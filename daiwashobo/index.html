@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大和書房 営業資料 自動生成デモ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-1: #08080d;
+  --bg-2: #101018;
+  --bg-3: #181824;
+  --bg-4: #222234;
+  --blue: #4a9eff;
+  --blue-dim: #2a6ecc;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --navy: #1B3A5C;
+  --text-1: #f1f5f9;
+  --text-2: #94a3b8;
+  --text-3: #64748b;
+  --border: #2a2a3e;
+  --card-bg: rgba(24, 24, 36, 0.8);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-1);
+  color: var(--text-1);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--bg-1) 0%, #0f1a2e 50%, var(--bg-2) 100%);
+  padding: 80px 40px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(74, 158, 255, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(34, 211, 238, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--text-1), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+.hero .subtitle {
+  font-size: 1.15rem;
+  color: var(--text-2);
+  font-weight: 300;
+  position: relative;
+}
+.hero .badge {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 6px 18px;
+  background: rgba(74, 158, 255, 0.12);
+  border: 1px solid rgba(74, 158, 255, 0.3);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--blue);
+  font-weight: 500;
+  position: relative;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Section */
+.section {
+  padding: 60px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-1);
+}
+.section-desc {
+  font-size: 0.95rem;
+  color: var(--text-2);
+  margin-bottom: 32px;
+}
+
+/* Before/After */
+.ba-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+.ba-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+.ba-card.before { border-left: 3px solid var(--red); }
+.ba-card.after { border-left: 3px solid var(--green); }
+.ba-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ba-card h3 .tag {
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.ba-card.before h3 .tag { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+.ba-card.after h3 .tag { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+.ba-card ul {
+  list-style: none;
+  padding: 0;
+}
+.ba-card ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.9rem;
+  color: var(--text-2);
+}
+.ba-card ul li:last-child { border-bottom: none; }
+.ba-card ul li::before {
+  content: '×';
+  color: var(--red);
+  margin-right: 8px;
+  font-weight: 700;
+}
+.ba-card.after ul li::before {
+  content: '✓';
+  color: var(--green);
+}
+.ba-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--blue);
+}
+
+/* Demo Area */
+.demo-area {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.form-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  position: sticky;
+  top: 20px;
+}
+.form-panel h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--blue);
+}
+.form-group {
+  margin-bottom: 14px;
+}
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-3);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-1);
+  font-family: var(--font-jp);
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.form-group textarea { resize: vertical; min-height: 60px; }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Order Form Preview */
+.preview-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 40px 36px;
+  color: #333;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  min-height: 700px;
+  position: relative;
+}
+.preview-panel::before {
+  content: 'PREVIEW';
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 0.7rem;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+}
+
+.of-banner {
+  background: #1B3A5C;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  letter-spacing: 0.05em;
+}
+.of-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+.of-author {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 12px;
+}
+.of-reprint {
+  background: #C41E3A;
+  color: white;
+  text-align: center;
+  padding: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: inline-block;
+  width: 100%;
+}
+.of-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 0.88rem;
+}
+.of-info-table td {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+}
+.of-info-table td:first-child {
+  background: #E8EDF3;
+  font-weight: 700;
+  width: 100px;
+  white-space: nowrap;
+}
+.of-catch {
+  background: #FFF8E1;
+  border: 1px solid #FFE082;
+  border-radius: 4px;
+  padding: 10px 16px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 16px;
+}
+.of-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1B3A5C;
+  margin-bottom: 6px;
+}
+.of-sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+}
+.of-sales-table th {
+  background: #1B3A5C;
+  color: white;
+  padding: 6px 10px;
+  text-align: center;
+  font-weight: 700;
+}
+.of-sales-table td {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+.of-sales-table tr:nth-child(even) td { background: #F5F7FA; }
+.of-sales-table td:first-child { text-align: left; }
+
+.of-image-placeholder {
+  background: #F0F0F0;
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+.of-order-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+}
+.of-order-table th {
+  background: #1B3A5C;
+  color: white;
+  padding: 6px 10px;
+  text-align: center;
+  font-weight: 700;
+}
+.of-order-table td {
+  padding: 20px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+.of-footer {
+  text-align: center;
+  color: #1B3A5C;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-top: 16px;
+}
+.of-footer-note {
+  text-align: center;
+  color: #999;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* Proposal Preview */
+.proposal-slides {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.slide-card {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  color: #333;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  position: relative;
+}
+.slide-card .slide-number {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.7rem;
+  color: #999;
+  font-family: var(--font-mono);
+}
+
+/* Slide 1: Cover */
+.slide-cover {
+  background: linear-gradient(135deg, #0F253C, #1B3A5C);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+.slide-cover .accent-line {
+  width: 100%;
+  height: 4px;
+  background: var(--blue);
+  position: absolute;
+  top: 0;
+}
+.slide-cover .accent-line-bottom {
+  width: 100%;
+  height: 4px;
+  background: var(--blue);
+  position: absolute;
+  bottom: 0;
+}
+.slide-cover h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.slide-cover h3 {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--blue);
+  margin-bottom: 24px;
+}
+.slide-cover .slide-meta {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* Slide 2-3: Tables */
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.slide-header {
+  background: #1B3A5C;
+  color: white;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.slide-body {
+  padding: 20px 24px;
+  flex: 1;
+  overflow: auto;
+}
+.slide-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.slide-body table th {
+  background: #1B3A5C;
+  color: white;
+  padding: 6px 8px;
+  text-align: center;
+  font-weight: 600;
+}
+.slide-body table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+.slide-body table td:first-child { text-align: left; }
+.slide-body table tr:nth-child(even) td { background: #F5F7FA; }
+.yoy-positive { color: #2E7D32; font-weight: 700; }
+.yoy-negative { color: #C41E3A; font-weight: 700; }
+
+/* Slide 4: Books */
+.book-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+}
+.book-card {
+  border: 1.5px solid #3A7CBD;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.book-card .book-img {
+  background: #F5F7FA;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+.book-card .book-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1B3A5C;
+}
+.book-card .book-meta {
+  font-size: 0.75rem;
+  color: #999;
+}
+.book-card .book-perf {
+  display: inline-block;
+  background: #2E7D32;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  align-self: flex-start;
+}
+.book-card .book-rec {
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Roadmap */
+.roadmap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.roadmap-phase {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+}
+.roadmap-phase::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 12px 12px 0 0;
+}
+.roadmap-phase.phase1::before { background: var(--green); }
+.roadmap-phase.phase2::before { background: var(--blue); }
+.roadmap-phase.phase3::before { background: var(--amber); }
+.phase-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.phase1 .phase-label { color: var(--green); }
+.phase2 .phase-label { color: var(--blue); }
+.phase3 .phase-label { color: var(--amber); }
+.roadmap-phase h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.roadmap-phase ul {
+  list-style: none;
+  padding: 0;
+}
+.roadmap-phase ul li {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+.roadmap-phase ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+.phase1 ul li::before { background: var(--green); }
+.phase2 ul li::before { background: var(--blue); }
+.phase3 ul li::before { background: var(--amber); }
+
+/* Tab */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+.tab-btn {
+  padding: 10px 24px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  color: var(--text-3);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-jp);
+}
+.tab-btn.active {
+  background: var(--bg-4);
+  color: var(--blue);
+  border-bottom-color: var(--bg-4);
+}
+.tab-btn:hover:not(.active) {
+  color: var(--text-2);
+  background: var(--bg-4);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Footer */
+.page-footer {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero h1 { font-size: 1.8rem; }
+  .ba-grid { grid-template-columns: 1fr; }
+  .ba-arrow { transform: rotate(90deg); }
+  .demo-area { grid-template-columns: 1fr; }
+  .form-panel { position: static; }
+  .roadmap { grid-template-columns: 1fr; }
+  .book-cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>営業資料 自動生成デモ</h1>
+  <div class="subtitle">注文書・商談資料のフォーマット統一と自動生成</div>
+  <div class="badge">Prototype v1.0 / 大和書房 DX推進</div>
+</div>
+
+<!-- Before/After -->
+<div class="section">
+  <div class="container">
+    <div class="section-title">Before / After</div>
+    <div class="section-desc">営業資料作成の現在と、自動化後のイメージ</div>
+
+    <div class="ba-grid">
+      <div class="ba-card before">
+        <h3><span class="tag">BEFORE</span> 現状の課題</h3>
+        <ul>
+          <li>営業担当者が個別にWord/PPTで作成</li>
+          <li>人によってフォーマット・品質がバラバラ</li>
+          <li>書誌情報の手入力でミスが発生</li>
+          <li>売上データの転記に時間がかかる</li>
+          <li>新人が作れるようになるまで時間がかかる</li>
+          <li>過去の資料を探すのが大変</li>
+        </ul>
+      </div>
+      <div class="ba-arrow">&#10132;</div>
+      <div class="ba-card after">
+        <h3><span class="tag">AFTER</span> 自動化後</h3>
+        <ul>
+          <li>統一フォーマットで品質が安定</li>
+          <li>書籍データから注文書を自動生成</li>
+          <li>POSデータから商談資料を自動作成</li>
+          <li>誰でも同じクオリティの資料を作成可能</li>
+          <li>AIによるキャッチコピーたたき台の生成</li>
+          <li>作成した資料を一元管理・検索</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Demo: Interactive -->
+<div class="section" style="background: var(--bg-2);">
+  <div class="container">
+    <div class="section-title">インタラクティブデモ</div>
+    <div class="section-desc">フォームに入力すると、右側のプレビューがリアルタイムに更新されます</div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('order')">注文書</button>
+      <button class="tab-btn" onclick="switchTab('proposal')">商談資料</button>
+    </div>
+
+    <!-- 注文書タブ -->
+    <div id="tab-order" class="tab-content active">
+      <div class="demo-area">
+        <div class="form-panel">
+          <h3>書籍情報を入力</h3>
+          <div class="form-group">
+            <label>書籍タイトル</label>
+            <input type="text" id="f-title" value="私たちの読書生活" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>著者名</label>
+            <input type="text" id="f-author" value="大島梢絵" oninput="updatePreview()">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>ISBN</label>
+              <input type="text" id="f-isbn" value="978-4-479-39472-3" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+              <label>本体価格</label>
+              <input type="number" id="f-price" value="1500" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>判型</label>
+              <select id="f-size" onchange="updatePreview()">
+                <option value="四六判" selected>四六判</option>
+                <option value="A5判">A5判</option>
+                <option value="B6判">B6判</option>
+                <option value="新書判">新書判</option>
+                <option value="文庫判">文庫判</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>ページ数</label>
+              <input type="number" id="f-pages" value="128" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>製本</label>
+              <select id="f-binding" onchange="updatePreview()">
+                <option value="並製" selected>並製</option>
+                <option value="上製">上製</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>重版（刷数）</label>
+              <input type="number" id="f-edition" value="2" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>出来日</label>
+            <input type="date" id="f-available" value="2026-03-02" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label>キャッチコピー</label>
+            <textarea id="f-catch" oninput="updatePreview()">SNSで話題沸騰！本好きの心を掴む珠玉のエッセイ。</textarea>
+          </div>
+        </div>
+
+        <div class="preview-panel" id="order-preview">
+          <!-- JS generated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 提案書タブ -->
+    <div id="tab-proposal" class="tab-content">
+      <div class="proposal-slides" id="proposal-preview">
+        <!-- JS generated -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Roadmap -->
+<div class="section">
+  <div class="container">
+    <div class="section-title">導入ロードマップ</div>
+    <div class="section-desc">段階的に自動化を進め、着実に成果を出す</div>
+
+    <div class="roadmap">
+      <div class="roadmap-phase phase1">
+        <div class="phase-label">PHASE 1 / 今すぐ</div>
+        <h4>テンプレート標準化</h4>
+        <ul>
+          <li>注文書フォーマットの統一</li>
+          <li>商談資料テンプレートの整備</li>
+          <li>入力項目の標準化</li>
+          <li>営業部内での運用ルール策定</li>
+        </ul>
+      </div>
+      <div class="roadmap-phase phase2">
+        <div class="phase-label">PHASE 2 / 1-2ヶ月</div>
+        <h4>データ連携</h4>
+        <ul>
+          <li>書誌データベースとの自動連携</li>
+          <li>POS売上データの自動取込み</li>
+          <li>書店マスタの整備</li>
+          <li>Excel/Pythonベースの生成ツール</li>
+        </ul>
+      </div>
+      <div class="roadmap-phase phase3">
+        <div class="phase-label">PHASE 3 / 3-6ヶ月</div>
+        <h4>AI活用</h4>
+        <ul>
+          <li>キャッチコピーのたたき台自動生成</li>
+          <li>売上傾向に基づく推薦書籍の自動提案</li>
+          <li>書店別のカスタマイズ提案</li>
+          <li>注文書の配信・管理システム化</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-footer">
+  <div class="container">
+    大和書房 DX推進プロジェクト &mdash; Prototype Demo v1.0
+  </div>
+</div>
+
+<script>
+const SAMPLE_SALES = [
+  { store: '丸善丸の内本店', ordered: 10, sold: 6 },
+  { store: '紀伊國屋書店新宿本店', ordered: 8, sold: 5 },
+  { store: '三省堂書店神保町本店', ordered: 6, sold: 4 },
+  { store: 'ジュンク堂書店池袋本店', ordered: 10, sold: 7 },
+  { store: '有隣堂横浜駅西口店', ordered: 5, sold: 3 },
+];
+
+const SAMPLE_PROPOSAL = {
+  chain: 'くまざわ書店',
+  period: '2026年2月',
+  chainSummary: {
+    months: ['2025-09', '2025-10', '2025-11', '2025-12', '2026-01'],
+    sales: [1250000, 1380000, 1520000, 1450000, 1310000],
+    yoy: [2.1, 5.3, 8.7, 3.2, -1.5]
+  },
+  stores: [
+    { name: 'くまざわ書店 錦糸町店', sales: [185000, 210000, 175000], yoy: 5.2 },
+    { name: 'くまざわ書店 武蔵小杉店', sales: [142000, 168000, 135000], yoy: 3.8 },
+    { name: 'くまざわ書店 ららぽーと横浜店', sales: [198000, 225000, 190000], yoy: 7.1 },
+    { name: 'くまざわ書店 グランツリー武蔵小杉店', sales: [120000, 155000, 118000], yoy: -2.3 },
+    { name: 'くまざわ書店 イオンモール日の出店', sales: [95000, 130000, 88000], yoy: 1.5 },
+  ],
+  books: [
+    { title: '私たちの読書生活', author: '大島梢絵', isbn: '978-4-479-39472-3', price: 1500, perf: '10入6売', rec: 'SNSで話題沸騰の読書エッセイ。重版出来、店頭展開推奨。' },
+    { title: '明日のための言葉', author: '山田花子', isbn: '978-4-479-12345-6', price: 1600, perf: '8入5売', rec: '20-30代女性に支持。自己啓発棚との連動陳列が効果的。' },
+    { title: '夜空の下で考えたこと', author: '佐藤一郎', isbn: '978-4-479-67890-1', price: 1400, perf: '6入4売', rec: '天文エッセイの新定番。理工書棚からの回遊が期待できる。' },
+  ]
+};
+
+function formatNum(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+}
+
+function updatePreview() {
+  const title = document.getElementById('f-title').value || '書籍タイトル';
+  const author = document.getElementById('f-author').value || '著者名';
+  const isbn = document.getElementById('f-isbn').value || '978-4-479-XXXXX-X';
+  const price = parseInt(document.getElementById('f-price').value) || 0;
+  const size = document.getElementById('f-size').value;
+  const pages = document.getElementById('f-pages').value || '0';
+  const binding = document.getElementById('f-binding').value;
+  const edition = document.getElementById('f-edition').value || '1';
+  const available = document.getElementById('f-available').value;
+  const catchCopy = document.getElementById('f-catch').value || '';
+  const taxPrice = Math.floor(price * 1.1);
+
+  const salesRows = SAMPLE_SALES.map((s, i) => `
+    <tr>
+      <td>${s.store}</td>
+      <td>${s.ordered}</td>
+      <td>${s.sold}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('order-preview').innerHTML = `
+    <div class="of-banner">☆ 大和書房 重版情報 ☆</div>
+    <div class="of-title">${title}</div>
+    <div class="of-author">${author}</div>
+    <div class="of-reprint">${edition}刷　${formatDate(available)} 出来</div>
+    <table class="of-info-table">
+      <tr><td>ISBN</td><td>${isbn}</td></tr>
+      <tr><td>判型・頁数</td><td>${size}　${binding}　${pages}頁</td></tr>
+      <tr><td>本体価格</td><td>&yen;${formatNum(price)}（税込 &yen;${formatNum(taxPrice)}）</td></tr>
+    </table>
+    ${catchCopy ? `<div class="of-catch">${catchCopy}</div>` : ''}
+    <div class="of-section-title">&#9660; 売行き実績</div>
+    <table class="of-sales-table">
+      <tr><th>書店名</th><th>入数</th><th>売数</th></tr>
+      ${salesRows}
+    </table>
+    <div class="of-image-placeholder">[ 書影画像 ]</div>
+    <div class="of-section-title">&#9660; ご注文</div>
+    <table class="of-order-table">
+      <tr><th>店印</th><th>ご担当者名</th><th>ご注文冊数</th><th>備考</th></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </table>
+    <div class="of-footer">FAX: 03-3203-4578　大和書房 営業部</div>
+    <div class="of-footer-note">※ご注文はFAXにてお願いいたします。</div>
+  `;
+}
+
+function renderProposal() {
+  const p = SAMPLE_PROPOSAL;
+  const months3 = ['2025-11', '2025-12', '2026-01'];
+
+  const summaryRows = `
+    <tr>
+      <td style="font-weight:700;background:#E8EDF3">売上（円）</td>
+      ${p.chainSummary.sales.map(s => `<td>&yen;${formatNum(s)}</td>`).join('')}
+    </tr>
+    <tr>
+      <td style="font-weight:700;background:#E8EDF3">前年比</td>
+      ${p.chainSummary.yoy.map(y => `<td class="${y >= 0 ? 'yoy-positive' : 'yoy-negative'}">${y >= 0 ? '+' : ''}${y}%</td>`).join('')}
+    </tr>
+  `;
+
+  const storeRows = p.stores.map((s, i) => `
+    <tr>
+      <td>${s.name}</td>
+      ${s.sales.map(v => `<td>&yen;${formatNum(v)}</td>`).join('')}
+      <td class="${s.yoy >= 0 ? 'yoy-positive' : 'yoy-negative'}">${s.yoy >= 0 ? '+' : ''}${s.yoy}%</td>
+    </tr>
+  `).join('');
+
+  const bookCards = p.books.map(b => `
+    <div class="book-card">
+      <div class="book-img">書影</div>
+      <div class="book-title">${b.title}</div>
+      <div class="book-meta">${b.author}　&yen;${formatNum(b.price)}</div>
+      <div class="book-meta">ISBN: ${b.isbn}</div>
+      <div class="book-perf">${b.perf}</div>
+      <div class="book-rec">${b.rec}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('proposal-preview').innerHTML = `
+    <div class="slide-card slide-cover">
+      <div class="accent-line"></div>
+      <h2>【${p.chain}様】</h2>
+      <h3>ご商談資料</h3>
+      <div class="slide-meta">${p.period}<br>大和書房</div>
+      <div class="accent-line-bottom"></div>
+      <span class="slide-number">1 / 4</span>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-content">
+        <div class="slide-header">${p.chain}様  売上推移サマリ</div>
+        <div class="slide-body">
+          <table>
+            <tr><th></th>${p.chainSummary.months.map(m => `<th>${m}</th>`).join('')}</tr>
+            ${summaryRows}
+          </table>
+        </div>
+      </div>
+      <span class="slide-number">2 / 4</span>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-content">
+        <div class="slide-header">店舗別 売上実績</div>
+        <div class="slide-body">
+          <table>
+            <tr><th>店舗名</th>${months3.map(m => `<th>${m}</th>`).join('')}<th>前年比</th></tr>
+            ${storeRows}
+          </table>
+        </div>
+      </div>
+      <span class="slide-number">3 / 4</span>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-content">
+        <div class="slide-header">おすすめ書籍</div>
+        <div class="slide-body">
+          <div class="book-cards">
+            ${bookCards}
+          </div>
+        </div>
+      </div>
+      <span class="slide-number">4 / 4</span>
+    </div>
+  `;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+  if (tab === 'order') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('tab-order').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('tab-proposal').classList.add('active');
+  }
+}
+
+// 初期表示
+updatePreview();
+renderProposal();
+</script>
+</body>
+</html>
