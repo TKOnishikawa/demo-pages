@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注文書OCR自動化 実装仕様書 | 大和書房</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN SYSTEM — McKinsey-inspired Dark Theme v3
+   Adapted for: Daiwashobo Order OCR Specification
+   ============================================================ */
+:root {
+  --bg-base:    #08080d;
+  --bg-surface: #101018;
+  --bg-raised:  #181824;
+  --bg-top:     #222234;
+  --border:       rgba(255,255,255,0.06);
+  --border-focus: rgba(255,255,255,0.12);
+  --text:       #eaeaf2;
+  --text-dim:   #9898ae;
+  --text-muted: #58586e;
+  --blue:   #4a7dff;
+  --cyan:   #22d3ee;
+  --green:  #34d399;
+  --amber:  #f59e0b;
+  --red:    #ef4444;
+  --purple: #a78bfa;
+  --pink:   #f472b6;
+  --grad-hero:    linear-gradient(135deg, #4a7dff 0%, #22d3ee 100%);
+  --grad-success: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+  --grad-warn:    linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
+  --grad-vision:  linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans JP', -apple-system, sans-serif;
+  background: var(--bg-base); color: var(--text);
+  line-height: 1.8; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+.page-layout { display: flex; gap: 32px; position: relative; }
+.main-content { flex: 1; min-width: 0; }
+
+/* ===== TOC Sidebar ===== */
+.toc-sidebar {
+  width: 220px; flex-shrink: 0;
+  position: sticky; top: 24px; align-self: flex-start;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+  padding: 16px 0;
+  scrollbar-width: thin; scrollbar-color: var(--bg-top) transparent;
+}
+.toc-sidebar::-webkit-scrollbar { width: 4px; }
+.toc-sidebar::-webkit-scrollbar-thumb { background: var(--bg-top); border-radius: 2px; }
+.toc-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 14px; padding: 0 12px;
+}
+.toc-list { list-style: none; }
+.toc-link {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 12px; margin-bottom: 2px;
+  font-size: 11px; color: var(--text-muted);
+  text-decoration: none; border-radius: 6px;
+  transition: all 0.15s ease; line-height: 1.5;
+  border-left: 2px solid transparent;
+}
+.toc-link:hover { color: var(--text-dim); background: var(--bg-surface); }
+.toc-link.active {
+  color: var(--cyan); background: rgba(34,211,238,0.04);
+  border-left-color: var(--cyan);
+}
+.toc-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  color: var(--text-muted); min-width: 20px; margin-top: 1px;
+}
+.toc-link.active .toc-num { color: var(--cyan); }
+.toc-sep { height: 1px; background: var(--border); margin: 8px 12px; }
+@media (max-width: 960px) {
+  .page-layout { flex-direction: column; }
+  .toc-sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 240px; z-index: 100;
+    background: var(--bg-base); border-right: 1px solid var(--border);
+    padding: 24px 8px;
+    transform: translateX(-100%); transition: transform 0.25s ease;
+  }
+  .toc-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+  .toc-toggle {
+    display: flex; position: fixed; left: 12px; top: 12px;
+    z-index: 101; width: 36px; height: 36px;
+    align-items: center; justify-content: center;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text-dim); cursor: pointer;
+    font-size: 16px; box-shadow: var(--shadow-sm);
+  }
+  .toc-overlay {
+    display: none; position: fixed; inset: 0; z-index: 99;
+    background: rgba(0,0,0,0.5);
+  }
+  .toc-overlay.open { display: block; }
+}
+@media (min-width: 961px) { .toc-toggle, .toc-overlay { display: none; } }
+.mono { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+/* ===== Section Structure ===== */
+.section { padding: 56px 0 40px; border-bottom: 1px solid var(--border); }
+.section:last-of-type { border-bottom: none; }
+.section-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 3.5px;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.section-eyebrow.asis    { color: var(--amber); }
+.section-eyebrow.success { color: var(--green); }
+.section-eyebrow.issue   { color: var(--red); }
+.section-eyebrow.cr      { color: var(--cyan); }
+.section-eyebrow.tobe    { color: var(--cyan); }
+.section-eyebrow.impact  { color: var(--purple); }
+.section-eyebrow.discuss { color: var(--pink); }
+.section-eyebrow.qw      { color: var(--blue); }
+.section-eyebrow.risk    { color: var(--red); }
+.section-eyebrow.shift   { color: var(--green); }
+.section-eyebrow.invest  { color: var(--amber); }
+.section-eyebrow.strat   { color: var(--purple); }
+.action-title {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 22px; font-weight: 700; line-height: 1.5;
+  margin-bottom: 10px; color: var(--text);
+}
+.section-lead {
+  font-size: 14px; color: var(--text-dim);
+  margin-bottom: 28px; max-width: 740px;
+}
+.sub-heading {
+  font-size: 15px; font-weight: 700; margin: 28px 0 14px; color: var(--text-dim);
+}
+
+/* ===== Hero ===== */
+.hero { padding: 72px 0 20px; text-align: center; position: relative; }
+.hero::before {
+  content: ''; position: absolute; top: -80px; left: 50%;
+  transform: translateX(-50%); width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(74,125,255,0.05) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block; padding: 5px 14px;
+  border: 1px solid rgba(74,125,255,0.25); border-radius: 20px;
+  font-size: 10px; font-weight: 700; color: var(--blue);
+  letter-spacing: 2.5px; text-transform: uppercase;
+  margin-bottom: 18px; background: rgba(74,125,255,0.04);
+}
+.hero h1 {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 30px; font-weight: 900; line-height: 1.4;
+  margin-bottom: 14px;
+  background: var(--grad-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  font-size: 13px; color: var(--text-dim);
+  max-width: 640px; margin: 0 auto 28px; line-height: 1.9;
+}
+.hero-meta {
+  display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+  font-size: 11px; color: var(--text-muted);
+}
+
+/* ===== KPI Cards ===== */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin: 28px 0 20px;
+}
+@media (max-width: 768px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+.kpi-card {
+  background: var(--bg-surface); border-radius: 12px;
+  padding: 22px 16px; text-align: center;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  transition: transform 0.15s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kpi-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px; font-weight: 600; margin-bottom: 4px;
+}
+.kpi-num.warn   { background: var(--grad-warn);    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-num.good   { background: var(--grad-success); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-num.blue   { background: var(--grad-hero);    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-num.vision { background: var(--grad-vision);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-label { font-size: 11px; color: var(--text-dim); font-weight: 500; line-height: 1.6; }
+
+/* ===== Story Arc ===== */
+.story-arc {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; margin: 8px 0 0; font-size: 12px; color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.story-arc .arc-arrow { color: var(--cyan); font-size: 16px; }
+
+/* ===== So What Callout ===== */
+.sowhat {
+  background: rgba(239,68,68,0.03);
+  border-left: 4px solid var(--red);
+  border-radius: 0 10px 10px 0;
+  padding: 18px 22px; margin: 24px 0;
+  box-shadow: var(--shadow-sm);
+}
+.sowhat-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--red); margin-bottom: 6px;
+}
+.sowhat p { font-size: 13px; line-height: 1.9; color: var(--text-dim); }
+.sowhat strong { color: #f87171; }
+
+/* ===== Key Message Callout ===== */
+.keymsg {
+  background: rgba(52,211,153,0.03);
+  border-left: 4px solid var(--green);
+  border-radius: 0 10px 10px 0;
+  padding: 18px 22px; margin: 24px 0;
+  box-shadow: var(--shadow-sm);
+}
+.keymsg-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--green); margin-bottom: 6px;
+}
+.keymsg p { font-size: 13px; line-height: 1.9; color: var(--text-dim); }
+
+/* ===== Insight Cards ===== */
+.insight-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin: 20px 0;
+}
+@media (max-width: 700px) { .insight-grid { grid-template-columns: 1fr; } }
+.insight-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.insight-card .ic-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px; font-weight: 600; margin-bottom: 4px;
+}
+.insight-card .ic-label { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+.insight-card .ic-detail { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
+/* ===== Swimlane ===== */
+.swimlane-wrap {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 20px; margin: 20px 0;
+  overflow-x: auto; box-shadow: var(--shadow-sm);
+}
+.swimlane-title {
+  font-size: 14px; font-weight: 700; margin-bottom: 20px; color: var(--text-dim);
+}
+.swimlane {
+  display: grid; grid-template-columns: 100px repeat(5, 1fr);
+  gap: 0; min-width: 700px;
+}
+.swim-label {
+  display: flex; align-items: center; padding: 8px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--text-muted); border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.swim-header {
+  text-align: center; padding: 10px 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+  border-bottom: 2px solid;
+}
+.swim-header.h-recv { border-bottom-color: var(--amber); color: var(--amber); }
+.swim-header.h-check { border-bottom-color: var(--red); color: var(--red); }
+.swim-header.h-entry { border-bottom-color: var(--red); color: var(--red); }
+.swim-header.h-sys { border-bottom-color: var(--blue); color: var(--blue); }
+.swim-header.h-ship { border-bottom-color: var(--green); color: var(--green); }
+.swim-cell {
+  padding: 8px 5px; border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+  align-items: center; min-height: 48px;
+}
+.swim-cell:last-child { border-right: none; }
+.swim-chip {
+  font-size: 9px; padding: 4px 8px; border-radius: 5px;
+  text-align: center; white-space: nowrap;
+  border: 1px solid var(--border); background: var(--bg-raised);
+  color: var(--text-dim);
+}
+.swim-chip.fax {
+  background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.30);
+  color: var(--amber); font-weight: 600;
+}
+.swim-chip.bottleneck {
+  background: rgba(239,68,68,0.10); border-color: rgba(239,68,68,0.30);
+  color: #f87171; font-weight: 700;
+}
+.swim-chip.achieved {
+  background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.25);
+  color: var(--green);
+}
+.swim-chip.system {
+  background: rgba(74,125,255,0.08); border-color: rgba(74,125,255,0.25);
+  color: var(--blue); font-weight: 600;
+}
+.swim-chip-sub {
+  font-size: 8px; color: var(--text-muted); text-align: center; line-height: 1.3;
+}
+
+/* ===== Issue Cards ===== */
+.issue-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin: 20px 0;
+}
+@media (max-width: 700px) { .issue-grid { grid-template-columns: 1fr; } }
+.issue-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px; border-left: 4px solid;
+  box-shadow: var(--shadow-sm);
+}
+.issue-card.critical { border-left-color: var(--red); }
+.issue-card.high     { border-left-color: var(--amber); }
+.issue-card.medium   { border-left-color: var(--blue); }
+.issue-card.positive { border-left-color: var(--green); }
+.issue-severity {
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 2px 8px;
+  border-radius: 3px; display: inline-block; margin-bottom: 8px;
+}
+.issue-card.critical .issue-severity { background: rgba(239,68,68,0.12); color: var(--red); }
+.issue-card.high .issue-severity     { background: rgba(245,158,11,0.12); color: var(--amber); }
+.issue-card.medium .issue-severity   { background: rgba(74,125,255,0.12); color: var(--blue); }
+.issue-card.positive .issue-severity { background: rgba(52,211,153,0.12); color: var(--green); }
+.issue-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.issue-card p  { font-size: 12px; color: var(--text-dim); line-height: 1.8; }
+
+/* ===== CR Grid ===== */
+.cr-grid { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.cr-row {
+  display: grid; grid-template-columns: 1fr 48px 1fr;
+  align-items: center; gap: 0;
+}
+@media (max-width: 700px) { .cr-row { grid-template-columns: 1fr; gap: 4px; } }
+.cr-challenge {
+  background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 10px; padding: 14px 18px; font-size: 13px;
+  color: var(--text); line-height: 1.6;
+}
+.cr-arrow {
+  text-align: center; font-family: 'JetBrains Mono', monospace;
+  font-size: 20px; color: var(--cyan); position: relative;
+}
+.cr-arrow::before {
+  content: ''; position: absolute; top: 50%; left: 4px; right: 4px;
+  height: 2px; background: linear-gradient(90deg, rgba(239,68,68,0.3) 0%, var(--cyan) 100%);
+  transform: translateY(-50%); z-index: 0;
+}
+.cr-arrow span { position: relative; z-index: 1; background: var(--bg-base); padding: 0 4px; }
+.cr-response {
+  background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15);
+  border-radius: 10px; padding: 14px 18px; font-size: 13px;
+  color: var(--text); line-height: 1.6;
+}
+
+/* ===== Impact Table ===== */
+.impact-tbl {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); margin: 20px 0;
+}
+.impact-tbl thead th {
+  background: var(--bg-raised); padding: 12px 16px;
+  font-size: 10px; font-weight: 700; text-align: left;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+.impact-tbl tbody td {
+  padding: 12px 16px; font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top; background: var(--bg-surface);
+}
+.impact-tbl tbody tr:last-child td { border-bottom: none; }
+.impact-tbl .m-name { font-weight: 600; color: var(--text); }
+.impact-tbl .m-after { color: var(--green); font-weight: 500; }
+
+/* ===== Status tags ===== */
+.st-tag {
+  font-size: 9px; font-weight: 600; padding: 2px 7px;
+  border-radius: 3px; white-space: nowrap;
+}
+.st-tag.pass   { background: rgba(52,211,153,0.10); color: var(--green); }
+.st-tag.fail   { background: rgba(239,68,68,0.10); color: #f87171; }
+.st-tag.qw     { background: rgba(74,125,255,0.10); color: var(--blue); }
+.st-tag.medium { background: rgba(245,158,11,0.10); color: var(--amber); }
+.st-tag.strat  { background: rgba(167,139,250,0.10); color: var(--purple); }
+.st-tag.high   { background: rgba(239,68,68,0.10); color: #f87171; }
+
+/* ===== Shift Cards ===== */
+.shift-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 14px; margin: 20px 0;
+}
+.shift-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm);
+}
+.shift-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 600;
+  background: var(--grad-success);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+.shift-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.shift-before, .shift-after {
+  font-size: 11px; padding: 7px 11px; border-radius: 7px;
+  margin-bottom: 5px; line-height: 1.6;
+}
+.shift-before {
+  background: rgba(239,68,68,0.05); border-left: 3px solid var(--red); color: #f87171;
+}
+.shift-after {
+  background: rgba(34,211,238,0.05); border-left: 3px solid var(--cyan); color: var(--cyan);
+}
+
+/* ===== Phase Cards ===== */
+.phase-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.phase-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.phase-card .phase-policy {
+  font-size: 12px; color: var(--cyan); font-weight: 600;
+  margin-bottom: 8px; padding: 6px 12px;
+  background: rgba(34,211,238,0.04); border-radius: 6px;
+  display: inline-block;
+}
+.phase-card > p { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; line-height: 1.8; }
+.phase-items { display: flex; flex-direction: column; gap: 5px; }
+.phase-item {
+  font-size: 11px; color: var(--text-dim); padding: 6px 12px;
+  background: var(--bg-raised); border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.6;
+}
+.pi-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+.pi-dot.done { background: var(--green); }
+.pi-dot.wip  { background: var(--cyan); }
+.pi-dot.plan { background: var(--text-muted); }
+.pi-dot.risk { background: var(--red); }
+
+/* ===== Layer Stack ===== */
+.layer-stack { display: flex; flex-direction: column; gap: 14px; margin: 20px 0; }
+.layer {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.layer-badge {
+  position: absolute; top: -9px; left: 18px;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 2px 10px; border-radius: 4px;
+}
+.layer-badge.l1 { background: var(--amber); color: #000; }
+.layer-badge.l2 { background: var(--cyan); color: #000; }
+.layer-badge.l3 { background: var(--green); color: #000; }
+.layer-badge.l4 { background: var(--blue); color: #fff; }
+.layer h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; margin-top: 4px; }
+.layer p  { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; line-height: 1.8; }
+
+/* ===== Confidence Routing ===== */
+.conf-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin: 20px 0;
+}
+@media (max-width: 700px) { .conf-grid { grid-template-columns: 1fr; } }
+.conf-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; text-align: center;
+  box-shadow: var(--shadow-sm); border-top: 3px solid;
+}
+.conf-card.auto   { border-top-color: var(--green); }
+.conf-card.review { border-top-color: var(--amber); }
+.conf-card.manual { border-top-color: var(--red); }
+.conf-card .conf-threshold {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 600; margin-bottom: 6px;
+}
+.conf-card.auto .conf-threshold   { color: var(--green); }
+.conf-card.review .conf-threshold { color: var(--amber); }
+.conf-card.manual .conf-threshold { color: #f87171; }
+.conf-card .conf-label { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.conf-card .conf-desc  { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+
+/* ===== Feasibility Matrix ===== */
+.feasibility-matrix {
+  display: grid; grid-template-columns: 40px 1fr 1fr;
+  grid-template-rows: auto 1fr 1fr auto;
+  gap: 0; margin: 24px 0; min-height: 300px;
+}
+.fm-corner { background: transparent; }
+.fm-y-label {
+  writing-mode: vertical-rl; text-orientation: mixed;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  color: var(--text-muted); transform: rotate(180deg);
+}
+.fm-x-label {
+  text-align: center; font-size: 10px; font-weight: 700;
+  color: var(--text-muted); padding: 8px 0;
+}
+.fm-quadrant {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  padding: 16px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  min-height: 140px;
+}
+.fm-quadrant.best { background: rgba(52,211,153,0.04); border-color: rgba(52,211,153,0.15); }
+.fm-quadrant.good { background: rgba(74,125,255,0.04); border-color: rgba(74,125,255,0.15); }
+.fm-quadrant.ok   { background: rgba(245,158,11,0.04); border-color: rgba(245,158,11,0.15); }
+.fm-quadrant.wait { background: rgba(239,68,68,0.04); border-color: rgba(239,68,68,0.15); }
+.fm-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.fm-quadrant.best .fm-label { color: var(--green); }
+.fm-quadrant.good .fm-label { color: var(--blue); }
+.fm-quadrant.ok .fm-label   { color: var(--amber); }
+.fm-quadrant.wait .fm-label { color: var(--red); }
+.fm-item {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  background: var(--bg-raised); border: 1px solid var(--border);
+  color: var(--text-dim); text-align: center;
+}
+
+/* ===== Migration Table ===== */
+.mig-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); font-size: 12px; margin: 18px 0;
+}
+.mig-table thead th {
+  background: var(--bg-raised); padding: 10px 14px;
+  font-size: 10px; font-weight: 700; text-align: left;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+.mig-table tbody td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  background: var(--bg-surface); vertical-align: top;
+}
+.mig-table tbody tr:last-child td { border-bottom: none; }
+
+/* ===== Discussion Cards ===== */
+.disc-card {
+  background: var(--bg-surface); border: 1px solid rgba(244,114,182,0.15);
+  border-radius: 12px; padding: 22px; margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.disc-num {
+  font-size: 10px; font-weight: 700; color: var(--pink); margin-bottom: 6px;
+}
+.disc-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.disc-card > p { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.disc-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.disc-opt {
+  font-size: 10px; padding: 4px 10px; border-radius: 5px;
+  border: 1px solid var(--border); background: var(--bg-raised); color: var(--text-dim);
+}
+.disc-opt.rec {
+  border-color: rgba(34,211,238,0.35); background: rgba(34,211,238,0.06); color: var(--cyan);
+}
+
+/* ===== Success Criteria ===== */
+.criteria-list { list-style: none; margin: 16px 0; }
+.criteria-list li {
+  font-size: 12px; color: var(--text-dim);
+  padding: 8px 14px; margin-bottom: 6px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; display: flex; align-items: center; gap: 10px;
+}
+.criteria-check {
+  width: 16px; height: 16px; border-radius: 4px;
+  border: 2px solid var(--text-muted); flex-shrink: 0;
+}
+
+/* ===== Code Block ===== */
+.code-block {
+  background: var(--bg-raised); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px 22px; margin: 16px 0;
+  overflow-x: auto;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; line-height: 1.7; color: var(--text-dim);
+  white-space: pre-wrap; word-break: break-word;
+}
+.code-block .code-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
+}
+
+/* ===== Reference List ===== */
+.ref-list { margin: 16px 0; }
+.ref-item {
+  font-size: 12px; color: var(--text-dim); padding: 8px 14px;
+  margin-bottom: 4px; background: var(--bg-surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  display: flex; align-items: center; gap: 10px; line-height: 1.6;
+}
+.ref-icon { font-size: 14px; flex-shrink: 0; }
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center; padding: 40px 0 28px;
+  color: var(--text-muted); font-size: 11px;
+  border-top: 1px solid var(--border); margin-top: 40px;
+}
+.footer a { color: var(--blue); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- Mobile TOC Toggle -->
+<button class="toc-toggle" onclick="document.querySelector('.toc-sidebar').classList.toggle('open');document.querySelector('.toc-overlay').classList.toggle('open');">&#9776;</button>
+<div class="toc-overlay" onclick="document.querySelector('.toc-sidebar').classList.remove('open');this.classList.remove('open');"></div>
+
+<div class="container">
+<div class="page-layout">
+
+<!-- ===== TOC SIDEBAR ===== -->
+<nav class="toc-sidebar">
+  <div class="toc-title">Contents</div>
+  <ul class="toc-list">
+    <li class="toc-item"><a href="#s0" class="toc-link active"><span class="toc-num">00</span>Executive Summary</a></li>
+    <li><div class="toc-sep"></div></li>
+    <li class="toc-item"><a href="#s1" class="toc-link"><span class="toc-num">01</span>ビジネス背景・課題</a></li>
+    <li class="toc-item"><a href="#s2" class="toc-link"><span class="toc-num">02</span>PoC検証結果</a></li>
+    <li class="toc-item"><a href="#s3" class="toc-link"><span class="toc-num">03</span>ビジネス要求</a></li>
+    <li><div class="toc-sep"></div></li>
+    <li class="toc-item"><a href="#s4" class="toc-link"><span class="toc-num">04</span>システム要件</a></li>
+    <li class="toc-item"><a href="#s5" class="toc-link"><span class="toc-num">05</span>実現方針 & ROI</a></li>
+    <li class="toc-item"><a href="#s6" class="toc-link"><span class="toc-num">06</span>実装ロードマップ</a></li>
+    <li class="toc-item"><a href="#s7" class="toc-link"><span class="toc-num">07</span>実装詳細</a></li>
+    <li><div class="toc-sep"></div></li>
+    <li class="toc-item"><a href="#s8" class="toc-link"><span class="toc-num">08</span>品質保証</a></li>
+    <li class="toc-item"><a href="#s9" class="toc-link"><span class="toc-num">09</span>リスクマトリクス</a></li>
+    <li class="toc-item"><a href="#s10" class="toc-link"><span class="toc-num">10</span>運用移行計画</a></li>
+    <li class="toc-item"><a href="#s11" class="toc-link"><span class="toc-num">11</span>未解決事項</a></li>
+  </ul>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S0: EXECUTIVE SUMMARY
+     ══════════════════════════════════════════════════════════════ -->
+<div class="hero" id="s0">
+  <div class="hero-badge">Order OCR Automation &mdash; Internal Specification</div>
+  <h1>PoC検証完了 &mdash; ISBN精度100%達成<br>FAX注文書OCR自動化 実装仕様書</h1>
+  <p class="hero-sub">
+    大和書房のFAX注文書入力業務を、Gemini Vision APIで自動化する。<br>
+    6件のPoCで100%のISBN抽出精度を実証済み。派遣契約満了までの3ヶ月で段階的にMVPを稼働させる。
+  </p>
+  <div class="hero-meta">
+    <span>大和書房</span>
+    <span>注文書OCR自動化</span>
+    <span>2026年3月</span>
+    <span>Internal Spec v1.0</span>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-num good">100%</div>
+    <div class="kpi-label">ISBN精度<br><span style="font-size:9px;color:var(--text-muted);">6PDF / 14件検証済</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num warn">2名</div>
+    <div class="kpi-label">派遣スタッフ<br><span style="font-size:9px;color:var(--text-muted);">3ヶ月後に契約満了</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num blue">&yen;5.6k</div>
+    <div class="kpi-label">月額ランニング<br><span style="font-size:9px;color:var(--text-muted);">Phase 1 MVP</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num vision">80x</div>
+    <div class="kpi-label">コスト削減倍率<br><span style="font-size:9px;color:var(--text-muted);">&yen;400k &rarr; &yen;5.6k</span></div>
+  </div>
+</div>
+
+<div class="story-arc">
+  <span>PoC実証済</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>6オプション比較</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>段階的ハイブリッド採用</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>Phase 1 MVP稼働</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>完全自動化</span>
+</div>
+
+<div style="margin:32px 0 24px;padding:20px 24px;background:rgba(74,125,255,0.06);border:1px solid rgba(74,125,255,0.15);border-left:4px solid var(--blue);border-radius:0 12px 12px 0;">
+  <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;">Core Principle</div>
+  <p style="font-size:15px;font-weight:500;line-height:1.7;color:var(--text);margin:0;">手入力作業そのものを排除することが定着である。利用者に「新しいツールを使う」行動変容を求めない設計 &mdash; FAXが届いたら自動で処理され、結果だけが届く。</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S1: BUSINESS CONTEXT
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-eyebrow asis">Business Context</div>
+  <h2 class="action-title">ビジネス背景・課題</h2>
+  <p class="section-lead">書店からFAXで返送される注文書を、派遣スタッフ2名がフルタイムで手入力している。FAX画像の品質劣化が激しく、既存のRPA（レイテック社）では読み取りが困難。</p>
+
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="ic-num" style="background:var(--grad-warn);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">~&yen;400k</div>
+      <div class="ic-label">月額人件費（派遣2名）</div>
+      <div class="ic-detail">2名体制・属人化。契約社員化は見送り</div>
+    </div>
+    <div class="insight-card">
+      <div class="ic-num" style="background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">~50件</div>
+      <div class="ic-label">週間FAX注文書処理量（推定）</div>
+      <div class="ic-detail">手入力 → 基幹システム転記の2画面作業</div>
+    </div>
+    <div class="insight-card">
+      <div class="ic-num" style="background:var(--grad-warn);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">3ヶ月</div>
+      <div class="ic-label">派遣契約満了までの残り</div>
+      <div class="ic-detail">2026年6月末。代替手段が必須</div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">現行業務フロー（AS-IS）</h3>
+  <div class="swimlane-wrap">
+    <div class="swimlane-title">FAX注文書 処理フロー</div>
+    <div class="swimlane">
+      <!-- Headers -->
+      <div class="swim-label"></div>
+      <div class="swim-header h-recv">FAX受信</div>
+      <div class="swim-header h-check">目視確認</div>
+      <div class="swim-header h-entry">手入力</div>
+      <div class="swim-header h-sys">基幹転記</div>
+      <div class="swim-header h-ship">出荷指示</div>
+      <!-- Row 1: 書店 -->
+      <div class="swim-label">書店</div>
+      <div class="swim-cell"><span class="swim-chip fax">番線印+手書き</span><span class="swim-chip-sub">判子＋注文数記入</span></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <!-- Row 2: 複合機 -->
+      <div class="swim-label">複合機</div>
+      <div class="swim-cell"><span class="swim-chip fax">FAX→PDF</span><span class="swim-chip-sub">品質劣化</span></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <!-- Row 3: 派遣スタッフ -->
+      <div class="swim-label">派遣2名</div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"><span class="swim-chip bottleneck">2画面で照合</span><span class="swim-chip-sub">原本+入力画面</span></div>
+      <div class="swim-cell"><span class="swim-chip bottleneck">1件5-10分</span><span class="swim-chip-sub">ISBN転記ミスリスク</span></div>
+      <div class="swim-cell"><span class="swim-chip">データ投入</span></div>
+      <div class="swim-cell"></div>
+      <!-- Row 4: 営業部 -->
+      <div class="swim-label">営業部</div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"><span class="swim-chip achieved">出荷手配</span></div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">前提条件・制約</h3>
+  <div class="ref-list">
+    <div class="ref-item"><span class="ref-icon">&#9888;</span> FAX画像は黒く劣化しやすい。既存RPA（レイテック社）では読み取り不可</div>
+    <div class="ref-item"><span class="ref-icon">&#9888;</span> 注文書フォーマットがバラバラ（セット/単品/新刊予約/フェア/コラボ帯）</div>
+    <div class="ref-item"><span class="ref-icon">&#9888;</span> 書店識別は物理判子（番線印）。取次ごとに形式が異なる</div>
+    <div class="ref-item"><span class="ref-icon">&#10003;</span> kintone契約済み（レイテック社が管理）</div>
+    <div class="ref-item"><span class="ref-icon">&#10003;</span> GCPプロジェクト既存（bigquery-459908）。Gemini APIキー取得済み</div>
+    <div class="ref-item"><span class="ref-icon">&#10003;</span> 派遣スタッフ契約満了: 2026年6月末</div>
+  </div>
+
+  <h3 class="sub-heading">インプット資料</h3>
+  <div class="ref-list">
+    <div class="ref-item"><span class="ref-icon">&#128196;</span> 会議議事録（2026/02/28 ながこさんとの事前MTG）</div>
+    <div class="ref-item"><span class="ref-icon">&#128196;</span> 注文書サンプル6件（セット注文書、単品注文書、新刊予約、フェア案内等）</div>
+    <div class="ref-item"><span class="ref-icon">&#128196;</span> プロトタイプデモ（demo.html + sample_data.json）</div>
+    <div class="ref-item"><span class="ref-icon">&#128196;</span> 抽出済みデータ（extracted_order_data.json — 14書籍+6注文書メタデータ）</div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>3ヶ月のデッドラインは動かせない。完全自動化ではなく、まず<strong>「派遣スタッフの作業を半減」できるMVP</strong>を稼働させることが最優先。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S2: POC VALIDATION
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-eyebrow success">PoC Validation</div>
+  <h2 class="action-title">PoC検証結果</h2>
+  <p class="section-lead">6件の注文書PDFをGemini 2.5 Proで処理し、14件の書籍データを抽出。ISBN-13チェックデジット検証で全件パスを確認。</p>
+
+  <div class="keymsg">
+    <div class="keymsg-label">Key Result</div>
+    <p>Gemini 2.5 Pro Vision APIで<strong>ISBN精度100%</strong>（14/14件パス）を達成。4種別の注文書フォーマットに対応し、JSON構造化出力を実現。既存スクリプト <span class="mono">order_ocr.py</span> + <span class="mono">order_validator.py</span> で実装済み。</p>
+  </div>
+
+  <h3 class="sub-heading">PoC結果一覧</h3>
+  <table class="impact-tbl">
+    <thead>
+      <tr>
+        <th>注文書PDF</th>
+        <th>種別</th>
+        <th>抽出件数</th>
+        <th>ISBN検証</th>
+        <th>Confidence</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">猫の日フェア</td>
+        <td>セット注文書</td>
+        <td>7件</td>
+        <td class="m-after"><span class="st-tag pass">7/7 PASS</span></td>
+        <td><span class="mono">1.0</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">おでかけアンソロジー ひとり旅</td>
+        <td>重版案内</td>
+        <td>2件</td>
+        <td class="m-after"><span class="st-tag pass">2/2 PASS</span></td>
+        <td><span class="mono">0.98</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">アレルギーの9割は腸で治る</td>
+        <td>重版案内</td>
+        <td>1件</td>
+        <td class="m-after"><span class="st-tag pass">1/1 PASS</span></td>
+        <td><span class="mono">1.0</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">私たちの読書生活</td>
+        <td>新刊予約</td>
+        <td>1件</td>
+        <td class="m-after"><span class="st-tag pass">1/1 PASS</span></td>
+        <td><span class="mono">1.0</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">教養としての落語</td>
+        <td>コラボ帯注文書</td>
+        <td>1件</td>
+        <td class="m-after"><span class="st-tag pass">1/1 PASS</span></td>
+        <td><span class="mono">1.0</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">健康書2点</td>
+        <td>新刊案内</td>
+        <td>3件</td>
+        <td class="m-after"><span class="st-tag pass">2/2 PASS</span></td>
+        <td><span class="mono">0.95</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">検証ハイライト</h3>
+  <div class="issue-grid">
+    <div class="issue-card positive">
+      <div class="issue-severity">Validated</div>
+      <h4>ISBN精度 100%</h4>
+      <p>mod-10チェックデジット検証で14件すべてパス。ISBN読み取りは最も厳格なテストであり、他フィールドの精度保証にもなる。</p>
+    </div>
+    <div class="issue-card positive">
+      <div class="issue-severity">Validated</div>
+      <h4>4種別の注文書に対応</h4>
+      <p>セット注文書、単品注文書、新刊予約、フェア案内。フォーマットが異なっても同一プロンプトで構造化データを抽出。</p>
+    </div>
+    <div class="issue-card positive">
+      <div class="issue-severity">Validated</div>
+      <h4>Confidence付き出力</h4>
+      <p>各項目に0.0〜1.0の確信度スコアを付与。自動承認/要確認/手入力の3段階ルーティングが可能。</p>
+    </div>
+    <div class="issue-card positive">
+      <div class="issue-severity">Validated</div>
+      <h4>JSON構造化出力</h4>
+      <p>13項目のメタデータ + items配列。バリデータ→Sheets→基幹連携のパイプラインにそのまま投入可能。</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">Pending</div>
+      <h4>手書き数量の認識精度</h4>
+      <p>今回のPoCは送付前の注文書（未記入）のため、手書き数量の精度は未検証。実FAX返送PDFでの30件テストが必要。</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">Pending</div>
+      <h4>番線印（店舗識別）の読取</h4>
+      <p>store_stamp / store_name は今回null多発。物理判子のOCRは技術的に最難関。段階的アプローチが必要。</p>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>ISBNという<strong>最も検証が厳格なデータで100%精度を達成</strong>した。手書き数量と番線印は次の検証ポイントだが、confidence routingにより「読めないものは人に回す」アーキテクチャで安全に運用開始できる。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S3: BUSINESS REQUIREMENTS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-eyebrow cr">Business Requirements</div>
+  <h2 class="action-title">ビジネス要求（5W1H + ユーザーストーリー）</h2>
+  <p class="section-lead">「誰が・何を・なぜ・いつ・どこで・どうやって」を網羅的に定義し、ユーザーストーリーで具体的な利用シーンを可視化する。</p>
+
+  <h3 class="sub-heading">5W1H</h3>
+  <table class="impact-tbl">
+    <thead><tr><th>項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td class="m-name">Why（なぜ）</td><td>派遣契約満了（3ヶ月後）。手入力業務の自動化で人件費を月額&yen;400k削減し、ISBN転記ミスを根絶する</td></tr>
+      <tr><td class="m-name">Who（誰が）</td><td>営業部（注文書受付）、派遣スタッフ2名（現行作業者）、レイテック社（kintone管理）、omoshiku（開発支援）</td></tr>
+      <tr><td class="m-name">What（何を）</td><td>FAX注文書 → 構造化データ → 基幹システム連携の自動化パイプライン。抽出対象: 注文日・店舗名/コード・書名・ISBN・注文数量</td></tr>
+      <tr><td class="m-name">When（いつ）</td><td>Phase 1: 2026年4月前半（MVP） / Phase 2: 2026年5月（HITL UI） / Phase 3: 2026年Q3（QRコード改革）</td></tr>
+      <tr><td class="m-name">Where（どこで）</td><td>大和書房社内。FAX受信 → API処理（GCP） → Google Sheets / kintone → 基幹システム</td></tr>
+      <tr><td class="m-name">How（どうやって）</td><td>Gemini 2.5 Pro Vision API + Python validator + Google Sheets（MVP）→ Streamlit HITL UI（Phase 2）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">ユーザーストーリー</h3>
+  <div class="cr-grid">
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>課題:</strong> 派遣スタッフが1件ずつFAXを目視 → 手入力。1件あたり5-10分、1日8時間フルタイム</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response"><strong>解決:</strong> OCRが自動抽出。confidence 90%以上は自動承認 → Sheets入力。処理時間は1件30秒</div>
+    </div>
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>課題:</strong> ISBNの手書き転記ミスで出荷エラーが発生。発見が遅く書店クレームにつながる</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response"><strong>解決:</strong> ISBN-13チェックデジット検証で100%精度保証。誤読は即座にフラグされ、出荷前に修正できる</div>
+    </div>
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>課題:</strong> 派遣スタッフ不在時（有休・体調不良）に処理が滞留。業務が属人化している</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response"><strong>解決:</strong> 24/7稼働のAPI処理。人の介在なしで抽出→バリデーションまで完了。属人化ゼロ</div>
+    </div>
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>課題:</strong> 新しい派遣スタッフの教育コスト（2-3週間）。注文書フォーマットの習熟が必要</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response"><strong>解決:</strong> HITL UIで確認・修正のみ。直感的操作で教育不要。OCRが全フォーマットを自動判定</div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">追加確認事項・論点</h3>
+  <div class="disc-card">
+    <div class="disc-num">論点 #1</div>
+    <h4>書店番線印の読取精度が低い場合の運用</h4>
+    <p>番線印（ハンコ）のOCR精度が低い場合、店舗特定をどこまで自動化するか？</p>
+    <div class="disc-opts">
+      <span class="disc-opt rec">周辺テキスト+マスタ照合（推奨）</span>
+      <span class="disc-opt">番線印は全件手動入力</span>
+      <span class="disc-opt">書店マスタDB構築で補完</span>
+    </div>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">論点 #2</div>
+    <h4>kintoneとの連携タイミング</h4>
+    <p>Phase 1ではSheets出力のみ？ kintone連携はPhase 2以降？書籍マスタとのISBN突合はいつから？</p>
+    <div class="disc-opts">
+      <span class="disc-opt rec">Phase 1: Sheets only（推奨）</span>
+      <span class="disc-opt">Phase 1からkintone連携</span>
+    </div>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">論点 #3</div>
+    <h4>レイテック社との役割分担</h4>
+    <p>OCRパイプライン = omoshiku、kintone + 基幹連携 = レイテック、の分業でよいか？</p>
+    <div class="disc-opts">
+      <span class="disc-opt rec">OCR: omoshiku / kintone: レイテック</span>
+      <span class="disc-opt">全工程をomoshikuが担当</span>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>ビジネス要求は<strong>「派遣契約満了前にMVPを稼働させる」</strong>という1点に集約される。完璧を追わず、confidence routingで安全に段階移行する方針が最適解。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S4: SYSTEM ARCHITECTURE
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-eyebrow tobe">System Architecture</div>
+  <h2 class="action-title">システム要件（全体アーキテクチャ）</h2>
+  <p class="section-lead">4層アーキテクチャと信頼度ベースのルーティング設計。各コンポーネントは独立して稼働し、段階的に統合する。</p>
+
+  <h3 class="sub-heading">システム全体構成</h3>
+  <div class="layer-stack">
+    <div class="layer">
+      <div class="layer-badge l1">Input</div>
+      <h4>入力層 &mdash; FAX受信 &rarr; PDF取得</h4>
+      <p>複合機がFAXを受信 → PDF化 → メール転送またはGoogle Drive保存。手動アップロードにも対応。対応形式: PDF / PNG / JPG / TIFF。</p>
+    </div>
+    <div class="layer">
+      <div class="layer-badge l2">Processing</div>
+      <h4>処理層 &mdash; Gemini 2.5 Pro Vision API</h4>
+      <p>PDFをGemini APIに送信 → JSON構造化データを取得。抽出プロンプトで13項目のメタデータ + items配列を生成。Temperature 0.1で決定的出力。</p>
+    </div>
+    <div class="layer">
+      <div class="layer-badge l3">Routing</div>
+      <h4>判定層 &mdash; バリデーション + 信頼度ルーティング</h4>
+      <p>ISBN-13チェックデジット検証、数量異常値検知（1-999範囲チェック）、書名存在チェック。信頼度スコアに基づく3段階ルーティング。</p>
+    </div>
+    <div class="layer">
+      <div class="layer-badge l4">Output</div>
+      <h4>出力層 &mdash; Google Sheets / kintone / 基幹システム</h4>
+      <p>Phase 1: Google Sheets（自動書き込み + 色付きフラグ）。Phase 2: Streamlit UIでHuman-in-the-Loop確認。Phase 3: kintone → 基幹システム連携。</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">信頼度ルーティング（Confidence Routing）</h3>
+  <div class="conf-grid">
+    <div class="conf-card auto">
+      <div class="conf-threshold">&ge;90%</div>
+      <div class="conf-label">自動承認</div>
+      <div class="conf-desc">Sheets直接書き込み。ISBNチェック済み。目標: 全件の60%以上</div>
+    </div>
+    <div class="conf-card review">
+      <div class="conf-threshold">70-90%</div>
+      <div class="conf-label">要レビュー</div>
+      <div class="conf-desc">Sheets入力 + 警告フラグ表示。営業担当が確認・修正。目標: 全件の30%以下</div>
+    </div>
+    <div class="conf-card manual">
+      <div class="conf-threshold">&lt;70%</div>
+      <div class="conf-label">手動入力</div>
+      <div class="conf-desc">原本画像リンク付きで手入力キューへ。従来フローで処理。目標: 全件の10%以下</div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">コンポーネント一覧</h3>
+  <div class="phase-items">
+    <div class="phase-item"><span class="pi-dot done"></span><span class="mono">order_ocr.py</span> &mdash; Gemini API呼び出し + JSON抽出（バッチ/単一ファイル対応）</div>
+    <div class="phase-item"><span class="pi-dot done"></span><span class="mono">order_validator.py</span> &mdash; ISBN-13チェックデジット + 数量異常値検知 + 信頼度判定</div>
+    <div class="phase-item"><span class="pi-dot wip"></span>Google Sheets連携 &mdash; 抽出結果の自動書き込み + 条件付き書式（信頼度色分け）</div>
+    <div class="phase-item"><span class="pi-dot plan"></span>Streamlit HITL UI &mdash; レビュー画面（原本PDF + 抽出データの並列表示）</div>
+    <div class="phase-item"><span class="pi-dot plan"></span>kintone連携 &mdash; REST API経由での書籍マスタ突合 + データ投入</div>
+  </div>
+
+  <h3 class="sub-heading">実装論点</h3>
+  <div class="disc-card">
+    <div class="disc-num">論点 #4</div>
+    <h4>FAX → デジタルの入口設計</h4>
+    <p>FAX受信PDFをOCRパイプラインに渡す方法。どの経路が大和書房の環境に最適か？</p>
+    <div class="disc-opts">
+      <span class="disc-opt rec">複合機メール転送（推奨）</span>
+      <span class="disc-opt">Google Drive監視</span>
+      <span class="disc-opt">手動アップロード</span>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>アーキテクチャの各層は<strong>すでに独立して動作する</strong>。Phase 1では「繋ぐ」だけでMVPが成立する。最大のリスクはFAX → デジタルの入口部分であり、ここを複合機メール転送で解決する方針を推奨。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S5: SOLUTION DESIGN & ROI
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-eyebrow impact">Solution Design &amp; ROI</div>
+  <h2 class="action-title">実現方針 &amp; ROI</h2>
+  <p class="section-lead">6つの実現方式を8つの評価軸で比較し、段階的ハイブリッドアプローチを採用。ROI 80倍のコスト構造転換を実現する。</p>
+
+  <h3 class="sub-heading">6オプション比較</h3>
+  <table class="impact-tbl">
+    <thead>
+      <tr>
+        <th>オプション</th>
+        <th>定着しやすさ</th>
+        <th>初期コスト</th>
+        <th>月額</th>
+        <th>精度</th>
+        <th>導入速度</th>
+        <th>3ヶ月実現性</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">A: Gemini Vision + Sheets</td>
+        <td class="m-after"><span class="st-tag pass">&#9678; 排除型</span></td>
+        <td>&yen;3-5万</td>
+        <td>&yen;2-5千</td>
+        <td>80-90%</td>
+        <td>2週間</td>
+        <td class="m-after"><span class="st-tag pass">&#9678;</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">B: Document AI カスタム</td>
+        <td><span class="st-tag medium">&bigcirc; 排除型</span></td>
+        <td>&yen;40-60万</td>
+        <td>&yen;1.5-2万</td>
+        <td>95-98%</td>
+        <td>8-12週</td>
+        <td><span class="st-tag high">&times;</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">C: Streamlit HITL UI</td>
+        <td><span class="st-tag medium">&triangle; 新UI学習</span></td>
+        <td>&yen;20-40万</td>
+        <td>&yen;5千-1万</td>
+        <td>80-90%</td>
+        <td>1ヶ月</td>
+        <td><span class="st-tag medium">&bigcirc;</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">D: Python Validator</td>
+        <td class="m-after"><span class="st-tag pass">&#9678; 排除型</span></td>
+        <td>&yen;5-15万</td>
+        <td>&yen;3-6千</td>
+        <td>50-70%</td>
+        <td>1週間</td>
+        <td class="m-after"><span class="st-tag pass">&#9678;</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">E: Power Automate</td>
+        <td><span class="st-tag medium">&triangle; 変革型</span></td>
+        <td>&yen;10-25万</td>
+        <td>&yen;2千-5万</td>
+        <td>90-95%</td>
+        <td>1ヶ月</td>
+        <td><span class="st-tag medium">&bigcirc;</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">F: QRコード改革</td>
+        <td class="m-after"><span class="st-tag pass">&#9678; 排除型</span></td>
+        <td>&yen;60-150万</td>
+        <td>&yen;1-1.5万</td>
+        <td>99%+</td>
+        <td>6-12ヶ月</td>
+        <td><span class="st-tag high">&times;</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">実現可能性マトリクス</h3>
+  <div class="feasibility-matrix">
+    <div class="fm-corner"></div>
+    <div class="fm-x-label">短期実現（&lt;1ヶ月）</div>
+    <div class="fm-x-label">中長期（1ヶ月+）</div>
+    <div class="fm-y-label">効果：大</div>
+    <div class="fm-quadrant best">
+      <div class="fm-label">Best &mdash; 即効×高効果</div>
+      <div class="fm-item">A + D 段階的ハイブリッド</div>
+    </div>
+    <div class="fm-quadrant good">
+      <div class="fm-label">Good &mdash; 本格投資</div>
+      <div class="fm-item">C: Streamlit HITL UI</div>
+      <div class="fm-item">F: QRコード改革</div>
+    </div>
+    <div class="fm-y-label">効果：中</div>
+    <div class="fm-quadrant ok">
+      <div class="fm-label">OK &mdash; 限定的</div>
+      <div class="fm-item">D: Validator単体</div>
+    </div>
+    <div class="fm-quadrant wait">
+      <div class="fm-label">Wait &mdash; 要検討</div>
+      <div class="fm-item">B: Document AI</div>
+      <div class="fm-item">E: Power Automate</div>
+    </div>
+  </div>
+
+  <div class="keymsg">
+    <div class="keymsg-label">Adopted Approach</div>
+    <p><strong>段階的ハイブリッド: A+D &rarr; C &rarr; F</strong><br>
+    Phase 1でGemini Vision + Validator（即効MVP）を稼働し、Phase 2でStreamlit UIを追加。Phase 3でQRコード注文書に移行し、根本解決を図る。</p>
+  </div>
+
+  <h3 class="sub-heading">ROI分析（Before / After）</h3>
+  <div class="shift-grid">
+    <div class="shift-card">
+      <div class="shift-num">80x</div>
+      <h4>月額コスト</h4>
+      <div class="shift-before">Before: &yen;400,000+/月（派遣スタッフ2名フルタイム）</div>
+      <div class="shift-after">After: &yen;5,600/月（Gemini API + Google Sheets）</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">20x</div>
+      <h4>処理速度</h4>
+      <div class="shift-before">Before: 1件あたり5-10分（手入力）</div>
+      <div class="shift-after">After: 1件あたり30秒（API処理 + バリデーション）</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">0%</div>
+      <h4>ISBN転記エラー率</h4>
+      <div class="shift-before">Before: 推定2-3%（手書き転記ミス）</div>
+      <div class="shift-after">After: 0%（チェックデジット自動検証。PoC実証済み）</div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">ROI 3シナリオ分析（定着率込み）</h3>
+  <table class="impact-tbl">
+    <thead>
+      <tr>
+        <th>指標</th>
+        <th>楽観（定着率95%）</th>
+        <th>現実（定着率70%）</th>
+        <th>悲観（定着率30%）</th>
+        <th>根拠</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">月額コスト</td>
+        <td class="m-after">&yen;5,600</td>
+        <td>&yen;45,000</td>
+        <td>&yen;200,000</td>
+        <td style="font-size:10px;color:var(--text-dim)">定着率による手作業残存分</td>
+      </tr>
+      <tr>
+        <td class="m-name">処理時間/件</td>
+        <td class="m-after">30秒</td>
+        <td>2分</td>
+        <td>5分</td>
+        <td style="font-size:10px;color:var(--text-dim)">レビュー頻度による</td>
+      </tr>
+      <tr>
+        <td class="m-name">エラー率</td>
+        <td class="m-after">0%</td>
+        <td>0.5%</td>
+        <td>2%</td>
+        <td style="font-size:10px;color:var(--text-dim)">手書き品質による</td>
+      </tr>
+      <tr>
+        <td class="m-name">年間ROI</td>
+        <td class="m-after">&yen;4,700K</td>
+        <td>&yen;4,260K</td>
+        <td>&yen;2,400K</td>
+        <td style="font-size:10px;color:var(--text-dim)">人件費&yen;400K/月 &minus; 運用コスト</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:var(--text-dim);margin-top:8px;">
+    <strong>定着率の前提</strong>: 楽観=作業排除型のため高い、現実=HITL UIの学習コスト込み、悲観=組織抵抗想定
+  </p>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>6つの選択肢を8軸で評価した結果、<strong>段階的ハイブリッド（A+D&rarr;C&rarr;F）が最適解</strong>。Phase 1のMVPは&yen;100kの初期投資で、月&yen;400kの人件費を代替する。悲観シナリオ（定着率30%）でも年間&yen;2,400Kの削減効果。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S6: IMPLEMENTATION ROADMAP
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-eyebrow qw">Implementation Roadmap</div>
+  <h2 class="action-title">実装ロードマップ</h2>
+  <p class="section-lead">3フェーズで段階的に実装。Phase 1のMVPは2週間で稼働開始可能。</p>
+
+  <div class="phase-card">
+    <h3>Phase 1: MVP &mdash; Gemini + Sheets + Validator</h3>
+    <span class="phase-policy">2026年4月前半（2週間）</span>
+    <p>既存スクリプトを調整し、Google Sheetsとの連携を構築。FAX→PDFの入口を設定して、バッチ処理で日次稼働。</p>
+    <div class="phase-items">
+      <div class="phase-item"><span class="pi-dot done"></span><span class="mono">order_ocr.py</span> 本番調整（プロンプトチューニング + エラーハンドリング強化）</div>
+      <div class="phase-item"><span class="pi-dot done"></span><span class="mono">order_validator.py</span> ISBN + 数量バリデーション</div>
+      <div class="phase-item"><span class="pi-dot wip"></span>Google Sheets出力テンプレート設計 + 自動書き込み</div>
+      <div class="phase-item"><span class="pi-dot plan"></span>複合機メール転送設定（FAX→PDF自動化）</div>
+      <div class="phase-item"><span class="pi-dot plan"></span>バッチ処理スケジューラ（日次 or リアルタイム）</div>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:rgba(52,211,153,0.08);border-left:3px solid var(--green);border-radius:0 8px 8px 0;font-size:11px;color:var(--text-dim);">
+      <strong style="color:var(--green);">定着確認ゲート:</strong> ISBN精度&ge;98%, 処理速度&le;60秒/件, 並行稼働2週間で派遣スタッフとの結果一致率&ge;95%
+    </div>
+  </div>
+
+  <div class="phase-card">
+    <h3>Phase 2: HITL UI &mdash; Streamlit レビュー画面</h3>
+    <span class="phase-policy">2026年5月（1ヶ月）</span>
+    <p>営業担当がブラウザでレビュー・修正・承認できるUIを構築。原本PDFと抽出データを並列表示し、修正履歴をログに記録。</p>
+    <div class="phase-items">
+      <div class="phase-item"><span class="pi-dot plan"></span>Streamlit アプリケーション開発（左: 原本PDF / 右: 編集テーブル）</div>
+      <div class="phase-item"><span class="pi-dot plan"></span>Confidence routing UI（自動/レビュー/手動の3レーン表示）</div>
+      <div class="phase-item"><span class="pi-dot plan"></span>修正履歴ログ（フィードバックループ用）</div>
+      <div class="phase-item"><span class="pi-dot plan"></span>ダッシュボード（処理件数・精度・所要時間の可視化）</div>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:rgba(52,211,153,0.08);border-left:3px solid var(--green);border-radius:0 8px 8px 0;font-size:11px;color:var(--text-dim);">
+      <strong style="color:var(--green);">定着確認ゲート:</strong> レビュー時間 &lt; 手入力の50%, 週次利用率&ge;80%, HITL UIの修正率&le;10%
+    </div>
+  </div>
+
+  <div class="phase-card">
+    <h3>Phase 3: フォーマット改革 &mdash; QRコード注文書</h3>
+    <span class="phase-policy">2026年Q3（3ヶ月）</span>
+    <p>注文書にQRコード（ISBN+注文書ID）を印刷。書店からの返送時にQRスキャンで書籍を100%自動特定。番線印依存を解消。</p>
+    <div class="phase-items">
+      <div class="phase-item"><span class="pi-dot plan"></span>QRコード付き注文書フォーマット設計</div>
+      <div class="phase-item"><span class="pi-dot plan"></span>書店向け案内・移行計画</div>
+      <div class="phase-item"><span class="pi-dot plan"></span>QRコードスキャナ連携</div>
+      <div class="phase-item"><span class="pi-dot risk"></span>書店の協力が必要（採用率のリスク）</div>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:rgba(52,211,153,0.08);border-left:3px solid var(--green);border-radius:0 8px 8px 0;font-size:11px;color:var(--text-dim);">
+      <strong style="color:var(--green);">定着確認ゲート:</strong> QR注文書採用率&ge;50%, 書店クレーム0件, 自動承認率&ge;85%
+    </div>
+  </div>
+
+  <h3 class="sub-heading">週次タイムライン</h3>
+  <table class="mig-table">
+    <thead><tr><th>Week</th><th>タスク</th><th>担当</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>W1-2</td><td>30件テスト + プロンプトチューニング</td><td>omoshiku</td><td><span class="st-tag qw">Plan</span></td></tr>
+      <tr><td>W3</td><td>Sheets出力テンプレート + バッチ処理</td><td>omoshiku</td><td><span class="st-tag qw">Plan</span></td></tr>
+      <tr><td>W4</td><td>複合機メール転送設定</td><td>レイテック</td><td><span class="st-tag qw">Plan</span></td></tr>
+      <tr><td>W5-6</td><td>本番データ並行稼働（派遣スタッフと結果比較）</td><td>omoshiku + 派遣</td><td><span class="st-tag qw">Plan</span></td></tr>
+      <tr><td>W7-8</td><td>Streamlit HITL UI開発</td><td>omoshiku</td><td><span class="st-tag qw">Plan</span></td></tr>
+      <tr><td>W9-12</td><td>kintone連携検討 + 閾値チューニング</td><td>レイテック + omoshiku</td><td><span class="st-tag qw">Plan</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>Phase 1のMVPは<strong>2週間で稼働可能</strong>。既存スクリプトが実装済みのため、残作業はSheets連携とFAX→PDFの入口整備のみ。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S7: IMPLEMENTATION DETAILS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-eyebrow qw">Implementation Details</div>
+  <h2 class="action-title">各ステップの実装詳細</h2>
+  <p class="section-lead">Phase 1のコンポーネント別仕様。モデル設定、プロンプト設計、バリデーションロジック、出力スキーマを定義。</p>
+
+  <div class="layer-stack">
+    <div class="layer">
+      <div class="layer-badge l1">OCR Engine</div>
+      <h4>order_ocr.py &mdash; Gemini Vision API呼び出し</h4>
+      <p>ファイルをbase64エンコードしてGemini APIに送信。JSON構造化データを抽出。バッチ処理とエラーハンドリングを内蔵。</p>
+      <div class="code-block">
+        <div class="code-label">Model Configuration</div>
+        <pre>Model:          gemini-2.5-pro
+Temperature:    0.1（決定的出力）
+Max Tokens:     8,192
+API Key:        .credentials/gemini-api-key.txt
+SDK:            google-genai（新SDK）</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Supported Formats</div>
+        <pre>PDF (.pdf)  |  PNG (.png)  |  JPG/JPEG (.jpg/.jpeg)
+GIF (.gif)  |  WebP (.webp) |  TIFF (.tiff/.tif)</pre>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-badge l2">Extraction Prompt</div>
+      <h4>抽出プロンプト設計</h4>
+      <p>出版社固有の文脈（番線印、手書き注文数、FAX劣化）を組み込んだ専用プロンプト。13項目のメタデータ + items配列を生成。</p>
+      <div class="code-block">
+        <div class="code-label">JSON Output Schema（13 top-level fields）</div>
+        <pre>{
+  "document_type": "セット注文書 | 単品注文書 | 新刊予約 | ...",
+  "publisher":     "出版社名",
+  "fax":           "FAX番号",
+  "contact":       "問い合わせ先",
+  "campaign":      "フェア名・キャンペーン名",
+  "delivery_date": "搬入日・配本予定",
+  "order_deadline":"予約締切",
+  "store_stamp":   "番線印テキスト",
+  "store_name":    "店舗名",
+  "order_date":    "注文日",
+  "items": [{
+    "isbn": "978-4-479-XXXXX-X",
+    "title": "書名",
+    "author": "著者名",
+    "price": 1500,
+    "quantity": 5,
+    "confidence": 0.95
+  }],
+  "overall_confidence": 0.98,
+  "notes": "特記事項"
+}</pre>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-badge l3">Validator</div>
+      <h4>order_validator.py &mdash; バリデーション + 信頼度判定</h4>
+      <p>ISBN-13チェックデジット検証（mod-10アルゴリズム）、数量異常値検知、信頼度レベル判定を実行。</p>
+      <div class="code-block">
+        <div class="code-label">Validation Rules</div>
+        <pre>ISBN-13:   ハイフン除去 → 13桁数字チェック → mod-10検証
+数量:      null → NG | &lt;=0 → NG | &gt;999 → NG | &gt;100 → 要確認
+書名:      2文字未満 → NG
+信頼度:    &ge;0.90 → high | &ge;0.70 → medium | &lt;0.70 → low
+           警告あり + high → medium に降格</pre>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-badge l4">Output</div>
+      <h4>Google Sheets出力スキーマ</h4>
+      <p>抽出データをSheetsに自動書き込み。信頼度に応じた条件付き書式（色分け）を適用。</p>
+      <div class="code-block">
+        <div class="code-label">Sheets Column Layout（Phase 1 MVP）</div>
+        <pre>A: 処理日時    B: ソースファイル  C: 注文書種別
+D: ISBN        E: 書名           F: 著者
+G: 価格        H: 注文数量       I: 信頼度
+J: ISBN検証    K: 数量検証       L: 警告メッセージ
+M: ステータス（自動承認/要確認/手動入力）</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>実装の<strong>80%は完了済み</strong>（order_ocr.py + order_validator.py）。残りはSheets連携とFAX入口の設定のみ。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S8: QUALITY ASSURANCE
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="section-eyebrow success">Quality Assurance</div>
+  <h2 class="action-title">品質保証・検証計画</h2>
+  <p class="section-lead">30件の実FAXサンプルでの精度検証プロトコル。メトリクス定義と受入基準を明確化。</p>
+
+  <h3 class="sub-heading">30件テストプロトコル</h3>
+  <table class="impact-tbl">
+    <thead>
+      <tr><th>テスト項目</th><th>件数</th><th>メトリクス</th><th>合格基準</th><th>方法</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">ISBN精度</td>
+        <td>30件</td>
+        <td>チェックデジット正答率</td>
+        <td class="m-after">&ge;98%</td>
+        <td>mod-10自動検証</td>
+      </tr>
+      <tr>
+        <td class="m-name">書名抽出</td>
+        <td>30件</td>
+        <td>完全一致率</td>
+        <td class="m-after">&ge;95%</td>
+        <td>原本との目視突合</td>
+      </tr>
+      <tr>
+        <td class="m-name">手書き数量</td>
+        <td>30件</td>
+        <td>正答率（手書きあり）</td>
+        <td class="m-after">&ge;90%</td>
+        <td>人手ダブルチェック</td>
+      </tr>
+      <tr>
+        <td class="m-name">番線印読取</td>
+        <td>30件</td>
+        <td>部分一致率</td>
+        <td class="m-after">&ge;70%</td>
+        <td>書店マスタ突合</td>
+      </tr>
+      <tr>
+        <td class="m-name">処理速度</td>
+        <td>30件</td>
+        <td>平均処理時間</td>
+        <td class="m-after">&le;60秒/件</td>
+        <td>タイムスタンプ計測</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">Confidence Routing目標分布</h3>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="ic-num" style="color:var(--green);">&ge;60%</div>
+      <div class="ic-label">自動承認率（目標）</div>
+      <div class="ic-detail">Confidence &ge;90%。人手確認なしで即時処理</div>
+    </div>
+    <div class="insight-card">
+      <div class="ic-num" style="color:var(--amber);">&le;30%</div>
+      <div class="ic-label">レビュー率（目標）</div>
+      <div class="ic-detail">Confidence 70-90%。フラグ付きで確認のみ</div>
+    </div>
+    <div class="insight-card">
+      <div class="ic-num" style="color:#f87171;">&le;10%</div>
+      <div class="ic-label">手動入力率（目標）</div>
+      <div class="ic-detail">Confidence &lt;70%。原本画像付きで従来フロー</div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">受入基準チェックリスト</h3>
+  <ul class="criteria-list">
+    <li><span class="criteria-check"></span>ISBN-13チェックデジット検証が30件中29件以上パス</li>
+    <li><span class="criteria-check"></span>手書き数量の認識精度が90%以上</li>
+    <li><span class="criteria-check"></span>処理エラー率（API障害含む）が5%以下</li>
+    <li><span class="criteria-check"></span>バッチ処理が6件/分以上の速度で安定稼働</li>
+    <li><span class="criteria-check"></span>Sheets出力が手動入力と同等以上の品質</li>
+    <li><span class="criteria-check"></span>自動承認率が全件の50%以上（初期目標）</li>
+  </ul>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>30件テストで上記閾値をクリアすればMVP稼働の品質基準を満たす。未達項目がある場合は<strong>confidence閾値を上方修正し、人手レビュー比率を上げる</strong>ことで安全に運用開始できる。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S9: RISK MATRIX
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="section-eyebrow risk">Risk Matrix</div>
+  <h2 class="action-title">リスクマトリクス</h2>
+  <p class="section-lead">想定されるリスクを影響度別に整理し、対策を定義する。</p>
+
+  <h3 class="sub-heading" style="color:var(--amber);">定着リスク（独立カテゴリ）</h3>
+  <div class="issue-grid">
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>HITL UIが「見るだけ」になる</h4>
+      <p>AP-1: Dashboard Fatigue &mdash; レビュー画面を開いても確認せずに承認する惰性利用。<br><strong>対策:</strong> Push通知型設計（Slack連携）。異常値のみアラート表示し、正常パターンは自動承認で負荷を最小化</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>プロンプト調整知識が西川に集中</h4>
+      <p>AP-6: 属人化再現 &mdash; OCRプロンプトの改善ノウハウが特定人物に依存し、異動後に品質劣化。<br><strong>対策:</strong> 調整手順のランブック化 + プロンプトバージョン管理（Git） + 月次の調整トレーニング</p>
+    </div>
+    <div class="issue-card medium">
+      <div class="issue-severity">Medium</div>
+      <h4>レビュー作業が新たな負荷に</h4>
+      <p>AP-2: 入力負荷過小評価 &mdash; HITL UIでの確認作業が「手入力より面倒」と感じられるリスク。<br><strong>対策:</strong> 自動承認率を上げる閾値調整（90%&rarr;85%）。Excel風UIで学習コスト最小化</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">技術・運用リスク</h3>
+  <div class="issue-grid">
+    <div class="issue-card critical">
+      <div class="issue-severity">Critical</div>
+      <h4>Gemini API精度の劣化</h4>
+      <p>モデルアップデートで精度が変動する可能性。対策: モデルバージョン固定 + 月次精度モニタリング + 閾値自動調整</p>
+    </div>
+    <div class="issue-card critical">
+      <div class="issue-severity">Critical</div>
+      <h4>派遣契約満了に間に合わない</h4>
+      <p>Phase 1が2週間以上遅延した場合。対策: 最小MVP（Sheets出力のみ）で即時稼働。UIは後回し</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>FAXスキャン品質が想定以下</h4>
+      <p>複合機の解像度が低い場合、OCR精度に影響。対策: 300dpi以上を推奨設定。前処理パイプライン（二値化・ノイズ除去）を追加</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>手書き数量の認識限界</h4>
+      <p>崩れた手書き文字の誤認識。対策: confidence閾値で自動ルーティング（70%未満は人手レビュー）。複数モデル併用も検討</p>
+    </div>
+    <div class="issue-card medium">
+      <div class="issue-severity">Medium</div>
+      <h4>書店のQRコード移行拒否</h4>
+      <p>Phase 3で書店が新フォーマットを採用しない可能性。対策: 従来FAXフォーマットとの併存期間を設定。大型チェーンから段階的に</p>
+    </div>
+    <div class="issue-card medium">
+      <div class="issue-severity">Medium</div>
+      <h4>API費用の想定外増加</h4>
+      <p>注文書件数が増加した場合のコスト懸念。対策: 月次コストモニタリング + 予算アラート + バッチ最適化</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading" style="color:var(--red);">Kill Criteria（撤退基準）</h3>
+  <div style="padding:16px 20px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;margin-bottom:20px;">
+    <table class="impact-tbl" style="margin:0;">
+      <thead>
+        <tr>
+          <th>判定タイミング</th>
+          <th>撤退条件</th>
+          <th>アクション</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="m-name">Phase 1 4週目</td>
+          <td>ISBN精度 &lt; 80%（30件テスト）</td>
+          <td>Document AI（オプションB）へ方針転換を検討</td>
+        </tr>
+        <tr>
+          <td class="m-name">Phase 1 4週目</td>
+          <td>処理速度 &gt; 3分/件</td>
+          <td>バッチ最適化。改善不可なら手動併用で継続</td>
+        </tr>
+        <tr>
+          <td class="m-name">Phase 2 8週目</td>
+          <td>HITL UI週次利用率 &lt; 30%</td>
+          <td>UIを廃止しSheets直接出力に簡素化</td>
+        </tr>
+        <tr>
+          <td class="m-name">全Phase共通</td>
+          <td>月額コスト &gt; &yen;50,000</td>
+          <td>API呼び出し最適化 or 代替モデル検討</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>リスクは<strong>「定着リスク」3件 +「技術・運用リスク」6件</strong>の計9件。定着リスクはHITL UIの形骸化（AP-1）と属人化（AP-6）が最重要。技術面ではタイムライン遅延と手書き認識精度がCriticalだが、スコープ絞り込みとconfidence routingで対処可能。撤退基準を事前定義し、深追いリスクを排除。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S10: OPERATIONS TRANSITION
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s10">
+  <div class="section-eyebrow shift">Operations Transition</div>
+  <h2 class="action-title">運用移行計画</h2>
+  <p class="section-lead">派遣スタッフ2名体制から段階的に自動化へ移行。4ステップで安全に切り替える。</p>
+
+  <h3 class="sub-heading">ユーザージャーニー</h3>
+  <table class="impact-tbl">
+    <thead>
+      <tr>
+        <th>利用者</th>
+        <th>現在の行動</th>
+        <th>新しい行動</th>
+        <th>移行のハードル</th>
+        <th>解消策</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">派遣スタッフ</td>
+        <td>FAX目視&rarr;手入力（1日8h）</td>
+        <td>HITL UIでレビュー（1日30分）</td>
+        <td>UI操作の学習</td>
+        <td>Excel風UIで学習コスト最小化。初週は並行稼働</td>
+      </tr>
+      <tr>
+        <td class="m-name">営業チーム</td>
+        <td>出荷指示書を手動確認</td>
+        <td>自動生成結果の確認</td>
+        <td>「合ってる？」不安</td>
+        <td>初月100%ダブルチェック。精度実績で信頼醸成</td>
+      </tr>
+      <tr>
+        <td class="m-name">情シス（レイテック）</td>
+        <td>複合機保守のみ</td>
+        <td>FAX転送設定 + kintone連携</td>
+        <td>追加工数の確保</td>
+        <td>設定は1回限り。マニュアル整備で自走可能に</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">Before / After</h3>
+  <div class="shift-grid">
+    <div class="shift-card">
+      <div class="shift-num">Role</div>
+      <h4>業務の質的変化</h4>
+      <div class="shift-before">Before: 派遣スタッフ2名が全件手入力（1日8時間フルタイム）</div>
+      <div class="shift-after">After: OCR自動処理 + 営業担当がレビューUIで確認（1日30分）</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">Error</div>
+      <h4>エラー対応の変化</h4>
+      <div class="shift-before">Before: 転記ミス → 出荷エラー → 書店クレーム（発見が遅い）</div>
+      <div class="shift-after">After: リアルタイム検証 → 即時アラート → 出荷前に修正</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">Know</div>
+      <h4>ナレッジの変化</h4>
+      <div class="shift-before">Before: 派遣スタッフの暗黙知（注文書形式の習熟に2-3週間）</div>
+      <div class="shift-after">After: プロンプト + バリデーションルールとしてコード化（属人化ゼロ）</div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">移行タイムライン</h3>
+  <table class="mig-table">
+    <thead><tr><th>フェーズ</th><th>期間</th><th>派遣スタッフの役割</th><th>OCRの役割</th><th>比率</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="m-name">並行稼働</td>
+        <td>W4-W6</td>
+        <td>従来通り全件処理</td>
+        <td>バックグラウンドで処理、結果を比較</td>
+        <td>人<span style="color:#f87171;">100%</span> : OCR 0%</td>
+      </tr>
+      <tr>
+        <td class="m-name">段階移行</td>
+        <td>W7-W8</td>
+        <td>OCR結果のレビュー + 差分入力</td>
+        <td>全件処理、confidence高は自動</td>
+        <td>人<span style="color:var(--amber);">30%</span> : OCR 70%</td>
+      </tr>
+      <tr>
+        <td class="m-name">MVP稼働</td>
+        <td>W9~</td>
+        <td>手動フォールバック要員（週2日）</td>
+        <td>メイン処理</td>
+        <td>人<span style="color:var(--green);">10%</span> : OCR 90%</td>
+      </tr>
+      <tr>
+        <td class="m-name">完全移行</td>
+        <td>派遣満了後</td>
+        <td>&mdash;</td>
+        <td>全件処理 + HITL UI</td>
+        <td>人(営業)<span style="color:var(--green);">5%</span> : OCR 95%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">FBループ設計</h3>
+  <table class="impact-tbl">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>内容</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">FB収集方法</td>
+        <td>HITL UIの修正ログ（自動蓄積） + 週次15分ヒアリング（営業担当）</td>
+      </tr>
+      <tr>
+        <td class="m-name">FB頻度</td>
+        <td><strong>2週間サイクル</strong>（Phase 1-2期間中）。安定後は月次</td>
+      </tr>
+      <tr>
+        <td class="m-name">改善サイクル</td>
+        <td>修正ログ分析 &rarr; プロンプト調整 &rarr; 30件テスト &rarr; 閾値更新 &rarr; デプロイ</td>
+      </tr>
+      <tr>
+        <td class="m-name">「使わない人」への対処</td>
+        <td>HITL UIのログイン頻度を監視。2週間未ログインの場合 &rarr; 原因ヒアリング（操作が不便？ / 必要性を感じない？ / 別の方法で処理？）&rarr; 原因別に対処（UI改善 / 自動承認率向上 / 業務フロー再設計）</td>
+      </tr>
+      <tr>
+        <td class="m-name">定着確認ポイント</td>
+        <td>W2: 初回利用完了 / W4: 週次利用定着 / W8: 自走運用（omoshiku介入なし）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">ステークホルダーマップ</h3>
+  <table class="impact-tbl">
+    <thead>
+      <tr>
+        <th>ステークホルダー</th>
+        <th>立場</th>
+        <th>関心事</th>
+        <th>巻き込み方</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">大和書房 経営層</td>
+        <td><span class="st-tag pass">推進</span></td>
+        <td>コスト削減、派遣満了対応</td>
+        <td>月次ROIレポートで効果を可視化</td>
+      </tr>
+      <tr>
+        <td class="m-name">営業チーム</td>
+        <td><span class="st-tag medium">中立</span></td>
+        <td>「出荷に影響ないか」の不安</td>
+        <td>初月ダブルチェックで信頼醸成。エラーゼロ実績を共有</td>
+      </tr>
+      <tr>
+        <td class="m-name">派遣スタッフ</td>
+        <td><span class="st-tag medium">中立&rarr;縮小</span></td>
+        <td>業務変化、契約期間</td>
+        <td>移行期間中はレビュー担当として協力依頼。ノウハウ引き継ぎ</td>
+      </tr>
+      <tr>
+        <td class="m-name">レイテック社</td>
+        <td><span class="st-tag pass">協力</span></td>
+        <td>kintone連携、複合機設定</td>
+        <td>役割分担を早期合意。OCR=omoshiku / 基幹連携=レイテック</td>
+      </tr>
+      <tr>
+        <td class="m-name">omoshiku</td>
+        <td><span class="st-tag pass">推進</span></td>
+        <td>技術実装、プロンプト最適化</td>
+        <td>Phase 1-2を主導。属人化防止のためランブック整備</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>派遣契約満了まで<strong>「並行稼働→段階移行→MVP稼働」の3ステップで安全に移行</strong>する。2週間FBサイクルで改善を回し、利用者の離脱を早期検知する。ステークホルダー5者の役割を明確化し、特に営業チームの不安解消が定着の鍵。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S11: OPEN ISSUES
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s11">
+  <div class="section-eyebrow discuss">Open Issues</div>
+  <h2 class="action-title">未解決事項・論点</h2>
+  <p class="section-lead">現時点で未確定の事項を一覧管理。定着に関わる論点を最優先で整理。</p>
+
+  <h3 class="sub-heading" style="color:var(--amber);">定着に関する論点（最優先）</h3>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #1 &mdash; 緊急</div>
+    <h4>FAXの入口設計</h4>
+    <p>FAX受信PDFをOCRパイプラインに渡す方法。利用者の行動動線を決定する最重要論点。レイテックに複合機のメール転送設定が可能かを確認する必要がある。</p>
+    <div class="disc-opts">
+      <span class="disc-opt rec">複合機メール転送（推奨 &mdash; 作業排除型で定着しやすい）</span>
+      <span class="disc-opt">Google Drive監視フォルダ</span>
+      <span class="disc-opt">手動アップロード</span>
+    </div>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #4</div>
+    <h4>番線印（ハンコ）の扱い</h4>
+    <p>番線印OCRの精度が低い場合の代替手段。書店マスタDB（番線印コード&harr;書店名対応表）の有無を確認。運用負荷に直結する論点。</p>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #6</div>
+    <h4>バッチ処理 vs リアルタイム処理</h4>
+    <p>FAX受信後すぐに処理するか、1日1回バッチ処理か。利用者の「結果をいつ見るか」に直結し、定着行動を規定する。</p>
+    <div class="disc-opts">
+      <span class="disc-opt rec">日次バッチ（推奨 &mdash; MVP。利用者の確認タイミングを固定化）</span>
+      <span class="disc-opt">リアルタイム処理</span>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">技術・運用論点</h3>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #2 &mdash; 緊急</div>
+    <h4>レイテック社との役割分担</h4>
+    <p>OCRパイプライン = omoshiku、kintone + 基幹連携 = レイテック、の分業を確認・合意する。</p>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #3</div>
+    <h4>kintoneとの連携タイミング</h4>
+    <p>Phase 1ではSheets出力のみ。kintoneの書籍マスタとのISBN突合をいつから開始するか。</p>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #5</div>
+    <h4>セット注文書 vs 単品注文書の扱い</h4>
+    <p>セット注文書の「セット部数」と単品注文書の「注文数量」の違いをシステム上どう区別するか。</p>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #7</div>
+    <h4>Gemini APIのコスト管理</h4>
+    <p>月間処理件数の上限設定やコストアラートが必要か。現状の推定: ~200件/月 = ~&yen;5,600/月。</p>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-num">Issue #8</div>
+    <h4>Phase 3 QRコードの推進主体</h4>
+    <p>書店への新フォーマット案内は営業部が実施？ omoshikuがフォーマット設計のみ担当？</p>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>未解決事項は8件。うち<strong>定着に直結する論点が3件（#1 FAX入口, #4 番線印, #6 バッチ方式）</strong>、技術・運用論点が5件。定着論点を次回MTGで最優先で確認する。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════ -->
+<div class="footer">
+  <p>注文書OCR自動化 実装仕様書 &mdash; 大和書房 &mdash; 2026-03-01</p>
+  <p style="margin-top:8px;">
+    ソース: PoC実施結果（6PDF / 14ISBN） / 事前MTG議事録（2026/02/28） / 注文書サンプル6件 / Gemini API Documentation
+  </p>
+  <p style="margin-top:4px;">
+    <a href="https://tkonishikawa.github.io/dx-projects/">dx-projects</a> &mdash; Generated with AI-assisted analysis by omoshiku
+  </p>
+</div>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+</div><!-- /.container -->
+
+<script>
+// Intersection Observer for active TOC highlighting
+document.addEventListener('DOMContentLoaded', () => {
+  const sections = document.querySelectorAll('[id^="s"]');
+  const tocLinks = document.querySelectorAll('.toc-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(link => link.classList.remove('active'));
+        const activeLink = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+
+  // Smooth scroll
+  tocLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelector('.toc-sidebar')?.classList.remove('open');
+        document.querySelector('.toc-overlay')?.classList.remove('open');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

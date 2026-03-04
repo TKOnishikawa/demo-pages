@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Win 実装詳細 | NIKKAHOME DX Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base:#f6f3ee;--bg-surface:#ffffff;--bg-raised:#ffffff;--bg-top:#f2f0ec;
+  --border:#e4ddd4;--border-focus:#d0c8be;
+  --text:#1a1a2e;--text-dim:#555566;--text-muted:#8a8a9a;
+  --blue:#2563eb;--cyan:#e8944a;--green:#16a34a;--amber:#d97706;
+  --red:#dc2626;--purple:#7c3aed;--pink:#db2777;
+  --grad-hero:linear-gradient(135deg,#e8944a 0%,#d4582f 50%,#c04040 100%);
+  --grad-success:linear-gradient(135deg,#16a34a 0%,#0d9488 100%);
+  --grad-warn:linear-gradient(135deg,#dc2626 0%,#d97706 100%);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.06);--shadow-md:0 4px 16px rgba(0,0,0,0.06),0 2px 4px rgba(0,0,0,0.04);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans JP','Sora',-apple-system,sans-serif;background:var(--bg-base);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.container{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* Layout */
+.page-layout{display:flex;gap:32px;position:relative}
+.main-content{flex:1;min-width:0}
+.toc-sidebar{width:230px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto;padding:16px 0;scrollbar-width:thin;scrollbar-color:#d0c8be transparent}
+.toc-sidebar::-webkit-scrollbar{width:4px}
+.toc-sidebar::-webkit-scrollbar-thumb{background:#d0c8be;border-radius:2px}
+.toc-title{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;padding:0 12px}
+.toc-list{list-style:none}
+.toc-link{display:flex;align-items:flex-start;gap:8px;padding:6px 12px;margin-bottom:2px;font-size:11px;color:var(--text-muted);text-decoration:none;border-radius:6px;transition:all .15s;line-height:1.5;border-left:2px solid transparent}
+.toc-link:hover{color:var(--text-dim);background:var(--bg-surface)}
+.toc-link.active{color:var(--cyan);background:rgba(232,148,74,0.08);border-left-color:var(--cyan)}
+.toc-num{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--text-muted);min-width:20px;margin-top:1px}
+.toc-link.active .toc-num{color:var(--cyan)}
+.toc-sep{height:1px;background:var(--border);margin:8px 12px}
+.toc-toggle{display:none;position:fixed;top:16px;left:16px;z-index:1001;width:40px;height:40px;border-radius:10px;background:#ffffff;border:1px solid #d0c8be;align-items:center;justify-content:center;cursor:pointer;color:#555566;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.toc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:999}
+@media(max-width:960px){
+  .page-layout{flex-direction:column}
+  .toc-sidebar{display:none;position:fixed;left:0;top:0;width:260px;height:100vh;background:#ffffff;z-index:1000;padding:60px 0 24px;border-right:1px solid #d0c8be;box-shadow:4px 0 16px rgba(0,0,0,0.08)}
+  .toc-sidebar.open{display:block}
+  .toc-toggle{display:flex}
+  .toc-overlay.open{display:block}
+}
+
+/* Hero */
+.hero{padding:60px 0 48px;text-align:center;border-bottom:1px solid var(--border)}
+.hero-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(232,148,74,0.12);color:var(--cyan);margin-bottom:16px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2rem);font-weight:900;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.3;margin-bottom:12px}
+.hero-sub{font-size:14px;color:var(--text-dim);max-width:680px;margin:0 auto;line-height:1.8}
+.hero-back{display:inline-flex;align-items:center;gap:6px;margin-top:20px;padding:8px 18px;border-radius:8px;font-size:12px;color:var(--cyan);background:rgba(232,148,74,0.08);border:1px solid rgba(232,148,74,0.2);text-decoration:none;transition:all .2s}
+.hero-back:hover{background:rgba(232,148,74,0.15)}
+
+/* Section */
+.section{padding:56px 0;border-bottom:1px solid var(--border)}
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+.section-eyebrow.qw1{color:var(--blue)}.section-eyebrow.qw2{color:var(--green)}
+.section-eyebrow.qw3{color:var(--amber)}.section-eyebrow.qw4{color:var(--pink)}
+.action-title{font-size:clamp(1.2rem,3vw,1.5rem);font-weight:700;line-height:1.35;margin-bottom:8px}
+.section-lead{font-size:14px;color:var(--text-dim);margin-bottom:32px;max-width:720px}
+
+/* Approach Comparison Table */
+.approach-tbl{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;margin:24px 0;font-size:13px}
+.approach-tbl thead th{background:#f2f0ec;padding:12px 16px;text-align:left;font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#555566;border-bottom:1px solid #d0c8be}
+.approach-tbl tbody td{padding:10px 16px;border-bottom:1px solid #e4ddd4;background:#ffffff;vertical-align:top}
+.approach-tbl tbody tr:last-child td{border-bottom:none}
+.approach-tbl .recommend{background:rgba(37,99,235,0.04)}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;letter-spacing:.5px}
+.tag.best{background:rgba(37,99,235,0.1);color:var(--blue)}
+.tag.ok{background:rgba(22,163,74,0.1);color:var(--green)}
+.tag.ng{background:rgba(220,38,38,0.1);color:var(--red)}
+.tag.warn{background:rgba(217,119,6,0.1);color:var(--amber)}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:24px 0}
+.card{background:var(--bg-raised);border-radius:12px;padding:22px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.card h4{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card p,.card li{font-size:13px;color:var(--text-dim);line-height:1.7}
+.card ul{padding-left:16px;margin-top:6px}
+.card-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+
+/* Step Flow */
+.step-flow{display:flex;flex-direction:column;gap:12px;margin:24px 0}
+.step{display:flex;gap:16px;align-items:flex-start;padding:16px 20px;background:#ffffff;border-radius:10px;border:1px solid #e4ddd4;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--blue);min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,0.08);border-radius:8px}
+.step-body h5{font-size:13px;font-weight:600;margin-bottom:4px}
+.step-body p{font-size:12px;color:var(--text-dim)}
+
+/* Hearing Items */
+.hearing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:24px 0}
+.hearing-item{padding:14px 18px;background:#ffffff;border-radius:10px;border-left:3px solid var(--amber);font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.hearing-item .q{font-weight:600;color:var(--amber);margin-bottom:4px}
+.hearing-item .why{font-size:11px;color:var(--text-muted)}
+
+/* Risk Matrix */
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:24px 0}
+.risk-card{padding:16px;background:#ffffff;border-radius:10px;border:1px solid #e4ddd4;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.risk-card.high{border-left:3px solid var(--red)}
+.risk-card.med{border-left:3px solid var(--amber)}
+.risk-card.low{border-left:3px solid var(--green)}
+.risk-card h5{font-size:13px;font-weight:600;margin-bottom:4px}
+.risk-card p{font-size:12px;color:var(--text-dim)}
+.risk-card .mitigation{font-size:12px;color:#b45309;margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+
+/* Adoption Design (NEW) */
+.adopt-card{background:#ffffff;border-radius:12px;padding:22px;border:1px solid rgba(232,148,74,0.25);margin:24px 0;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.adopt-card h4{font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.adopt-card .checklist{list-style:none;padding:0}
+.adopt-card .checklist li{padding:6px 0;font-size:13px;color:var(--text-dim);display:flex;gap:8px;align-items:flex-start}
+.adopt-card .checklist li::before{content:'';display:inline-block;width:16px;height:16px;min-width:16px;border-radius:4px;border:1.5px solid #e8944a;margin-top:3px}
+
+/* Phase Timeline */
+.timeline{display:flex;gap:12px;margin:24px 0;overflow-x:auto;padding-bottom:8px}
+.tl-phase{flex:1;min-width:200px;background:#ffffff;border-radius:12px;padding:18px;border:1px solid #e4ddd4;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.tl-phase h5{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tl-phase .tl-period{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:8px}
+.tl-phase ul{list-style:none;padding:0}
+.tl-phase li{font-size:12px;color:var(--text-dim);padding:3px 0;padding-left:12px;position:relative}
+.tl-phase li::before{content:'';position:absolute;left:0;top:9px;width:4px;height:4px;border-radius:50%;background:var(--cyan)}
+
+/* ROI Box */
+.roi-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:24px 0}
+.roi-card{background:#ffffff;border-radius:10px;padding:18px;text-align:center;border:1px solid #e4ddd4;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.roi-num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.roi-label{font-size:11px;color:var(--text-muted)}
+
+/* Mockup */
+.mockup{background:#f2f0ec;border-radius:12px;padding:20px;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;color:#555566;white-space:pre-wrap;overflow-x:auto;border:1px solid #d0c8be}
+
+/* So What */
+.sowhat{background:rgba(220,38,38,0.04);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
+.sowhat-label{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+.sowhat p{font-size:13px;line-height:1.8}
+
+/* Adoption Callout */
+.adopt-callout{background:rgba(232,148,74,0.06);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
+.adopt-callout .label{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
+.adopt-callout p{font-size:13px;line-height:1.8}
+
+/* Org Change */
+.org-card{background:#ffffff;border-radius:12px;padding:22px;border:1px solid rgba(124,58,237,0.15);margin:24px 0;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.org-card h4{font-size:14px;font-weight:700;color:var(--purple);margin-bottom:12px}
+.org-card p,.org-card li{font-size:13px;color:var(--text-dim);line-height:1.7}
+
+/* Data Box */
+.data-box{background:#ffffff;border-radius:12px;padding:22px;margin:24px 0;border:1px solid #e4ddd4;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.data-box h4{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--amber)}
+.data-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.data-tbl th{text-align:left;padding:8px;border-bottom:1px solid #d0c8be;color:#555566;font-size:11px;font-weight:600}
+.data-tbl td{padding:8px;border-bottom:1px solid #e4ddd4;color:#555566}
+
+/* Separator */
+.section-sep{text-align:center;padding:28px 0;opacity:0.3}
+.section-sep span{display:inline-block;width:40px;height:1px;background:var(--text-muted);margin:0 4px}
+
+/* Footer */
+.footer{padding:40px 0;text-align:center;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
+.footer a{color:var(--cyan);text-decoration:none;font-weight:500}
+
+@media(max-width:768px){.card-grid,.hearing-grid,.risk-grid{grid-template-columns:1fr}.roi-box{grid-template-columns:repeat(2,1fr)}.timeline{flex-direction:column}}
+@media(max-width:600px){.roi-box{grid-template-columns:1fr}}
+
+.section:nth-child(even){background:rgba(235,229,220,0.3);margin:0 -28px;padding-left:28px;padding-right:28px;border-radius:0}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="page-layout">
+
+<!-- TOC Toggle (Mobile) -->
+<button class="toc-toggle" onclick="document.querySelector('.toc-sidebar').classList.toggle('open');document.querySelector('.toc-overlay').classList.toggle('open')">&#9776;</button>
+<div class="toc-overlay" onclick="document.querySelector('.toc-sidebar').classList.remove('open');this.classList.remove('open')"></div>
+
+<!-- TOC Sidebar -->
+<nav class="toc-sidebar">
+  <div class="toc-title">Quick Win Detail</div>
+  <ul class="toc-list">
+    <li class="toc-item"><a class="toc-link" href="#overview"><span class="toc-num">00</span>概要・整理フレーム</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#qw1"><span class="toc-num">01</span>月次速報の自動化</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw1-approach"><span class="toc-num">&nbsp;&bull;</span>アプローチ比較</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw1-adopt"><span class="toc-num">&nbsp;&bull;</span>定着設計</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#qw2"><span class="toc-num">02</span>NotebookLMナレッジ</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw2-approach"><span class="toc-num">&nbsp;&bull;</span>アプローチ比較</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw2-adopt"><span class="toc-num">&nbsp;&bull;</span>定着設計</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#qw3"><span class="toc-num">03</span>GBP一元可視化</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw3-approach"><span class="toc-num">&nbsp;&bull;</span>アプローチ比較</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw3-adopt"><span class="toc-num">&nbsp;&bull;</span>定着設計</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#qw4"><span class="toc-num">04</span>業務フロー可視化</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw4-approach"><span class="toc-num">&nbsp;&bull;</span>アプローチ比較</a></li>
+    <li class="toc-item"><a class="toc-link" href="#qw4-adopt"><span class="toc-num">&nbsp;&bull;</span>定着設計</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#cross"><span class="toc-num">05</span>横断論点</a></li>
+  </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+
+<!-- HERO -->
+<div class="hero" id="overview">
+  <div class="hero-badge">Quick Win Implementation Detail</div>
+  <h1>4つのQuick Win施策<br>実装アプローチ &times; 定着設計</h1>
+  <p class="hero-sub">
+    「技術的にできる」と「実際に使われて価値を生む」は全く別の問題。<br>
+    各施策の実装方針を比較検討し、<strong>「作ったけど使われない」リスク</strong>を徹底的にケアした定着設計を含む。
+  </p>
+  <a class="hero-back" href="../5daf4f7f/dx-report.html">&larr; DX診断レポートに戻る</a>
+</div>
+
+<!-- Overview: 整理フレームワーク -->
+<div class="section" id="overview-frame">
+  <div class="section-eyebrow qw1">FRAMEWORK</div>
+  <div class="action-title">各QW施策を11の観点で整理</div>
+  <p class="section-lead">技術的フィジビリティだけでなく、ビジネス目的の明確化、ユーザーFBによるチューニング、組織変革マネジメントまでを網羅。</p>
+  <div class="card-grid">
+    <div class="card">
+      <h4><span style="color:var(--blue)">&#9632;</span> 技術設計</h4>
+      <ul>
+        <li>実装アプローチ比較（2-3案）</li>
+        <li>推奨ステップ</li>
+        <li>データ要件</li>
+        <li>技術フィジビリティ確認</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span style="color:var(--amber)">&#9632;</span> 意思決定支援</h4>
+      <ul>
+        <li>前提条件・ヒアリング項目</li>
+        <li>リスク・ブロッカー</li>
+        <li>ROI試算の精緻化</li>
+        <li>段階展開プラン</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span style="color:var(--cyan)">&#9632;</span> 定着・活用設計</h4>
+      <ul>
+        <li>ビジネス目的・KPIの定義</li>
+        <li>ユーザーFB &times; チューニング</li>
+        <li>成果物イメージ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span style="color:var(--purple)">&#9632;</span> 組織変革</h4>
+      <ul>
+        <li>現場ヒアリング対象</li>
+        <li>立場別ニーズ差異</li>
+        <li>社内政治・抵抗勢力ケア</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QW-1: 月次速報の自動化
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="qw1">
+  <div class="section-eyebrow qw1">QW-1: MONTHLY REPORT AUTOMATION</div>
+  <div class="action-title">営業月次速報の自動化 &mdash; 基幹CSV &rarr; Looker Studio</div>
+  <p class="section-lead">37営業所の管理職が毎月手作業で作成しているExcel月次速報を、Google Sheets + Looker Studioで自動ダッシュボード化。年間1,290時間・約387万円の工数を削減。</p>
+
+  <div class="roi-box">
+    <div class="roi-card"><div class="roi-num">387万円</div><div class="roi-label">年間削減効果</div></div>
+    <div class="roi-card"><div class="roi-num">1,290h</div><div class="roi-label">年間削減時間</div></div>
+    <div class="roi-card"><div class="roi-num">97%</div><div class="roi-label">工数削減率</div></div>
+    <div class="roi-card"><div class="roi-num">0円</div><div class="roi-label">追加投資</div></div>
+  </div>
+
+  <div class="roi-fermi" style="background: linear-gradient(135deg, rgba(232,148,74,0.06), rgba(212,88,47,0.04)); border-radius: 12px; padding: 24px; margin: 20px 0; border: 1px solid rgba(232,148,74,0.2);">
+    <h4 style="color: var(--cyan); margin-bottom: 16px; font-size: 15px; font-weight: 700;">&#128202; ROI変数分解（フェルミ推定）</h4>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 16px; line-height: 1.8;">
+      37営業所 &times; 管理職1.5人 &times; 月5h &times; 時給3,000円 = <strong style="color: var(--text);">年間999万円の工数が対象</strong>
+    </p>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 2px solid rgba(232,148,74,0.4);">
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">シナリオ</th>
+          <th style="text-align: right; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">年間効果</th>
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">前提</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">&#128315; 悲観</td><td style="text-align: right; padding: 10px 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 14px;">年100万円</td><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">自動化率30%、管理職1人のみ対象</td></tr>
+        <tr style="background: rgba(232,148,74,0.08); border-radius: 6px;"><td style="padding: 10px 12px; color: var(--cyan); font-weight: 600; font-size: 13px;">&#11088; 現実</td><td style="text-align: right; padding: 10px 12px; color: var(--cyan); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 16px;">年387万円</td><td style="padding: 10px 12px; color: var(--cyan); font-size: 13px;">自動化率70%、管理職1.5人/営業所</td></tr>
+        <tr><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">&#128314; 楽観</td><td style="text-align: right; padding: 10px 12px; color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 14px;">年500万円+</td><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">自動化率90%、＋営業担当分の集計も含む</td></tr>
+      </tbody>
+    </table>
+    <p style="color: var(--text-muted); font-size: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e4ddd4;">&#128176; 投資額: <strong style="color: var(--green);">0円</strong>（Google Workspace既存ライセンス内） | 回収期間: <strong style="color: var(--cyan);">即時</strong></p>
+  </div>
+</div>
+
+<div class="section" id="qw1-approach">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">アプローチ比較</h3>
+  <table class="approach-tbl">
+    <thead><tr><th>評価軸</th><th>A: Sheets + Looker Studio</th><th>B: Sheets + AppSheet</th><th>C: Sheets + Apps Script</th></tr></thead>
+    <tbody>
+      <tr class="recommend"><td>追加コスト</td><td><span class="tag best">0円</span></td><td><span class="tag ok">0円</span>（Core制限内）</td><td><span class="tag ok">0円</span></td></tr>
+      <tr class="recommend"><td>分析力</td><td><span class="tag best">最高</span></td><td><span class="tag warn">限定的</span></td><td><span class="tag warn">Sheets依存</span></td></tr>
+      <tr class="recommend"><td>スケーラビリティ</td><td><span class="tag best">十分</span></td><td><span class="tag ng">2,500行制限</span></td><td><span class="tag ok">実行時間制限</span></td></tr>
+      <tr><td>構築期間</td><td>2-3週間</td><td>3-4週間</td><td>3-4週間</td></tr>
+      <tr><td>必要スキル</td><td>Sheets + Looker操作</td><td>Sheets + AppSheet</td><td><span class="tag warn">JavaScript必須</span></td></tr>
+      <tr><td>保守性</td><td><span class="tag best">GUI操作</span></td><td>GUI操作</td><td><span class="tag ng">コード保守</span></td></tr>
+      <tr><td><strong>総合</strong></td><td><strong style="color:var(--blue)">推奨</strong></td><td>制限がネック</td><td>スキル次第</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sowhat">
+    <div class="sowhat-label">推奨</div>
+    <p><strong>A案（Looker Studio）でスタートし、Phase 3でC案（GAS自動化）を追加するハイブリッド</strong>が最適。AppSheetは2,500行/テーブル制限が致命的（37営業所&times;月50件 = 1,850件/月で2ヶ月目に上限突破）。</p>
+  </div>
+
+  <!-- Looker Studio vs Excel: Before/After 比較 -->
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">Looker Studio vs Excel: 5軸で比較</h4>
+  <table class="approach-tbl">
+    <thead><tr><th>観点</th><th style="color:var(--red)">Before: Excel</th><th style="color:var(--cyan)">After: Looker Studio</th></tr></thead>
+    <tbody>
+      <tr><td>更新頻度</td><td>月1回（手動集計5h）</td><td><span class="tag best">リアルタイム</span>（自動更新）</td></tr>
+      <tr><td>横断分析</td><td><span class="tag ng">37シート切替＋手動統合</span></td><td><span class="tag best">1画面で全営業所比較</span></td></tr>
+      <tr><td>モバイル</td><td>PC必須</td><td><span class="tag best">スマホで外出先から確認</span></td></tr>
+      <tr><td>アラート</td><td><span class="tag ng">目視チェック</span></td><td><span class="tag best">閾値超えで自動通知</span></td></tr>
+      <tr><td>共有</td><td><span class="tag warn">メール添付＋バージョン混乱</span></td><td><span class="tag best">URLワンクリック＋常に最新</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="before-after-comparison" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; margin: 24px 0; align-items: start;">
+    <div class="before-card" style="background: rgba(220,38,38,0.04); border: 1px solid rgba(220,38,38,0.15); border-radius: 12px; padding: 20px;">
+      <h4 style="color: var(--red); margin-bottom: 14px; font-size: 14px; font-weight: 700;">&#10060; Before: Excel月次レポート</h4>
+      <ul style="list-style: none; padding: 0;">
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--red);">&#9679;</span> 月末に5時間かけて手動集計</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--red);">&#9679;</span> 37営業所分のシートを切替えて比較</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--red);">&#9679;</span> PCが無いと数字が見られない</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--red);">&#9679;</span> 異常値は月次会議で初めて発覚</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--red);">&#9679;</span> メール添付で「どれが最新？」問題</li>
+      </ul>
+    </div>
+    <div class="arrow" style="display: flex; align-items: center; font-size: 32px; color: var(--green); padding-top: 60px;">&#8594;</div>
+    <div class="after-card" style="background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.2); border-radius: 12px; padding: 20px;">
+      <h4 style="color: var(--green); margin-bottom: 14px; font-size: 14px; font-weight: 700;">&#9989; After: Looker Studio ダッシュボード</h4>
+      <ul style="list-style: none; padding: 0;">
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--green);">&#9679;</span> データ更新は自動、常に最新</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--green);">&#9679;</span> 1画面で全営業所を横断比較</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--green);">&#9679;</span> スマホで移動中でもチェック可能</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--green);">&#9679;</span> 閾値を超えたら即アラート通知</li>
+        <li style="padding: 6px 0; font-size: 13px; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--green);">&#9679;</span> URLを共有するだけ、常に最新版</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">推奨アプローチの具体ステップ</h4>
+  <div class="step-flow">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h5>基幹CSV出力テスト</h5><p>基幹ベンダーと連携し、案件データ（受注/完工/原価）のCSV出力を実施。カラム構成を確認。</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h5>Google Sheetsテンプレート作成</h5><p>CSV取込用シート + 集計シートをテンプレート化。営業所コードでVLOOKUP/ピボット。</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h5>Looker Studioダッシュボード構築</h5><p>エグゼクティブサマリー（全営業所一覧） + 営業所詳細 + トレンド分析の3ページ構成。</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h5>パイロット検証（1-2営業所）</h5><p>本社近くの営業所で1ヶ月テスト運用。所長のFBを収集し、KPI/レイアウトを調整。</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h5>全37営業所展開</h5><p>操作マニュアル（動画付き）配布 + オンライン説明会。Excel月次速報の廃止判断。</p></div></div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">3/5 MTGで確認すべき項目</h4>
+  <div class="hearing-grid">
+    <div class="hearing-item"><div class="q">F-1: 基幹からCSV出力は可能か？</div><div class="why">全ての前提。不可なら代替策（画面手動転記 or ベンダーへの開発依頼）が必要</div></div>
+    <div class="hearing-item"><div class="q">F-2: CSV出力可能な場合、どの項目が出力できるか？</div><div class="why">ダッシュボードで表示できるKPIが決まる</div></div>
+    <div class="hearing-item"><div class="q">F-3: Google Workspaceのエディションは？</div><div class="why">Starterだと共有ドライブ不可。Looker Studio自体は全エディションで利用可能</div></div>
+    <div class="hearing-item"><div class="q">F-4: 現在のExcel月次速報の実物を見せてもらえるか？</div><div class="why">現場が本当に必要なKPI・レイアウトを把握し、ダッシュボードに反映</div></div>
+    <div class="hearing-item"><div class="q">F-5: 月次速報の作成に現在かかっている時間は？</div><div class="why">ROI計算の精度向上（現在の仮定: 3時間/人/月）</div></div>
+    <div class="hearing-item"><div class="q">F-6: IT担当者2名のスキルレベル（Sheets/GAS/Looker経験）</div><div class="why">構築・保守の担い手の適切性判断。GAS経験があればPhase 3前倒し可</div></div>
+  </div>
+
+  <div class="data-box">
+    <h4>データ要件: 必要なCSVカラム設計案</h4>
+    <table class="data-tbl">
+      <tr><th>カラム</th><th>データ型</th><th>必須</th><th>用途</th></tr>
+      <tr><td>営業所コード / 営業所名</td><td>TEXT</td><td>必須</td><td>フィルタリング・集計軸</td></tr>
+      <tr><td>案件番号</td><td>TEXT</td><td>必須</td><td>一意識別</td></tr>
+      <tr><td>ステータス</td><td>TEXT</td><td>必須</td><td>見込/商談/受注/施工中/完工/失注</td></tr>
+      <tr><td>受注日 / 完工日</td><td>DATE</td><td>必須</td><td>月次集計・推移分析</td></tr>
+      <tr><td>契約金額 / 原価合計</td><td>NUMBER</td><td>必須</td><td>売上・粗利計算</td></tr>
+      <tr><td>ヨミ区分</td><td>TEXT</td><td>推奨</td><td>A/B/C見込み管理</td></tr>
+    </table>
+  </div>
+
+  <div class="risk-grid">
+    <div class="risk-card high"><h5>基幹がCSV出力不可</h5><p>2015年構築のフルスクラッチ。出力機能がない可能性。</p><div class="mitigation">対策: まず画面手動転記→Sheets入力でスタート。効果実証後にベンダーにCSV出力機能の追加開発を依頼。</div></div>
+    <div class="risk-card med"><h5>手動CSV出力のヒューマンエラー</h5><p>月次の手動出力で項目抜け・日付ズレが発生。</p><div class="mitigation">対策: GASでレコード数・日付範囲の自動バリデーション。</div></div>
+    <div class="risk-card med"><h5>営業所長のITリテラシー格差</h5><p>37営業所で習熟度にバラつき。</p><div class="mitigation">対策: 操作動画マニュアル + パイロットでのFB収集 + 「3クリックで見られる」設計。</div></div>
+  </div>
+</div>
+
+<div class="section" id="qw1-adopt">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;color:var(--cyan)">定着・活用設計 &mdash; 「使われるダッシュボード」のために</h3>
+
+  <div class="adopt-callout">
+    <div class="label">CORE PRINCIPLE</div>
+    <p>ダッシュボードの成否は<strong>「技術的完成度」ではなく「現場の意思決定を変えたか」</strong>で決まる。営業所長が毎朝5分で自分の数字を確認し、部下に的確な指示を出せるようになること。それが唯一の成功基準。</p>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#9881; ビジネス目的の明確化（着手前に必ず合意）</h4>
+    <ul class="checklist">
+      <li>「何を見て、どんな判断をしたいか」を営業所長3名以上にインタビュー</li>
+      <li>Excel月次速報の「本当に見ている箇所」と「作っているけど見ていない箇所」を分離</li>
+      <li>KPI定義書（計算式・粒度・更新頻度）を先方IT担当と合意</li>
+      <li>ダッシュボードの想定利用シーンを3つ以上定義（月次会議、日常チェック、経営報告）</li>
+    </ul>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128260; ユーザーFB &times; チューニングサイクル</h4>
+    <ul class="checklist">
+      <li>パイロット期間（4週間）で週1回のFB収集（5分アンケート: 見やすさ/必要な情報/不要な情報）</li>
+      <li>「一度も開いていない人」を2週目に特定し、個別に理由をヒアリング</li>
+      <li>v1.0 → v1.1 → v1.2 の3イテレーションをパイロット期間中に実施</li>
+      <li>全営業所展開後も月1回のFB収集を3ヶ月継続</li>
+      <li>利用率KPIを設定: 月1回以上アクセスした営業所長の割合 &ge; 90%</li>
+    </ul>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128202; 成果物イメージ: ダッシュボード3ページ構成</h4>
+    <div class="mockup">Page 1: エグゼクティブサマリー
+┌──────┬──────┬──────┬──────┐
+│ 受注件数 │ 完工高   │ 粗利率  │ 予算達成率│
+│  ●●件  │ ●●億円 │  ●●%  │  ●●%  │
+├──────┴──────┴──────┴──────┤
+│  [受注金額の月次推移 - 当年 vs 前年]       │
+├─────────────┬─────────────┤
+│ [営業所別ランキング]  │ [粗利率ヒートマップ]  │
+└─────────────┴─────────────┘
+
+Page 2: 営業所詳細（所長が自分の数字を見る）
+Page 3: トレンド分析（本部が横断比較する）</div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-phase"><h5 style="color:var(--blue)">Phase 1</h5><div class="tl-period">2-3週間</div><ul><li>パイロット1-2営業所</li><li>Tier1 KPIのみ</li><li>月次CSV手動投入</li><li>ダッシュボード1ページ</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--cyan)">Phase 2</h5><div class="tl-period">4-6週間</div><ul><li>全37営業所展開</li><li>Tier1+2 KPI</li><li>週次更新に拡張</li><li>3ページ構成</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--green)">Phase 3</h5><div class="tl-period">3-6ヶ月後</div><ul><li>GAS自動化追加</li><li>異常値アラート</li><li>ANDPAD連携検討</li><li>Tier3 KPI</li></ul></div>
+  </div>
+
+  <div class="org-card">
+    <h4>組織変革マネジメント</h4>
+    <ul style="padding-left:18px;margin-top:8px">
+      <li><strong>現場ヒアリング対象</strong>: 営業所長（利用者）、経理部門（データ整合性の担保者）、IT担当2名（保守運用者）</li>
+      <li><strong>抵抗リスク</strong>: 「今のExcelで十分」という慣性。対策 → パイロット営業所長を「アンバサダー」に任命し、同僚に体験を語ってもらう</li>
+      <li><strong>Excel廃止のタイミング</strong>: 2ヶ月間の並行運用期間を設け、数字の一致を確認してからExcelを正式廃止。強制ではなく「もう不要」と自然に移行</li>
+      <li><strong>経営層への見せ方</strong>: 初月の利用率と工数削減実績を数字で報告。「年間387万円の効果」を視覚化して報告</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QW-2: NotebookLMナレッジ
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="qw2">
+  <div class="section-eyebrow qw2">QW-2: NOTEBOOKLM KNOWLEDGE BASE</div>
+  <div class="action-title">Gemini/NotebookLMによるナレッジ活用拡張</div>
+  <p class="section-lead">離職率25-33%によるナレッジ流出リスクに対応。既にGemini活用中の土壌を活かし、NotebookLMで施工マニュアル・FAQ・過去事例をAIチャット検索可能にする。</p>
+
+  <div class="roi-box">
+    <div class="roi-card"><div class="roi-num">9,000万</div><div class="roi-label">年間効果（保守的）</div></div>
+    <div class="roi-card"><div class="roi-num">13%</div><div class="roi-label">ハルシネーション率</div></div>
+    <div class="roi-card"><div class="roi-num">0円</div><div class="roi-label">追加投資（Standard以上）</div></div>
+    <div class="roi-card"><div class="roi-num">即日</div><div class="roi-label">導入スピード</div></div>
+  </div>
+
+  <div class="roi-fermi" style="background: linear-gradient(135deg, rgba(22,163,74,0.06), rgba(13,148,136,0.04)); border-radius: 12px; padding: 24px; margin: 20px 0; border: 1px solid rgba(22,163,74,0.2);">
+    <h4 style="color: var(--cyan); margin-bottom: 16px; font-size: 15px; font-weight: 700;">&#128202; ROI変数分解（フェルミ推定）</h4>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 8px; line-height: 1.8;">
+      離職15人/年 &times; 採用育成コスト600万 &times; ナレッジ復元率30% = <strong style="color: var(--text);">年2,700万円の暗黙知流出を防止</strong>
+    </p>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 16px; line-height: 1.8;">
+      1件の施工トラブル回避 = 平均損失150万円（手戻り工事 + 顧客補償）
+    </p>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 2px solid rgba(232,148,74,0.4);">
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">シナリオ</th>
+          <th style="text-align: right; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">年間効果</th>
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">前提</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">&#128315; 悲観</td><td style="text-align: right; padding: 10px 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 14px;">年900万円</td><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">トラブル6件防止のみ（ナレッジ復元効果除外）</td></tr>
+        <tr style="background: rgba(232,148,74,0.08); border-radius: 6px;"><td style="padding: 10px 12px; color: var(--cyan); font-weight: 600; font-size: 13px;">&#11088; 現実</td><td style="text-align: right; padding: 10px 12px; color: var(--cyan); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 16px;">年2,700万円</td><td style="padding: 10px 12px; color: var(--cyan); font-size: 13px;">離職ナレッジ30%復元 + トラブル防止</td></tr>
+        <tr><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">&#128314; 楽観</td><td style="text-align: right; padding: 10px 12px; color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 14px;">年4,500万円</td><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">50%復元 + 新人研修期間50%短縮</td></tr>
+      </tbody>
+    </table>
+    <p style="color: var(--text-muted); font-size: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e4ddd4;">&#128176; 投資額: <strong style="color: var(--green);">0円</strong>（Google Workspace Gemini追加なし、既存契約範囲） | 回収期間: <strong style="color: var(--cyan);">即時</strong></p>
+  </div>
+</div>
+
+<div class="section" id="qw2-approach">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">アプローチ比較</h3>
+  <table class="approach-tbl">
+    <thead><tr><th>評価軸</th><th>A: NotebookLM</th><th>B: Gemini for WS</th><th>C: カスタムGemini</th></tr></thead>
+    <tbody>
+      <tr class="recommend"><td>追加コスト</td><td><span class="tag best">0円</span>（Standard以上）</td><td><span class="tag best">0円</span></td><td><span class="tag ng">月数万円〜</span></td></tr>
+      <tr class="recommend"><td>ナレッジベース適性</td><td><span class="tag best">高</span></td><td><span class="tag warn">低</span>（検索ツール）</td><td><span class="tag ok">高</span></td></tr>
+      <tr class="recommend"><td>ハルシネーション耐性</td><td><span class="tag best">高（13%）</span></td><td><span class="tag warn">中（約40%）</span></td><td>設計次第</td></tr>
+      <tr><td>導入速度</td><td><span class="tag best">即日</span></td><td><span class="tag best">即日</span></td><td><span class="tag ng">1-2ヶ月</span></td></tr>
+      <tr><td>カスタマイズ性</td><td>低</td><td>低</td><td><span class="tag best">高</span></td></tr>
+      <tr><td><strong>QW適性</strong></td><td><strong style="color:var(--blue)">最適</strong></td><td>併用推奨</td><td>Phase 3以降</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sowhat">
+    <div class="sowhat-label">推奨</div>
+    <p><strong>A案（NotebookLM）を主軸に、B案（Gemini for WS）を日常業務アシスタントとして併用</strong>。C案（カスタムGemini）はQuick Winの枠を超えるため将来の選択肢として温存。最大のチェックポイントは<strong>WorkspaceエディションがStandard以上であること</strong>（StarterだとNotebookLM Plus機能に制限あり）。</p>
+  </div>
+
+  <!-- NotebookLM vs Gemini in Drive: 設計思想の根本的な違い -->
+  <div class="tool-philosophy-comparison" style="margin: 28px 0;">
+    <h4 style="color: var(--cyan); margin-bottom: 20px; font-size: 15px; font-weight: 700;">&#129504; なぜNotebookLMなのか &mdash; 根本的な設計思想の違い</h4>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div style="background: rgba(217,119,6,0.04); border: 1px solid rgba(217,119,6,0.2); border-radius: 12px; padding: 22px;">
+        <h5 style="color: var(--amber); font-size: 14px; font-weight: 700; margin-bottom: 8px;">Gemini in Google Drive</h5>
+        <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">= <strong style="color: var(--text);">汎用AIアシスタント</strong></p>
+        <ul style="padding-left: 16px; margin: 0;">
+          <li style="font-size: 13px; color: var(--text-dim); padding: 4px 0; line-height: 1.7;">全インターネット知識 + Driveファイルを「参考」</li>
+          <li style="font-size: 13px; color: var(--text-dim); padding: 4px 0; line-height: 1.7;">答えが見つからない時: <strong style="color: var(--red);">知っている知識で補完する（ハルシネーション）</strong></li>
+          <li style="font-size: 13px; color: var(--text-dim); padding: 4px 0; line-height: 1.7;">建設現場で「この接着剤は〇〇に使えます」&rarr; 実は使えない（安全リスク）</li>
+        </ul>
+      </div>
+      <div style="background: rgba(22,163,74,0.05); border: 1px solid rgba(22,163,74,0.2); border-radius: 12px; padding: 22px;">
+        <h5 style="color: var(--cyan); font-size: 14px; font-weight: 700; margin-bottom: 8px;">NotebookLM</h5>
+        <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">= <strong style="color: var(--text);">専用ナレッジベース</strong></p>
+        <ul style="padding-left: 16px; margin: 0;">
+          <li style="font-size: 13px; color: var(--text-dim); padding: 4px 0; line-height: 1.7;">アップロードした資料<strong style="color: var(--text);">だけ</strong>を情報源にする</li>
+          <li style="font-size: 13px; color: var(--text-dim); padding: 4px 0; line-height: 1.7;">答えが見つからない時: <strong style="color: var(--green);">「この資料には情報がありません」と正直に回答</strong></li>
+          <li style="font-size: 13px; color: var(--text-dim); padding: 4px 0; line-height: 1.7;">建設現場で使っても、ソース不明の情報が混入しない</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="background: rgba(220,38,38,0.04); border-left: 4px solid var(--red); padding: 18px 20px; margin-top: 20px; border-radius: 0 10px 10px 0;">
+      <p style="color: var(--red); font-weight: 700; font-size: 13px; margin-bottom: 6px;">&#9888;&#65039; 建設業での安全リスク</p>
+      <p style="color: var(--text-dim); font-size: 13px; line-height: 1.8;">リフォーム現場では材料の耐荷重・施工手順・安全基準など<strong style="color: var(--text);">「間違った情報＝事故」に直結する</strong>。Gemini in Driveは便利だが、<strong style="color: var(--cyan);">現場ナレッジとして使うには「知らないことを知らないと言える」NotebookLMの方が安全</strong>。</p>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">3/5 MTGで確認すべき項目</h4>
+  <div class="hearing-grid">
+    <div class="hearing-item"><div class="q">N-1: Workspaceエディション確認（Starter? Standard?）</div><div class="why">NotebookLM Plus（300ソース上限）の利用可否が決まる。最重要</div></div>
+    <div class="hearing-item"><div class="q">N-2: 既存のGemini活用状況の詳細</div><div class="why">誰が・何に・どの機能を使っているか。既に成功体験があるなら拡張しやすい</div></div>
+    <div class="hearing-item"><div class="q">N-3: 共有ドライブ上の施工マニュアル・FAQ等の整備状況</div><div class="why">投入可能なドキュメントの量と品質を把握。紙のみの場合はデジタル化が先行タスク</div></div>
+    <div class="hearing-item"><div class="q">N-4: 新人教育の現在の方法と課題</div><div class="why">NotebookLMの最初の利用シーンとして最も効果が出やすい</div></div>
+    <div class="hearing-item"><div class="q">N-5: 管理コンソールへのアクセス権限</div><div class="why">NotebookLMの有効化・ユーザー管理に管理者権限が必要</div></div>
+    <div class="hearing-item"><div class="q">N-6: ベテラン職人の協力意欲</div><div class="why">ナレッジ提供者としてのベテランの巻き込みが成否を左右</div></div>
+  </div>
+
+  <div class="risk-grid">
+    <div class="risk-card high"><h5>StarterプランでNotebookLM Plus不可</h5><p>Business Starterの場合、ソース数上限50で建設業のナレッジには不足の可能性。</p><div class="mitigation">対策: Standardへのアップグレード（+$7/user/月）を提案 or 無料版50ソースで最重要マニュアルに絞ってパイロット。</div></div>
+    <div class="risk-card high"><h5>ドキュメント未整備（紙/FAXのまま）</h5><p>施工マニュアルが紙のみで存在し、デジタル化されていない。</p><div class="mitigation">対策: Phase 1ではデジタル化済みの資料だけでスタート。紙資料のOCR/デジタル化は別途並行タスクに。</div></div>
+    <div class="risk-card med"><h5>建設業専門用語の解釈精度</h5><p>業界特有の略語・方言的用語にNotebookLMが対応できない。</p><div class="mitigation">対策: 各マニュアル冒頭に用語集セクションを追加。プロンプトエンジニアリングで精度向上。</div></div>
+  </div>
+</div>
+
+<div class="section" id="qw2-adopt">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;color:var(--cyan)">定着・活用設計 &mdash; 「使われるナレッジベース」のために</h3>
+
+  <div class="adopt-callout">
+    <div class="label">CORE PRINCIPLE</div>
+    <p>ナレッジベースの失敗パターンは「ドキュメントを入れて終わり」。成功パターンは<strong>「具体的な利用シーンから逆算して、必要最小限のドキュメントを入れ、ユーザーFBでチューニングし続ける」</strong>。</p>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#9881; ビジネス目的の定義（3つの利用シーン）</h4>
+    <ul class="checklist">
+      <li><strong>シーン1: 新人研修</strong>「水回りリフォームの養生手順を教えて」→ マニュアルから即回答</li>
+      <li><strong>シーン2: 施工トラブル対応</strong>「壁紙の浮きが発生した場合の対処法は？」→ FAQ + 過去事例から回答</li>
+      <li><strong>シーン3: 見積作成支援</strong>「キッチンリフォームの標準単価と注意点は？」→ 単価表 + ガイドラインから回答</li>
+      <li>各シーンで「NotebookLM導入前の解決方法」と「導入後の期待体験」を明文化</li>
+      <li>パイロット参加者に「よく聞く質問TOP10」を事前にリストアップしてもらい、回答品質をテスト</li>
+    </ul>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128218; 資料の網羅的収集 + 品質担保</h4>
+    <ul class="checklist">
+      <li>P1（必須）: 施工マニュアル、FAQ集、安全管理マニュアル（推定30-90ファイル）</li>
+      <li>P2（推奨）: 見積ガイドライン、クレーム対応事例、建材カタログ（推定40-100ファイル）</li>
+      <li>全ドキュメントに見出し構造（H1→H2→H3）を統一適用</li>
+      <li>専門用語の定義セクションを各マニュアル冒頭に配置</li>
+      <li>FAQ形式化: 可能な限り「Q: 〜 A: 〜」構造に変換（NotebookLMの精度が大幅に向上）</li>
+      <li>作成日・更新日を全ドキュメントに明記し、古い情報を識別可能に</li>
+    </ul>
+  </div>
+
+  <!-- NotebookLM モックアップ: ニッカホームでの活用イメージ -->
+  <div class="notebooklm-mockup" style="margin: 28px 0;">
+    <h4 style="color: var(--cyan); margin-bottom: 20px; font-size: 15px; font-weight: 700;">&#128161; ニッカホームのNotebookLM活用イメージ</h4>
+
+    <!-- 6ノートブックカード -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
+      <div style="background: #ffffff; border: 1px solid #e4ddd4; border-radius: 10px; padding: 18px; text-align: center; transition: transform 0.2s; cursor: default; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 28px; margin-bottom: 8px;">&#128203;</div>
+        <div style="color: var(--text); font-size: 13px; font-weight: 600;">施工マニュアル</div>
+        <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">15ファイル・320ページ</div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #e4ddd4; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 28px; margin-bottom: 8px;">&#9888;&#65039;</div>
+        <div style="color: var(--text); font-size: 13px; font-weight: 600;">安全基準・規定</div>
+        <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">8ファイル・96ページ</div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #e4ddd4; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 28px; margin-bottom: 8px;">&#128295;</div>
+        <div style="color: var(--text); font-size: 13px; font-weight: 600;">材料仕様書</div>
+        <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">42ファイル・580ページ</div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #e4ddd4; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 28px; margin-bottom: 8px;">&#128680;</div>
+        <div style="color: var(--text); font-size: 13px; font-weight: 600;">過去トラブル事例</div>
+        <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">230件・写真付き</div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #e4ddd4; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 28px; margin-bottom: 8px;">&#128176;</div>
+        <div style="color: var(--text); font-size: 13px; font-weight: 600;">見積りノウハウ</div>
+        <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">12ファイル・85ページ</div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #e4ddd4; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 28px; margin-bottom: 8px;">&#128222;</div>
+        <div style="color: var(--text); font-size: 13px; font-weight: 600;">クレーム対応集</div>
+        <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">180件・対応フロー付き</div>
+      </div>
+    </div>
+
+    <!-- チャットUI -->
+    <div style="background: #f8f7f5; border: 1px solid #e4ddd4; border-radius: 12px; padding: 24px; max-width: 640px; margin: 0 auto 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+      <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase;">NotebookLM チャット画面イメージ</div>
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+        <div style="background: rgba(37,99,235,0.08); border-radius: 12px 12px 0 12px; padding: 14px 18px; max-width: 80%;">
+          <p style="color: var(--text); font-size: 14px; margin: 0;">築30年のマンション、ユニットバス交換で気をつけることは？</p>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-start;">
+        <div style="background: #ffffff; border: 1px solid #e4ddd4; border-radius: 12px 12px 12px 0; padding: 14px 18px; max-width: 88%; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+          <p style="color: var(--text); font-size: 14px; margin: 0 0 10px;">&#128214; <strong>施工マニュアル P.45</strong>より:</p>
+          <ol style="color: var(--text-dim); font-size: 13px; margin: 0; padding-left: 22px; line-height: 1.8;">
+            <li>排水勾配の確認（既存配管が鋳鉄管の場合は交換推奨）</li>
+            <li>防水層の状態確認（FRP&rarr;ウレタン塗膜の劣化チェック）</li>
+            <li>搬入経路の養生（共用部の保護・エレベーターサイズ確認）</li>
+          </ol>
+          <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e4ddd4;">
+            <span style="color: var(--cyan); font-size: 11px;">&#128206; 出典: 施工マニュアル_浴室リフォーム.pdf（2024年改訂版）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Before/After -->
+    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center;">
+      <div style="background: rgba(220,38,38,0.04); border: 1px solid rgba(220,38,38,0.15); border-radius: 12px; padding: 18px; text-align: center;">
+        <h5 style="color: var(--red); font-size: 13px; font-weight: 700; margin-bottom: 10px;">&#10060; Before</h5>
+        <div style="color: var(--text-dim); font-size: 13px; line-height: 1.8;">
+          <p style="margin: 4px 0;">ベテランに電話 &#128241;</p>
+          <p style="margin: 4px 0;">&rarr; 出ない（現場作業中）</p>
+          <p style="margin: 4px 0;">&rarr; 折返し待ち &#8987;</p>
+          <p style="color: var(--red); font-weight: 700; margin: 8px 0 0;">平均30分のロス</p>
+        </div>
+      </div>
+      <div style="font-size: 32px; color: var(--green);">&#8594;</div>
+      <div style="background: rgba(22,163,74,0.05); border: 1px solid rgba(22,163,74,0.2); border-radius: 12px; padding: 18px; text-align: center;">
+        <h5 style="color: var(--cyan); font-size: 13px; font-weight: 700; margin-bottom: 10px;">&#9989; After</h5>
+        <div style="color: var(--text-dim); font-size: 13px; line-height: 1.8;">
+          <p style="margin: 4px 0;">スマホでNotebookLMに質問 &#128172;</p>
+          <p style="margin: 4px 0;">&rarr; 10秒で回答</p>
+          <p style="margin: 4px 0;">&rarr; 出典付きで安心 &#128206;</p>
+          <p style="color: var(--green); font-weight: 700; margin: 8px 0 0;">待ち時間ゼロ</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128295; プロンプトエンジニアリング &times; チューニング</h4>
+    <ul class="checklist">
+      <li>ノートブック設計: 6冊構成（施工技術/安全管理/見積営業/クレーム対応/新人研修/建材カタログ）</li>
+      <li>パイロット参加者（5-10名）のQ&Aログを2週間収集</li>
+      <li>「期待した回答が得られなかった質問」を集め、ドキュメント側を修正（資料の書き方がAI精度を決める）</li>
+      <li>よく聞かれる質問パターンを「Notebook Guide」（ノートブック冒頭の説明文）に反映</li>
+      <li>誤回答が発生した場合のエスカレーションフロー（回答の引用元を確認 → 元資料を修正）を定義</li>
+      <li>月1回の「ナレッジ棚卸し」: 利用されていないドキュメントの削除、新ドキュメントの追加</li>
+    </ul>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128202; 定着KPI</h4>
+    <ul class="checklist">
+      <li>パイロット期間: 週1回以上利用する参加者 &ge; 70%</li>
+      <li>回答満足度: 「役に立った」評価 &ge; 75%（5段階の4以上）</li>
+      <li>新人教育での活用: 新人の質問のうち NotebookLM で自己解決できた割合 &ge; 40%</li>
+      <li>展開判断基準: パイロットKPIを3つ中2つ以上達成 → 全社展開</li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-phase"><h5 style="color:var(--green)">Phase 1</h5><div class="tl-period">1ヶ月</div><ul><li>本社部門5-10名でパイロット</li><li>P1ドキュメントのみ投入</li><li>3シーンでのQ&Aテスト</li><li>プロンプトチューニング</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--cyan)">Phase 2</h5><div class="tl-period">1-2ヶ月</div><ul><li>営業所長・管理職に展開</li><li>P2ドキュメント追加</li><li>利用ログ分析・改善</li><li>Audio Overview活用</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--purple)">Phase 3</h5><div class="tl-period">3ヶ月以降</div><ul><li>現場スタッフに展開</li><li>ベテランインタビュー記録追加</li><li>カスタムGemini検討</li></ul></div>
+  </div>
+
+  <div class="org-card">
+    <h4>組織変革マネジメント</h4>
+    <ul style="padding-left:18px;margin-top:8px">
+      <li><strong>ベテランの心理的抵抗</strong>: 「自分の知識が共有される = 自分の価値が下がる」不安。対策 → <strong>「匠認定制度」</strong>: ナレッジ提供者を社内で称号認定（社内報掲載、表彰）。「あなたの30年の経験を会社の財産にさせてください」というフレーミング</li>
+      <li><strong>「AIに仕事を奪われる」不安</strong>: 対策 → 「AIは職人の判断を代替するものではない。若手が自分で調べられるようになることで、ベテランが本来の高度な仕事に集中できる」メッセージ</li>
+      <li><strong>FAX世代への浸透</strong>: 操作説明は「LINEと同じ」で説明。30秒デモ動画+QRコードで現場に配布</li>
+      <li><strong>現場ヒアリング対象</strong>: 新人（利用者）、ベテラン職人（ナレッジ提供者）、営業所長（導入判断者）の3層</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QW-3: GBP一元可視化
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="qw3">
+  <div class="section-eyebrow qw3">QW-3: GBP UNIFIED MONITORING</div>
+  <div class="action-title">Googleビジネスプロフィールの本部一元可視化</div>
+  <p class="section-lead">各支社がバラバラに管理しているGBP（37営業所）を一覧化＋定期モニタリング。低コストで来店・電話問い合わせ5-10%増を実現。</p>
+
+  <div class="roi-box">
+    <div class="roi-card"><div class="roi-num">1,260万</div><div class="roi-label">年間追加粗利（保守的+5%）</div></div>
+    <div class="roi-card"><div class="roi-num">25-126倍</div><div class="roi-label">ROI</div></div>
+    <div class="roi-card"><div class="roi-num">350-1,800円</div><div class="roi-label">CPA（リスティングの1/10）</div></div>
+    <div class="roi-card"><div class="roi-num">月0-5.6万</div><div class="roi-label">ツールコスト</div></div>
+  </div>
+
+  <div class="roi-fermi" style="background: linear-gradient(135deg, rgba(217,119,6,0.06), rgba(232,148,74,0.04)); border-radius: 12px; padding: 24px; margin: 20px 0; border: 1px solid rgba(217,119,6,0.2);">
+    <h4 style="color: var(--cyan); margin-bottom: 16px; font-size: 15px; font-weight: 700;">&#128202; ROI変数分解（フェルミ推定）</h4>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 16px; line-height: 1.8;">
+      37店舗 &times; 月間問合せ増+5〜15件 &times; 成約率10% &times; 平均粗利90万円
+    </p>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 2px solid rgba(232,148,74,0.4);">
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">シナリオ</th>
+          <th style="text-align: right; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">年間効果</th>
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">前提</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">&#128315; 悲観</td><td style="text-align: right; padding: 10px 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 14px;">年600万円</td><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">+5件/月、成約率5%</td></tr>
+        <tr style="background: rgba(232,148,74,0.08); border-radius: 6px;"><td style="padding: 10px 12px; color: var(--cyan); font-weight: 600; font-size: 13px;">&#11088; 現実</td><td style="text-align: right; padding: 10px 12px; color: var(--cyan); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 16px;">年1,260万円</td><td style="padding: 10px 12px; color: var(--cyan); font-size: 13px;">+10件/月、成約率10%</td></tr>
+        <tr><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">&#128314; 楽観</td><td style="text-align: right; padding: 10px 12px; color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 14px;">年4,500万円</td><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">+15件/月、成約率10%、クチコミ効果込み</td></tr>
+      </tbody>
+    </table>
+    <p style="color: var(--text-muted); font-size: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e4ddd4;">&#128176; 投資額: <strong style="color: var(--green);">月0〜5.6万円</strong>（GBP API無料枠内 or 微額） | ROI: <strong style="color: var(--cyan);">25〜126倍</strong></p>
+  </div>
+</div>
+
+<div class="section" id="qw3-approach">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">アプローチ比較</h3>
+  <table class="approach-tbl">
+    <thead><tr><th>評価軸</th><th>A: GBP API + Looker</th><th>B: 専用MEOツール</th><th>C: 手動運用</th></tr></thead>
+    <tbody>
+      <tr class="recommend"><td>月額コスト（37店舗）</td><td><span class="tag best">ほぼ0円</span></td><td><span class="tag warn">5.6-30万円/月</span></td><td><span class="tag ok">0円（人件費別）</span></td></tr>
+      <tr class="recommend"><td>インサイトデータ</td><td><span class="tag best">API取得可</span></td><td><span class="tag best">自動取得</span></td><td><span class="tag ng">手動コピー</span></td></tr>
+      <tr><td>検索順位追跡</td><td><span class="tag ng">API非対応</span></td><td><span class="tag best">自動追跡</span></td><td><span class="tag ng">手動確認</span></td></tr>
+      <tr><td>技術難易度</td><td><span class="tag warn">API設定要</span></td><td><span class="tag best">低</span></td><td><span class="tag best">低</span></td></tr>
+      <tr><td>データ鮮度</td><td>日次可</td><td>日次〜週次</td><td><span class="tag warn">月次</span></td></tr>
+      <tr><td><strong>推奨</strong></td><td><strong style="color:var(--blue)">ベース</strong></td><td>補完的に検討</td><td>Phase 1の棚卸しのみ</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sowhat">
+    <div class="sowhat-label">推奨</div>
+    <p><strong>A案（GBP API + Sheets + Looker Studio）をベースに、Phase 1では手動棚卸しも併用するハイブリッド型</strong>。検索順位追跡が必要になった場合のみ、B案のGyro-n MEO（月約5.6万円）を補完的に追加。年間追加粗利1,260万円に対してコストが極めて低い。</p>
+  </div>
+
+  <div class="hearing-grid">
+    <div class="hearing-item"><div class="q">G-1: 37営業所のGBPアカウント一覧</div><div class="why">オーナー権限の所在確認が最優先。分散していると集約に時間がかかる</div></div>
+    <div class="hearing-item"><div class="q">G-2: GBPの管理体制（各支社個別? 本部一括?）</div><div class="why">API設定の認証スコープと運用ルール設計に直結</div></div>
+    <div class="hearing-item"><div class="q">G-3: 現在の口コミ返信ルール・方針</div><div class="why">統一ルール策定の起点。無い場合はテンプレート提案が有効</div></div>
+    <div class="hearing-item"><div class="q">G-4: GBPの投稿頻度と内容の現状</div><div class="why">ベースラインを把握して改善幅を測定するため</div></div>
+  </div>
+</div>
+
+<div class="section" id="qw3-adopt">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;color:var(--cyan)">定着・活用設計 &mdash; 「管理ではなく支援」のGBP運用</h3>
+
+  <div class="adopt-callout">
+    <div class="label">CORE PRINCIPLE</div>
+    <p>本部一元管理を「監視」と受け取られると支社の協力が得られない。<strong>「各営業所の集客を本部がサポートする仕組み」</strong>というフレーミングが成否を分ける。</p>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#9881; ビジネス目的の定義</h4>
+    <ul class="checklist">
+      <li>目標: 37営業所のGBP経由の問い合わせを6ヶ月で5%増</li>
+      <li>KPI: 月間検索表示回数、クリック数、電話発信数、口コミ評価平均</li>
+      <li>各営業所長に「あなたの営業所の課題と改善提案」をレポートとして月次配信</li>
+      <li>口コミ返信テンプレート（ポジティブ/ネガティブ）を提供し、返信率を50%以上に</li>
+    </ul>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128260; ユーザーFB &times; チューニング</h4>
+    <ul class="checklist">
+      <li>パイロット3-5店舗で2ヶ月間のGBP最適化を実施し、問い合わせ増加を計測</li>
+      <li>「改善前後の数字」を全営業所に共有 → 「うちもやりたい」の自発的参加を促す</li>
+      <li>ダッシュボードの見やすさFBを月1回収集</li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-phase"><h5 style="color:var(--amber)">Phase 1</h5><div class="tl-period">4週間</div><ul><li>37店舗のGBP情報棚卸し</li><li>オーナー権限の集約</li><li>API接続設定</li><li>現状KPIのベースライン取得</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--cyan)">Phase 2</h5><div class="tl-period">4週間</div><ul><li>Looker Studioダッシュボード構築</li><li>口コミ返信テンプレート配布</li><li>投稿ガイドライン策定</li><li>パイロット店舗の最適化</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--green)">Phase 3</h5><div class="tl-period">継続</div><ul><li>全店舗のGBP投稿週1回</li><li>月次レポート配信</li><li>検索順位追跡（必要に応じてMEOツール追加）</li></ul></div>
+  </div>
+
+  <div class="org-card">
+    <h4>組織変革マネジメント</h4>
+    <ul style="padding-left:18px;margin-top:8px">
+      <li><strong>支社の「テリトリー意識」</strong>: 「本部に管理されたくない」心理。対策 → <strong>「管理」ではなく「支援」</strong>。「本部がデータを分析して、各営業所に改善提案を届ける」ポジション</li>
+      <li><strong>GBP管理の責務</strong>: 推奨は「投稿＝支社」「分析・改善提案＝本部マーケ」の二重構造。支社に「作業負荷」を感じさせない</li>
+      <li><strong>パイロット店舗の選び方</strong>: 意欲的な支社長がいる3-5店舗。成功事例を作ってから横展開</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QW-4: 業務フロー可視化
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="qw4">
+  <div class="section-eyebrow qw4">QW-4: PROCESS MAPPING</div>
+  <div class="action-title">業務フロー可視化 + 課題MAP &mdash; DXの「共通言語」を作る</div>
+  <p class="section-lead">受領した営業フローpdf + 業務効率化課題pptxをベースに、AS-IS業務フロー図 + システム対応表 + 課題MAPを共同作成。3/5 MTGで着手。中期投資の意思決定に必要な「共通理解」を形成。</p>
+
+  <div class="roi-fermi" style="background: linear-gradient(135deg, rgba(219,39,119,0.06), rgba(124,58,237,0.04)); border-radius: 12px; padding: 24px; margin: 20px 0; border: 1px solid rgba(219,39,119,0.2);">
+    <h4 style="color: var(--cyan); margin-bottom: 16px; font-size: 15px; font-weight: 700;">&#128202; ROI変数分解（定性+定量ハイブリッド）</h4>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 8px; line-height: 1.8;">
+      <strong style="color: var(--text);">定量</strong>: 意思決定スピード改善 &rarr; 中期DX投資（ANDPAD受発注等）のROI <strong style="color: var(--cyan);">+20〜30%向上</strong>
+    </p>
+    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 16px; line-height: 1.8;">
+      <strong style="color: var(--text);">定性</strong>: 属人的な暗黙ルールの可視化 &rarr; 引継ぎコスト削減、ベストプラクティス横展開
+    </p>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 2px solid rgba(232,148,74,0.4);">
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">シナリオ</th>
+          <th style="text-align: right; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">中期投資ROI改善</th>
+          <th style="text-align: left; padding: 10px 12px; color: var(--text); font-size: 13px; font-weight: 600;">前提</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">&#128315; 悲観</td><td style="text-align: right; padding: 10px 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 14px;">+10%</td><td style="padding: 10px 12px; color: var(--text-muted); font-size: 13px;">意思決定明確化の最低ライン</td></tr>
+        <tr style="background: rgba(232,148,74,0.08); border-radius: 6px;"><td style="padding: 10px 12px; color: var(--cyan); font-weight: 600; font-size: 13px;">&#11088; 現実</td><td style="text-align: right; padding: 10px 12px; color: var(--cyan); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 16px;">+25%</td><td style="padding: 10px 12px; color: var(--cyan); font-size: 13px;">業務ボトルネック特定 &rarr; 施策優先度精緻化</td></tr>
+        <tr><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">&#128314; 楽観</td><td style="text-align: right; padding: 10px 12px; color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 14px;">+40%</td><td style="padding: 10px 12px; color: var(--green); font-size: 13px;">全社共有による組織学習効果含む</td></tr>
+      </tbody>
+    </table>
+    <p style="color: var(--text-muted); font-size: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e4ddd4;">&#128176; 投資額: <strong style="color: var(--green);">0円</strong>（Google Slides + draw.io無料版） | 効果: <strong style="color: var(--cyan);">中期DX投資の成功確率を底上げ</strong></p>
+  </div>
+</div>
+
+<div class="section" id="qw4-approach">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">アプローチ比較</h3>
+  <table class="approach-tbl">
+    <thead><tr><th>評価軸</th><th>A: Miro / FigJam</th><th>B: Google Slides + draw.io</th><th>C: Lucidchart</th></tr></thead>
+    <tbody>
+      <tr class="recommend"><td>コスト</td><td><span class="tag ok">無料枠あり</span></td><td><span class="tag best">完全無料</span></td><td><span class="tag warn">無料枠制限あり</span></td></tr>
+      <tr><td>リアルタイム共同編集</td><td><span class="tag best">最高</span></td><td><span class="tag ok">Slidesのみ</span></td><td><span class="tag ok">あり</span></td></tr>
+      <tr class="recommend"><td>先方の学習コスト</td><td><span class="tag warn">新ツール導入</span></td><td><span class="tag best">ゼロ（GWS既存）</span></td><td><span class="tag ng">高い</span></td></tr>
+      <tr><td>プロセス図の品質</td><td>中</td><td><span class="tag best">高（draw.io清書）</span></td><td><span class="tag best">高</span></td></tr>
+      <tr><td>Drive統合</td><td>なし</td><td><span class="tag best">完全統合</span></td><td>あり</td></tr>
+      <tr><td><strong>推奨</strong></td><td>MTGだけなら良い</td><td><strong style="color:var(--blue)">最適</strong></td><td>過剰</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sowhat">
+    <div class="sowhat-label">推奨</div>
+    <p><strong>B案（Google Slides + draw.io）の二段構え</strong>。MTGではGoogle Slides（先方が慣れたツール、追加コストゼロ）でリアルタイム確認・修正。清書はdraw.io（完全無料、BPMN/Swimlane対応、Drive統合可）。新ツール導入のハードルを回避しつつ、プロフェッショナルな成果物を生成。</p>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">推奨フレームワーク: Swimlane + VSM要素</h4>
+  <div class="card-grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
+    <div class="card" style="border-left:3px solid var(--blue)">
+      <h4>Swimlane Diagram <span class="tag best">メイン</span></h4>
+      <p>営業→施工管理→経理→職人の4部門の責任分担が一目瞭然。非技術者にも説明不要で理解可能。</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--cyan)">
+      <h4>VSM要素の重ね合わせ</h4>
+      <p>各ステップの所要時間・待ち時間・付加価値/非付加価値を追記。ボトルネック特定に有効。</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--purple)">
+      <h4>BPMN <span class="tag warn">TO-BEのみ</span></h4>
+      <p>専門的で再利用性が高いが、AS-IS段階では複雑すぎる。TO-BE設計（Phase 4）で初めて使用。</p>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">3/5 MTGで確認すべき項目</h4>
+  <div class="hearing-grid">
+    <div class="hearing-item"><div class="q">P-1: 受領した営業フローpdfの内容確認</div><div class="why">事前にフロー図の骨格を準備するための基礎情報</div></div>
+    <div class="hearing-item"><div class="q">P-2: 業務効率化課題pptxの詳細確認</div><div class="why">課題MAPの初期データ。現場が認識している課題の網羅性を検証</div></div>
+    <div class="hearing-item"><div class="q">P-3: 各システム間のデータ連携方法</div><div class="why">ANDPAD↔基幹↔SMILE↔Excel の連携（CSV? 手入力? 自動?）の正確な情報</div></div>
+    <div class="hearing-item"><div class="q">P-4: ワークショップに営業代表1名の参加可否</div><div class="why">増田さんだけでは「本当の業務フロー」が見えない。現場視点が必須</div></div>
+  </div>
+</div>
+
+<div class="section" id="qw4-adopt">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;color:var(--cyan)">定着・活用設計 &mdash; 「作って終わり」にしないために</h3>
+
+  <div class="adopt-callout">
+    <div class="label">CORE PRINCIPLE</div>
+    <p>業務フロー図は<strong>「描くこと」が目的ではなく「共通認識を持つこと」が目的</strong>。図の正確性より、関係者が「確かにそうだ」と納得するプロセスが100倍重要。</p>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#127891; ワークショップ設計（3/5 MTG内）</h4>
+    <ul class="checklist">
+      <li>事前準備: 受領pdfベースの業務フロー図ドラフトをGoogle Slidesで作成（コンサル側）</li>
+      <li>MTG冒頭15分: ドラフトを画面共有し、「ここは合っていますか？」形式で確認</li>
+      <li>修正はリアルタイムでSlides上に反映（参加者に「自分の意見が反映された」実感）</li>
+      <li>各ステップで「この作業にどのくらい時間がかかりますか？」「手作業ですか？」を確認</li>
+      <li>終了時に「ここが一番のボトルネックだと思いますか？」の投票（1人3票）</li>
+    </ul>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128196; 成果物の3層構造</h4>
+    <ul class="checklist">
+      <li><strong>Layer 1: AS-IS業務フロー図</strong> &mdash; 10ステップ &times; 4部門のSwimlane。FAX/手動箇所を色分け</li>
+      <li><strong>Layer 2: システムランドスケープ</strong> &mdash; 6システムの接続関係（手動/CSV/未接続を色分け）</li>
+      <li><strong>Layer 3: 課題MAP</strong> &mdash; フロー図上に課題アイコンを重ね、インパクト（大/中/小）で色分け</li>
+      <li>3層を重ねることで「どの業務ステップ &times; どのシステム &times; どの課題」が一目で分かる</li>
+    </ul>
+  </div>
+
+  <div class="adopt-card">
+    <h4>&#128260; 継続的更新の仕組み</h4>
+    <ul class="checklist">
+      <li>draw.ioで清書後、Google Driveの共有フォルダに配置（関係者全員がアクセス可能）</li>
+      <li>四半期に1回の「業務フロー棚卸し」を定例化（DX施策の進捗に応じて更新）</li>
+      <li>ANDPAD受発注導入後のTO-BE図を同じフォーマットで作成 → Before/After比較</li>
+      <li>新入社員研修の教材として活用（「うちの会社の業務はこう動いている」を可視化）</li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-phase"><h5 style="color:var(--pink)">Step 1</h5><div class="tl-period">3/5 MTG</div><ul><li>初回ワークショップ</li><li>業務フロー骨格確認</li><li>ボトルネック仮説の合意</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--cyan)">Step 2</h5><div class="tl-period">1-2週間後</div><ul><li>draw.ioで清書</li><li>各ステップの所要時間追加</li><li>システムランドスケープ作成</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--amber)">Step 3</h5><div class="tl-period">2-3週間後</div><ul><li>課題MAPの重ね合わせ</li><li>QW/Medium/Strategicへの紐づけ</li><li>関係者レビュー</li></ul></div>
+    <div class="tl-phase"><h5 style="color:var(--purple)">Step 4</h5><div class="tl-period">ANDPAD導入後</div><ul><li>TO-BE業務フロー設計</li><li>Before/After比較</li><li>効果測定</li></ul></div>
+  </div>
+
+  <div class="org-card">
+    <h4>組織変革マネジメント</h4>
+    <ul style="padding-left:18px;margin-top:8px">
+      <li><strong>「問題の見える化」の防衛反応</strong>: 業務フロー可視化は「あなたの仕事のやり方が悪い」と受け取られるリスク。対策 → <strong>「改善の機会を一緒に発見する」</strong>フレーミング。「あなたが一番よく知っているからこそ教えてほしい」</li>
+      <li><strong>部門間の認識差異</strong>: 営業と経理で業務フローの理解が違う。対策 → 3/5 MTGで営業代表も同席させ、「本当のフロー」を確認</li>
+      <li><strong>ステークホルダー拡大</strong>: 3/5 MTG後に、IT担当2名・支社長1-2名・経理部門長との個別ヒアリングを設計</li>
+      <li><strong>McKinseyの日本企業研究の知見</strong>: 変革の失敗は「中間管理職層」で起きる。コンセンサス文化の中で数人のブロッカーがいるだけで全体が止まる。早期に巻き込むことが重要</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     横断論点
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="cross">
+  <div class="section-eyebrow" style="color:var(--purple)">CROSS-CUTTING THEMES</div>
+  <div class="action-title">4施策横断の論点 &mdash; 技術フィジビリティ &times; 組織変革</div>
+
+  <h4 style="margin-top:24px;margin-bottom:16px;font-size:14px">先方に事前依頼すべき環境・権限リスト</h4>
+  <table class="approach-tbl">
+    <thead><tr><th>依頼項目</th><th>対象QW</th><th>優先度</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>Google Workspaceエディション確認</td><td>全QW</td><td><span class="tag best">最優先</span></td><td>Looker Studio/NotebookLM/共有ドライブの利用可否が全て変わる</td></tr>
+      <tr><td>基幹システムのCSV出力テスト</td><td>QW-1</td><td><span class="tag best">最優先</span></td><td>QW-1の実現可否を決定する唯一のゲート</td></tr>
+      <tr><td>管理コンソールへのアクセス（NotebookLM有効化）</td><td>QW-2</td><td><span class="tag warn">重要</span></td><td>IT管理者がNotebookLMを組織で有効にする操作が必要</td></tr>
+      <tr><td>GBP組織アカウントの構成確認</td><td>QW-3</td><td><span class="tag warn">重要</span></td><td>API設定の認証スコープとアクセス権限に直結</td></tr>
+      <tr><td>営業フローpdf + 課題pptxの事前共有</td><td>QW-4</td><td><span class="tag ok">推奨</span></td><td>ワークショップの事前準備品質が大幅に向上</td></tr>
+      <tr><td>Excel月次速報の実物サンプル</td><td>QW-1</td><td><span class="tag ok">推奨</span></td><td>「本当に見ている数字」を正確に把握</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">「作ったけど使われない」を防ぐ共通原則</h4>
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4>1. 利用シーンから逆算</h4>
+      <p>「こんな技術がある」ではなく「こんな場面で困っている」からスタート。先方の課題認識pptxが最良の起点。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4>2. パイロットで小さく始める</h4>
+      <p>全社展開前に1-5拠点で検証。定着KPIを設定し、クリアしてから横展開。いきなり37営業所は危険。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4>3. FBループを2週間で回す</h4>
+      <p>v1.0を出したら2週間以内にFB収集 → v1.1へ。完璧を目指す前に「まず使ってもらう」。使わない人に個別ヒアリング。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4>4. 旧プロセスとの並行運用期間</h4>
+      <p>いきなり「明日からこっち」は失敗する。2ヶ月の並行運用で信頼を醸成してから旧プロセスを廃止。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4>5. 成功を数字で語る</h4>
+      <p>「便利になった」では経営層は動かない。「年間387万円の工数削減」「問い合わせ5%増」等の定量効果を初月から計測。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4>6. 推進者を「中」に置く</h4>
+      <p>外部コンサルだけでは定着しない。IT担当2名 + パイロット営業所長を「社内推進者」に育てる設計。</p>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">増田さん以外に巻き込むべきステークホルダー</h4>
+  <div class="card-grid">
+    <div class="card">
+      <h4><span class="card-badge" style="background:rgba(37,99,235,0.1);color:var(--blue)">IT担当2名</span></h4>
+      <p>QW-1/2の構築・保守の実行者。スキルレベルと意欲の確認が最優先。「やらされ感」ではなく「自分のスキルアップにもなる」動機づけ。</p>
+    </div>
+    <div class="card">
+      <h4><span class="card-badge" style="background:rgba(217,119,6,0.1);color:var(--amber)">支社長（2-3名）</span></h4>
+      <p>パイロット候補の営業所長。成功体験を横展開する「アンバサダー」。意欲的な人を選ぶ。</p>
+    </div>
+    <div class="card">
+      <h4><span class="card-badge" style="background:rgba(22,163,74,0.1);color:var(--green)">経理部門長</span></h4>
+      <p>QW-1のデータ整合性の担保者。基幹CSV→ダッシュボードの数字と経理の数字が一致することの確認。</p>
+    </div>
+    <div class="card">
+      <h4><span class="card-badge" style="background:rgba(124,58,237,0.1);color:var(--purple)">現場営業（1-2名）</span></h4>
+      <p>QW-4のワークショップに必須。「本当の業務フロー」は現場にしか分からない。</p>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>
+      4つのQuick Winはすべて<strong>投資ゼロ（または月数千円）で即効果</strong>。しかし「作れること」と「使われること」は全く別問題。<strong>技術実装と同じかそれ以上のエネルギーを「定着設計」に投資する</strong>ことが、DXの成否を分ける。「経営層のDX意識が弱い」というニッカホームの現状では、<strong>Quick Winの成功体験こそが中期投資への唯一のパスポート</strong>。だからこそ、1つ1つのQWを「確実に使われ、確実に効果を生む」ものにすることが最優先。
+    </p>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>NIKKAHOME DX Strategy &mdash; Quick Win Implementation Detail</p>
+  <p>Created: 2026-03-01 | Source: 4 research reports (Looker Studio, NotebookLM, GBP, Process Mapping)</p>
+  <p><a href="../5daf4f7f/dx-report.html">&larr; DX診断レポートに戻る</a></p>
+</div>
+
+</div><!-- main-content -->
+</div><!-- page-layout -->
+</div><!-- container -->
+
+<script>
+// TOC Active State Tracking
+const tocLinks = document.querySelectorAll('.toc-link');
+const sections = document.querySelectorAll('.section[id], .hero[id]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(link => link.classList.remove('active'));
+      const id = entry.target.id;
+      const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -80% 0px' });
+sections.forEach(section => observer.observe(section));
+
+// Smooth Scroll
+tocLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Close mobile menu
+      document.querySelector('.toc-sidebar').classList.remove('open');
+      document.querySelector('.toc-overlay').classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>

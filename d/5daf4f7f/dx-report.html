@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ニッカホーム DX診断レポート</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --navy-light: #2a2a44;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --bg-hero: #0a0a14;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --blue: #2563eb;
+  --blue-light: #3b82f6;
+  --warning-bg: #faf5ef;
+  --warning-border: #e8ddd0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-warm);
+  color: var(--text-1);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+section { padding: 72px 0; }
+section.alt { background: var(--bg-warm-2); }
+section.dark { background: var(--navy); color: #f0ece6; }
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.section-label::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--accent);
+}
+.section-title {
+  font-size: clamp(1.3rem, 3vw, 1.65rem);
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-2);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 56px; }
+
+
+.gnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,10,20,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transform: translateY(-100%);
+  transition: transform 0.35s ease, background 0.3s;
+}
+.gnav.visible { transform: translateY(0); }
+.gnav.scrolled {
+  background: rgba(246,243,238,0.92);
+  border-bottom: 1px solid var(--border);
+}
+.gnav-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  gap: 4px;
+  overflow-x: auto;
+}
+.gnav-logo {
+  font-family: var(--font-en);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(240,236,230,0.7);
+  letter-spacing: 0.05em;
+  margin-right: auto;
+  white-space: nowrap;
+}
+.gnav.scrolled .gnav-logo { color: var(--text-1); }
+.gnav-link {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(240,236,230,0.5);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.gnav-link:hover {
+  color: #f0ece6;
+  background: rgba(255,255,255,0.08);
+}
+.gnav.scrolled .gnav-link { color: var(--text-2); }
+.gnav.scrolled .gnav-link:hover {
+  color: var(--text-1);
+  background: rgba(0,0,0,0.04);
+}
+.gnav-link.active { color: var(--accent-light); }
+.gnav.scrolled .gnav-link.active { color: var(--accent); }
+@media (max-width: 700px) {
+  .gnav-link { font-size: 0.6rem; padding: 6px 6px; }
+  .gnav-logo { font-size: 0.6rem; }
+}
+
+
+.hero {
+  position: relative;
+  min-height: 65vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a14;
+  overflow: hidden;
+  text-align: center;
+  padding: 80px 28px 64px;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,148,74,0.2), transparent);
+}
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg::before {
+  content: ''; position: absolute; top: -40%; right: -20%;
+  width: 900px; height: 900px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,148,74,0.12) 0%, transparent 65%);
+  animation: float-orb 14s ease-in-out infinite;
+}
+.hero-bg::after {
+  content: ''; position: absolute; bottom: -25%; left: -15%;
+  width: 750px; height: 750px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,64,64,0.08) 0%, transparent 65%);
+  animation: float-orb 18s ease-in-out infinite reverse;
+}
+.hero-mesh {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.04;
+  background-image:
+    linear-gradient(30deg, transparent 48%, rgba(232,148,74,0.3) 49%, rgba(232,148,74,0.3) 51%, transparent 52%),
+    linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 52%);
+  background-size: 80px 80px;
+  animation: mesh-drift 30s linear infinite;
+}
+.hero-scanlines {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.006) 2px, rgba(255,255,255,0.006) 4px);
+}
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 680px; margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 18px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; color: var(--accent-light);
+  border: 1px solid rgba(232,148,74,0.2); border-radius: 20px;
+  margin-bottom: 28px;
+  opacity: 0; animation: hero-fade-in 1s 0.3s forwards;
+}
+.hero h1 {
+  font-family: var(--font-jp);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800; color: #f0ece6; line-height: 1.5;
+  margin-bottom: 20px; letter-spacing: 0.02em;
+  opacity: 0; animation: hero-fade-in 1s 0.5s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .lead {
+  font-size: 0.88rem; color: rgba(240,236,230,0.5);
+  font-weight: 300; line-height: 1.9;
+  max-width: 560px; margin: 0 auto;
+  opacity: 0; animation: hero-fade-in 1s 0.7s forwards;
+}
+.hero-footer {
+  margin-top: 36px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  opacity: 0; animation: hero-fade-in 1s 0.9s forwards;
+}
+.hero-footer .meta { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); }
+.hero-footer .meta strong { color: rgba(240,236,230,0.5); font-weight: 500; }
+
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+@media (max-width: 700px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+}
+.kpi-number {
+  font-family: var(--font-mono);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.kpi-unit {
+  font-size: 0.82rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--text-2);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+
+.finding-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+.finding-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 12px 12px 0;
+  padding: 28px 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.finding-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.finding-num {
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.finding-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.finding-hypo {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+}
+.finding-hypo-box {
+  background: #f0eae2;
+  border-radius: 8px;
+  padding: 10px 14px;
+  line-height: 1.6;
+}
+.finding-hypo-box.reality {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+}
+.finding-hypo-arrow {
+  color: var(--accent);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.finding-impact {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.7;
+  padding-left: 14px;
+  border-left: 2px solid var(--border);
+}
+@media (max-width: 600px) {
+  .finding-hypo {
+    grid-template-columns: 1fr;
+  }
+  .finding-hypo-arrow {
+    text-align: center;
+    transform: rotate(90deg);
+  }
+}
+
+
+.chain-section {
+  margin-bottom: 36px;
+}
+.chain-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chain-icon {
+  width: 32px; height: 32px;
+  background: var(--accent-bg);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.chain-icon svg {
+  width: 18px; height: 18px;
+  stroke: var(--accent); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.chain-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 16px;
+}
+.chain-step {
+  position: relative;
+  padding: 10px 16px 10px 28px;
+  font-size: 0.84rem;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.chain-step::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.chain-step::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-warm);
+  border: 2px solid var(--border);
+}
+.chain-step:last-child::before {
+  bottom: 50%;
+}
+.chain-step.critical {
+  color: var(--text-1);
+  font-weight: 600;
+}
+.chain-step.critical::after {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.chain-step .chain-highlight {
+  background: rgba(232,148,74,0.12);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .scenario-grid { grid-template-columns: 1fr; }
+}
+.scenario-card {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: 12px;
+  padding: 24px 20px;
+}
+.scenario-card h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 8px;
+}
+.scenario-card p {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+
+.roadmap-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.roadmap-phase {
+  padding: 14px 16px;
+  text-align: center;
+}
+.roadmap-phase.short { background: var(--accent); color: #fff; }
+.roadmap-phase.mid { background: var(--accent-dark); color: #fff; }
+.roadmap-phase.long { background: var(--navy-mid); color: rgba(240,236,230,0.8); }
+.roadmap-phase-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-en);
+  opacity: 0.8;
+}
+.roadmap-phase-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.roadmap-gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(232,148,74,0.06);
+  border: 1px dashed var(--accent-border);
+  border-radius: 8px;
+  margin: 16px 0;
+  font-size: 0.78rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+
+.qw-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 700px) {
+  .qw-grid { grid-template-columns: 1fr; }
+}
+.qw-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 0 0 12px 12px;
+  padding: 24px 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.qw-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.qw-badge {
+  display: inline-block;
+  font-family: var(--font-en);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.qw-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.qw-before-after {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.qw-ba-col {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.qw-ba-col.before {
+  background: #f0eae2;
+  color: var(--text-2);
+}
+.qw-ba-col.after {
+  background: rgba(52,211,153,0.08);
+  color: #1a6b4a;
+}
+.qw-ba-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: var(--font-en);
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+  display: block;
+}
+.qw-ba-col.before .qw-ba-label { color: var(--text-3); }
+.qw-ba-col.after .qw-ba-label { color: var(--success); }
+.qw-estimate {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: var(--accent-bg);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.qw-estimate .num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+.qw-note {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+
+.faq-list {
+  display: grid;
+  gap: 10px;
+}
+.faq-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.faq-q {
+  padding: 18px 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.2s;
+}
+.faq-q:hover { background: rgba(0,0,0,0.02); }
+.faq-q::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(-45deg);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.faq-item.open .faq-q::before {
+  transform: rotate(45deg);
+}
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.faq-a-inner {
+  padding: 0 20px 18px 38px;
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 700px) {
+  .option-grid { grid-template-columns: 1fr; }
+}
+.option-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.option-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.option-label {
+  font-family: var(--font-en);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.option-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 10px;
+}
+.option-card p {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.7;
+  text-align: left;
+}
+
+
+.value-stream {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  padding: 8px 0;
+  margin: 24px 0;
+}
+.vs-step {
+  flex: 1;
+  min-width: 110px;
+  padding: 14px 10px;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-2);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.vs-step:first-child { border-radius: 8px 0 0 8px; }
+.vs-step:last-child { border-radius: 0 8px 8px 0; }
+.vs-step + .vs-step { border-left: none; }
+.vs-step.bottleneck {
+  background: rgba(232,148,74,0.1);
+  border-color: var(--accent-border);
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+.vs-step .vs-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+.vs-step.bottleneck .vs-label {
+  color: var(--accent-dark);
+}
+.vs-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--text-3);
+  font-size: 0.8rem;
+  padding: 0 2px;
+}
+@media (max-width: 600px) {
+  .value-stream {
+    flex-direction: column;
+  }
+  .vs-step { min-width: auto; border-radius: 0; }
+  .vs-step:first-child { border-radius: 8px 8px 0 0; }
+  .vs-step:last-child { border-radius: 0 0 8px 8px; }
+  .vs-step + .vs-step { border-left: 1px solid var(--border); border-top: none; }
+  .vs-arrow { transform: rotate(90deg); justify-content: center; padding: 4px 0; }
+}
+
+
+.unresolved-list {
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+}
+.unresolved-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  margin-bottom: 12px;
+}
+.unresolved-item {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.7;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.unresolved-item:last-child { border-bottom: none; }
+.unresolved-item strong { color: var(--text-1); }
+
+
+.so-what {
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: var(--accent-bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.86rem;
+  color: var(--text-1);
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+
+.layer-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.layer-tab {
+  padding: 8px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-card);
+  color: var(--text-2);
+}
+.layer-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.layer-content {
+  display: none;
+}
+.layer-content.active {
+  display: block;
+}
+.layer-content p {
+  font-size: 0.84rem;
+  color: var(--text-2);
+  line-height: 1.8;
+  margin-bottom: 10px;
+}
+.layer-content ul {
+  list-style: none;
+  padding: 0;
+}
+.layer-content li {
+  font-size: 0.84rem;
+  color: var(--text-2);
+  line-height: 1.7;
+  padding: 4px 0 4px 20px;
+  position: relative;
+}
+.layer-content li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+
+.system-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+@media (max-width: 600px) {
+  .system-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.system-chip {
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  text-align: center;
+}
+.system-chip .sys-name {
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+.system-chip .sys-desc {
+  font-size: 0.7rem;
+  color: var(--text-3);
+}
+.system-chip.isolated {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+
+.profile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.profile-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  padding: 24px;
+  color: #f0ece6;
+}
+.profile-header h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+.profile-header .title { font-size: 0.78rem; color: rgba(240,236,230,0.5); font-weight: 300; }
+.profile-body { padding: 24px; }
+
+.career-timeline { position: relative; padding-left: 24px; }
+.career-timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px; top: 8px; bottom: 8px;
+  width: 2px;
+  background: var(--border);
+}
+.career-item { position: relative; margin-bottom: 14px; padding-left: 20px; }
+.career-item:last-child { margin-bottom: 0; }
+.career-item::before {
+  content: '';
+  position: absolute;
+  left: -20px; top: 8px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--text-3);
+  border: 2px solid var(--bg-card);
+}
+.career-item:last-child::before { background: var(--accent); }
+.career-company { font-size: 0.82rem; font-weight: 700; color: var(--text-1); }
+.career-role { font-size: 0.75rem; color: var(--text-2); margin-top: 2px; }
+.career-achievement { font-size: 0.75rem; color: var(--accent-dark); font-weight: 600; margin-top: 2px; }
+
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+@media (max-width: 600px) {
+  .pillar-grid { grid-template-columns: 1fr; }
+}
+.pillar-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--text-2);
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: rgba(52,211,153,0.04);
+  border-radius: 8px;
+}
+.pillar-check {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  background: rgba(52,211,153,0.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
+}
+.pillar-check svg { width: 10px; height: 10px; stroke: #34d399; fill: none; stroke-width: 3; }
+
+
+.closing {
+  background: var(--navy);
+  padding: 48px 28px 32px;
+  text-align: center;
+}
+.closing-msg {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(240,236,230,0.75);
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+.closing-sub {
+  font-size: 0.75rem;
+  color: rgba(240,236,230,0.3);
+  font-family: var(--font-en);
+  letter-spacing: 0.05em;
+}
+
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.08); }
+  66% { transform: translate(-30px, 30px) scale(0.94); }
+}
+@keyframes mesh-drift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(80px, 80px); }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media print {
+  .gnav{display:none}.hero{min-height:auto;padding:40px 28px}
+  section{padding:32px 0;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<nav class="gnav" id="gnav">
+  <div class="gnav-inner">
+    <span class="gnav-logo">DX Diagnostic Report</span>
+    <a href="#summary" class="gnav-link">要約</a>
+    <a href="#situation" class="gnav-link">現在地</a>
+    <a href="#findings" class="gnav-link">発見</a>
+    <a href="#chain" class="gnav-link">構造課題</a>
+    <a href="#inaction" class="gnav-link">放置リスク</a>
+    <a href="#direction" class="gnav-link">方向性</a>
+    <a href="#quickwin" class="gnav-link">短期施策</a>
+    <a href="#faq" class="gnav-link">論点</a>
+    <a href="#nextstep" class="gnav-link">次の一手</a>
+  </div>
+</nav>
+
+<header class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">Diagnostic Report</div>
+    <h1>ニッカホーム<br><em>業務改善 診断レポート</em></h1>
+    <p class="lead">初回商談とシステムヒアリングを踏まえた現状分析と、今後の戦略オプションをまとめました。データが繋がれば、判断が変わります。</p>
+    <div class="hero-footer">
+      <div class="meta"><strong>Date</strong> 2026.03</div>
+      <div class="meta"><strong>Confidential</strong></div>
+    </div>
+  </div>
+</header>
+
+<section id="summary">
+  <div class="container reveal">
+    <div class="section-label">Executive Summary</div>
+    <h2 class="section-title">調査で見えたこと</h2>
+    <p class="section-subtitle">2回の商談・ヒアリングから、ニッカホームの業務構造には3つの発見がありました。<br>いずれも「個別の問題」ではなく、仕組みの構造に起因しています。</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-number">2<span class="kpi-unit">ヶ月</span></div>
+        <div class="kpi-label">原価把握の遅延<br>経営判断が常に後追い</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-number">15<span class="kpi-unit">人/年</span></div>
+        <div class="kpi-label">ベテラン離職による<br>ナレッジ流出</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-number">6<span class="kpi-unit">システム</span></div>
+        <div class="kpi-label">完全にサイロ化<br>データ連携ゼロ</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-number">0<span class="kpi-unit">円</span></div>
+        <div class="kpi-label">短期施策の追加投資<br>既存環境で完結</div>
+      </div>
+    </div>
+
+    <div class="so-what" style="margin-top:32px;">
+      ニッカホームの課題は「デジタル化の遅れ」ではなく、「データが繋がっていない」ことにあります。紙とExcelが残る業務フローが、経営判断・人材育成・集客の全てに影響しています。まず追加投資ゼロの短期施策で効果を確認し、その数字をもとに中期投資を判断する進め方が合理的です。
+    </div>
+  </div>
+</section>
+
+<section id="situation" class="alt">
+  <div class="container reveal">
+    <div class="section-label">Situation</div>
+    <h2 class="section-title">ニッカホームの現在地</h2>
+    <p class="section-subtitle">業界・自社・システム環境の3つのレイヤーで整理しました。</p>
+
+        <div class="layer-tabs">
+      <div class="layer-tab active" data-layer="industry">業界環境</div>
+      <div class="layer-tab" data-layer="company">自社の状況</div>
+      <div class="layer-tab" data-layer="it">システム環境</div>
+    </div>
+
+    <div class="layer-content active" id="layer-industry">
+      <ul>
+        <li>リフォーム市場は約7兆円規模。2024年問題（時間外労働の上限規制）が建設業にも本格適用され、「同じ人数で同じ仕事量」は維持できない時代に入っています</li>
+        <li>職人不足は年々深刻化しています。FAXが依然として業界標準であり、受発注の仕組みが紙に依存しています</li>
+        <li>施工管理ツール「ANDPAD」の普及が進む一方、「施工管理」と「受発注」は別の契約モジュールであり、導入状況は企業ごとに大きく異なります</li>
+      </ul>
+    </div>
+
+    <div class="layer-content" id="layer-company">
+      <ul>
+        <li><strong>売上711億円</strong>（業界3位）。従業員1,695名、117店舗を展開。167店舗への拡大ビジョンを掲げています</li>
+        <li>協力会社1,500社。離職率は<strong>25〜33%</strong>で、年間15〜20人が退社しています</li>
+        <li>関東支社の月間受注は1,200件。ただし横浜南421件に対し水戸6件と、<strong>地域差は70倍</strong>に達しています</li>
+      </ul>
+    </div>
+
+    <div class="layer-content" id="layer-it">
+      <p>6つのシステムが、データ連携なしに並立しています。</p>
+      <div class="system-grid">
+        <div class="system-chip isolated">
+          <div class="sys-name">基幹システム</div>
+          <div class="sys-desc">2015年フルスクラッチ。つなぎ口なし</div>
+        </div>
+        <div class="system-chip">
+          <div class="sys-name">ANDPAD</div>
+          <div class="sys-desc">チャット+施工管理。社内400名+社外891名</div>
+        </div>
+        <div class="system-chip">
+          <div class="sys-name">SMILE</div>
+          <div class="sys-desc">会計ソフト（大塚商会）</div>
+        </div>
+        <div class="system-chip">
+          <div class="sys-name">自社見積システム</div>
+          <div class="sys-desc">見積作成専用</div>
+        </div>
+        <div class="system-chip">
+          <div class="sys-name">Excel</div>
+          <div class="sys-desc">予実管理・月次報告</div>
+        </div>
+        <div class="system-chip">
+          <div class="sys-name">Google ビジネスプロフィール</div>
+          <div class="sys-desc">店舗集客。各支社バラバラ管理</div>
+        </div>
+      </div>
+      <ul>
+        <li>社内のシステム担当は<strong>2名＋外注</strong>体制</li>
+        <li>Google Workspace導入済み（Business Starter / Standard）。Geminiも一部活用中</li>
+      </ul>
+    </div>
+
+        <h3 style="font-size:0.92rem; font-weight:700; margin:32px 0 8px; color:var(--text-1);">業務の流れ（バリューストリーム）</h3>
+    <p style="font-size:0.78rem; color:var(--text-3); margin-bottom:12px;">色付き = 紙・手作業が残るボトルネック</p>
+    <div class="value-stream">
+      <div class="vs-step bottleneck">
+        <div class="vs-label">引合い・集客</div>
+        Google ビジネスプロフィール<br>（各支社分散管理）
+      </div>
+      <div class="vs-arrow">&rarr;</div>
+      <div class="vs-step">
+        <div class="vs-label">見積り</div>
+        専用システム
+      </div>
+      <div class="vs-arrow">&rarr;</div>
+      <div class="vs-step bottleneck">
+        <div class="vs-label">発注</div>
+        <strong>FAX・電話</strong>
+      </div>
+      <div class="vs-arrow">&rarr;</div>
+      <div class="vs-step">
+        <div class="vs-label">施工管理</div>
+        ANDPAD<br>（チャットのみ）
+      </div>
+      <div class="vs-arrow">&rarr;</div>
+      <div class="vs-step bottleneck">
+        <div class="vs-label">原価確定</div>
+        <strong>2ヶ月遅延</strong>
+      </div>
+      <div class="vs-arrow">&rarr;</div>
+      <div class="vs-step bottleneck">
+        <div class="vs-label">月次報告</div>
+        <strong>Excel手作業</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="findings">
+  <div class="container reveal">
+    <div class="section-label">Findings</div>
+    <h2 class="section-title">3つの前提が覆った</h2>
+    <p class="section-subtitle">ヒアリングを進める中で、当初の仮説と実態が異なる重要な発見がありました。<br>これらはすべて、今後の戦略設計に直接影響します。</p>
+
+    <div class="finding-grid">
+
+            <div class="finding-card">
+        <div class="finding-num">Finding 01</div>
+        <h3>ANDPADの受発注モジュールは「未契約」だった</h3>
+        <div class="finding-hypo">
+          <div class="finding-hypo-box">
+            <span class="qw-ba-label" style="color:var(--text-3)">仮説</span>
+            契約済みだが現場に定着していない
+          </div>
+          <div class="finding-hypo-arrow">&rarr;</div>
+          <div class="finding-hypo-box reality">
+            <span class="qw-ba-label" style="color:var(--accent)">実態</span>
+            受発注モジュールは完全に未契約
+          </div>
+        </div>
+        <div class="finding-impact">受発注モジュールの追加契約と、協力会社1,500社への段階的な展開が必要です。先に業務フローを整理してから投資判断する方が合理的です。</div>
+      </div>
+
+            <div class="finding-card">
+        <div class="finding-num">Finding 02</div>
+        <h3>基幹システムは外部連携ができない構造</h3>
+        <div class="finding-hypo">
+          <div class="finding-hypo-box">
+            <span class="qw-ba-label" style="color:var(--text-3)">仮説</span>
+            パッケージ製品で、他システムとの連携が可能
+          </div>
+          <div class="finding-hypo-arrow">&rarr;</div>
+          <div class="finding-hypo-box reality">
+            <span class="qw-ba-label" style="color:var(--accent)">実態</span>
+            2015年にフルスクラッチ開発。つなぎ口が存在しない
+          </div>
+        </div>
+        <div class="finding-impact">推測として、クラウド上のカスタムアプリ（ネット上のサービス型ではなく、サーバーを借りて動かしている形態）の可能性があります。基幹システムを前提にしない戦略設計が必要です。</div>
+      </div>
+
+            <div class="finding-card">
+        <div class="finding-num">Finding 03</div>
+        <h3>会計は基幹システムとは別の製品（SMILE）</h3>
+        <div class="finding-hypo">
+          <div class="finding-hypo-box">
+            <span class="qw-ba-label" style="color:var(--text-3)">仮説</span>
+            会計機能は基幹システムの一部
+          </div>
+          <div class="finding-hypo-arrow">&rarr;</div>
+          <div class="finding-hypo-box reality">
+            <span class="qw-ba-label" style="color:var(--accent)">実態</span>
+            大塚商会の別製品「SMILE」を使用
+          </div>
+        </div>
+        <div class="finding-impact">データの流れが「ANDPAD → 基幹 → SMILE」の3段階で、すべて手作業連携です。原価をリアルタイムに把握するためのハードルは、当初想定の2〜3倍になります。</div>
+      </div>
+    </div>
+
+        <div class="unresolved-list">
+      <div class="unresolved-title">+ 未解決の矛盾 3件（3/5のMTGで確認したい事項）</div>
+      <div class="unresolved-item"><strong>1.</strong> 「FAXが半分、ANDPADが半分」というお話は、受発注ではなくチャット連絡のことでしょうか？</div>
+      <div class="unresolved-item"><strong>2.</strong> 基幹が「クラウド」なのに「つなぎ口なし」ということは、サーバーを借りて動かしている形態でしょうか？</div>
+      <div class="unresolved-item"><strong>3.</strong> 自社見積システムは基幹システムの一部機能でしょうか、それとも完全に別のシステムでしょうか？</div>
+    </div>
+  </div>
+</section>
+
+<section id="chain" class="alt">
+  <div class="container reveal">
+    <div class="section-label">Structural Issues</div>
+    <h2 class="section-title">個別の課題ではなく、構造として繋がっている</h2>
+    <p class="section-subtitle">ニッカホームが直面している課題は、それぞれ独立しているように見えて、実は1つの構造から派生しています。</p>
+
+        <div class="chain-section">
+      <div class="chain-title">
+        <div class="chain-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        原価管理の悪循環
+      </div>
+      <div class="chain-flow">
+        <div class="chain-step">発注がFAX・電話（紙ベース）で行われている</div>
+        <div class="chain-step">請求書が届くまで原価が分からない（<span class="chain-highlight">2ヶ月の遅延</span>）</div>
+        <div class="chain-step">経営判断が常に2ヶ月遅れで行われている</div>
+        <div class="chain-step">利益率の見えない案件がそのまま進行し続ける</div>
+        <div class="chain-step critical">問題に気づくのは粗利が確定した後。手を打てるタイミングを逃している</div>
+      </div>
+    </div>
+
+        <div class="chain-section">
+      <div class="chain-title">
+        <div class="chain-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        ナレッジ消失の連鎖
+      </div>
+      <div class="chain-flow">
+        <div class="chain-step">ベテラン社員が離職する（<span class="chain-highlight">年間15人、離職率25〜33%</span>）</div>
+        <div class="chain-step">その人だけが持っていた経験・判断基準が消える</div>
+        <div class="chain-step">新人が「誰に聞けばいいか」を見つけられない（電話で30分待ち）</div>
+        <div class="chain-step">施工現場でのトラブルが増加する（手戻り工事＋お客様への補償）</div>
+        <div class="chain-step critical">1件あたり平均150万円の損失。ベテランがいた頃は起きなかった問題が常態化する</div>
+      </div>
+    </div>
+
+        <div class="chain-section">
+      <div class="chain-title">
+        <div class="chain-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        データ分散の罠
+      </div>
+      <div class="chain-flow">
+        <div class="chain-step">6つのシステムが完全にサイロ化している（データ連携ゼロ）</div>
+        <div class="chain-step">月次レポートが手作業（<span class="chain-highlight">37営業所 x 月5時間</span>）</div>
+        <div class="chain-step">管理職の時間が集計作業に消えている</div>
+        <div class="chain-step">本来の営業・マネジメント業務が後回しになっている</div>
+      </div>
+      <div class="chain-flow" style="margin-top:12px;">
+        <div class="chain-step">37店舗のGoogle ビジネスプロフィールがバラバラに管理されている</div>
+        <div class="chain-step">成功パターン（口コミ獲得・写真投稿等）が横展開されない</div>
+        <div class="chain-step critical">集客効率の地域差が<span class="chain-highlight">70倍</span>（横浜南421件 vs 水戸6件）</div>
+      </div>
+    </div>
+
+    <div class="so-what">
+      これらは別々の問題に見えますが、根っこは同じ構造にあります。「データが繋がっていない」「紙が残っている」「経験知が個人に閉じている」。この3つが相互に悪循環を生んでいます。
+    </div>
+  </div>
+</section>
+
+<section id="inaction">
+  <div class="container reveal">
+    <div class="section-label">If Nothing Changes</div>
+    <h2 class="section-title">現状維持の場合に予想されること</h2>
+    <p class="section-subtitle">ニッカホームが167店舗への拡大を目指す中で、現在の仕組みのまま進んだ場合、2〜3年後にどうなるかを整理しました。</p>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <h4>原価管理</h4>
+        <p>2ヶ月の遅延構造が167店舗に拡大します。把握できない案件数が現在の1.4倍に。年間で数千万円の利益が「見えないまま」流出し続ける計算になります。</p>
+      </div>
+      <div class="scenario-card">
+        <h4>ナレッジ</h4>
+        <p>3年間で45人分の経験知が消失します。新人がトラブル対応に追われることが常態化し、手戻り工事のコストが年々積み上がります。</p>
+      </div>
+      <div class="scenario-card">
+        <h4>集客</h4>
+        <p>Google ビジネスプロフィールを放置した店舗から、競合に口コミで劣後し始めます。来店数の二極化がさらに加速します。</p>
+      </div>
+      <div class="scenario-card">
+        <h4>システム基盤</h4>
+        <p>基幹システムは2015年に構築され、すでに10年を超えます。保守ベンダーの対応リスクとセキュリティリスクが年々高まります。</p>
+      </div>
+    </div>
+
+    <div class="so-what">
+      167店舗への拡大は、現在の仕組みのまま実現しようとすると、問題が店舗数に比例して拡大します。逆に言えば、今この仕組みを変えれば、拡大するたびに効果も比例して大きくなります。
+    </div>
+  </div>
+</section>
+
+<section id="direction" class="alt">
+  <div class="container reveal">
+    <div class="section-label">Strategic Direction</div>
+    <h2 class="section-title">考えられる方向性</h2>
+    <p class="section-subtitle">基本方針は「追加投資ゼロで短期に効果を確認し、その結果データをもとに中期投資を判断する」ことです。</p>
+
+    <div class="roadmap-bar">
+      <div class="roadmap-phase short">
+        <div class="roadmap-phase-label">1-3 months</div>
+        <div class="roadmap-phase-title">短期：すぐ出せる成果</div>
+      </div>
+      <div class="roadmap-phase mid">
+        <div class="roadmap-phase-label">3-12 months</div>
+        <div class="roadmap-phase-title">中期：仕組みの構造改革</div>
+      </div>
+      <div class="roadmap-phase long">
+        <div class="roadmap-phase-label">12+ months</div>
+        <div class="roadmap-phase-title">長期：全社データ統合</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+      <div style="font-size:0.82rem; color:var(--text-2); line-height:1.7;">
+        <strong style="color:var(--text-1);">既存のGoogle環境で4施策</strong><br>
+        追加投資ゼロ。まず成功体験を積み上げる。
+      </div>
+      <div style="font-size:0.82rem; color:var(--text-2); line-height:1.7;">
+        <strong style="color:var(--text-1);">ANDPAD受発注の導入検討</strong><br>
+        協力会社1,500社への段階展開。原価管理の構造改革。
+      </div>
+      <div style="font-size:0.82rem; color:var(--text-2); line-height:1.7;">
+        <strong style="color:var(--text-1);">基幹システムの判断</strong><br>
+        全社のデータ統合。「数字を見て判断する経営」への移行。
+      </div>
+    </div>
+
+    <div class="roadmap-gate">
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--accent-dark);fill:none;stroke-width:2;">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      判断ゲート：短期施策の結果データを見てから中期投資を決める。いきなりの大型投資は不要です。
+    </div>
+  </div>
+</section>
+
+<section id="quickwin">
+  <div class="container reveal">
+    <div class="section-label">Short-term Actions</div>
+    <h2 class="section-title">追加投資なしで確認できる4つのこと</h2>
+    <p class="section-subtitle">Google Workspace の既存契約内で完結し、1〜3ヶ月で効果が数字で見える施策です。<br>中期投資（ANDPAD受発注など）の判断材料にもなります。</p>
+
+    <div class="qw-grid">
+
+            <div class="qw-card">
+        <div class="qw-badge">QW-1</div>
+        <h3>月次速報の自動化</h3>
+        <div class="qw-before-after">
+          <div class="qw-ba-col before">
+            <span class="qw-ba-label">Before</span>
+            Excel手作業で月末5時間。37営業所の管理職が集計に追われる
+          </div>
+          <div class="qw-ba-col after">
+            <span class="qw-ba-label">After</span>
+            Looker Studioで自動更新。スマホからでも数字を確認できる
+          </div>
+        </div>
+        <div class="qw-estimate">
+          対象工数：37営業所 x 管理職1.5人 x 月5時間 x 時給3,000円 = <span class="num">年間約1,000万円相当</span>
+        </div>
+        <div class="qw-note">前提：管理職の時給は3,000円で試算。自動化率は70%程度を想定しています。</div>
+      </div>
+
+            <div class="qw-card">
+        <div class="qw-badge">QW-2</div>
+        <h3>NotebookLMでナレッジ集約</h3>
+        <div class="qw-before-after">
+          <div class="qw-ba-col before">
+            <span class="qw-ba-label">Before</span>
+            ベテランに電話 → 出ない → 30分待ち。離職のたびにナレッジが消える
+          </div>
+          <div class="qw-ba-col after">
+            <span class="qw-ba-label">After</span>
+            スマホで質問 → 10秒で出典付き回答。経験知が組織に残る
+          </div>
+        </div>
+        <div class="qw-estimate">
+          離職15人/年 x 採用育成600万 x 復元率30% + トラブル防止150万/件 = <span class="num">年間数千万円規模</span>の影響
+        </div>
+        <div class="qw-note">前提：育成コスト600万は業界平均。復元率30%は初年度の保守的な見積りです。NotebookLMは「資料に書いていないことは"わからない"と答える」設計のため、建設現場での安全性が高い仕組みです。</div>
+      </div>
+
+            <div class="qw-card">
+        <div class="qw-badge">QW-3</div>
+        <h3>Google ビジネスプロフィール一元可視化</h3>
+        <div class="qw-before-after">
+          <div class="qw-ba-col before">
+            <span class="qw-ba-label">Before</span>
+            37店舗がバラバラに管理。口コミ放置の店舗もある
+          </div>
+          <div class="qw-ba-col after">
+            <span class="qw-ba-label">After</span>
+            本部で一括管理。成功パターンを見つけて横展開できる
+          </div>
+        </div>
+        <div class="qw-estimate">
+          37店舗 x 問合せ増+5〜15件/月 x 成約率5〜10% x 粗利90万 = <span class="num">年間1億〜5億円規模</span>の対象
+        </div>
+        <div class="qw-note">前提：問合せ増加幅は5〜15件/月の幅で試算。成約率は業界平均10%の下限5%も考慮しています。</div>
+      </div>
+
+            <div class="qw-card">
+        <div class="qw-badge">QW-4</div>
+        <h3>業務フロー可視化</h3>
+        <div class="qw-before-after">
+          <div class="qw-ba-col before">
+            <span class="qw-ba-label">Before</span>
+            業務フローが暗黙的。部署ごとに認識がバラバラ
+          </div>
+          <div class="qw-ba-col after">
+            <span class="qw-ba-label">After</span>
+            全社共通の「業務地図」ができる。ボトルネックと改善ポイントが明確に
+          </div>
+        </div>
+        <div class="qw-estimate">
+          中期投資（ANDPAD受発注など）の<span class="num">判断精度が向上</span>します
+        </div>
+        <div class="qw-note">定量化は困難ですが、業務フローを可視化せずに投資判断すると、投資の失敗確率が大幅に上がります。</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px; padding:16px 20px; background:var(--accent-bg); border-radius:10px; font-size:0.82rem; color:var(--text-2); line-height:1.7; text-align:center;">
+      各施策の実装アプローチ・定着設計・ROI精緻化の詳細は別途まとめています。<br>
+      <a href="../6c43094e/quickwin-detail.html" style="display:inline-block; margin-top:10px; padding:8px 24px; background:var(--accent); color:#fff; border-radius:6px; font-weight:600; text-decoration:none; font-size:0.85rem;">実装詳細ドキュメントを見る →</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="alt">
+  <div class="container reveal">
+    <div class="section-label">Discussion Points</div>
+    <h2 class="section-title">3/5のMTGで議論したいポイント</h2>
+    <p class="section-subtitle">想定される論点と、それぞれの「考え方」を整理しました。</p>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">営業本部長の視点：投資対効果の試算は妥当ですか？</div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            本レポートの試算はすべて「前提」を明記しています（管理職時給3,000円、離職率25〜33%、成約率5〜10%など）。3/5のMTGでニッカホームの実態に合わせて数字を補正し、より精度の高い試算に更新することを考えています。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">営業所長の視点：現場の負担が増えませんか？</div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            新しいツールを導入するのではなく、すでに使っているGoogle Workspaceの活用方法を変えるだけです。研修は1時間で完了する設計にしています。「覚えることが増える」のではなく「今やっている手作業が減る」方向です。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">システム担当の視点：保守の負担は増えますか？</div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            短期4施策はすべてGoogle Workspace内で完結します。サーバーの管理や新しいシステムの保守は発生しません。既存のGoogle管理者権限で運用できます。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">経営層の視点：中期・長期で費用はどれくらいかかりますか？</div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            短期は追加費用ゼロです。中期以降は短期施策の結果データをもとに判断します。「後から見えないコストが膨らむ」設計にはしません。中期のANDPAD受発注は月額制で、段階的な導入が可能です。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">協力会社への影響はありますか？</div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            短期施策では協力会社への影響はありません。中期のANDPAD受発注を検討する段階で、協力会社側もアプリ（無料）を利用していただく必要が出てくる可能性があります。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="nextstep">
+  <div class="container reveal">
+    <div class="section-label">Next Step</div>
+    <h2 class="section-title">3/5以降の進め方として、3つの選択肢があります</h2>
+    <p class="section-subtitle">いずれの場合も、次のアクションは3/5のMTGでお話しして決められればと考えています。</p>
+
+    <div class="option-grid">
+      <div class="option-card">
+        <div class="option-label">Option A</div>
+        <h3>まず1〜2施策を試す</h3>
+        <p>すぐ出せる成果の中から1〜2施策を選び、パイロット営業所で1ヶ月試してみる。効果を数字で確認してから、全社展開を判断する。</p>
+      </div>
+      <div class="option-card">
+        <div class="option-label">Option B</div>
+        <h3>業務フロー可視化を先に</h3>
+        <p>現状の業務フローを全社で共有するワークショップを先に実施する。全体像を把握してから、すぐ出せる成果に着手する。</p>
+      </div>
+      <div class="option-card">
+        <div class="option-label">Option C</div>
+        <h3>もう少し深掘りする</h3>
+        <p>システム担当や現場の所長への追加ヒアリングで診断を深め、より精度の高い戦略を策定してから判断する。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="profile" class="alt">
+  <div class="container reveal">
+    <div class="section-label">Reference</div>
+    <h2 class="section-title">ご参考</h2>
+    <p class="section-subtitle">「考える」と「作る」を一人でやる、業務改善の相談役。</p>
+
+    <div class="profile-card">
+      <div class="profile-header">
+        <h3>西川 太雄</h3>
+        <div class="title">オモシク（omoshiku）代表</div>
+      </div>
+      <div class="profile-body">
+        <div class="career-timeline">
+          <div class="career-item">
+            <div class="career-company">マクロミル</div>
+            <div class="career-role">調査分析のコンサルティング営業</div>
+          </div>
+          <div class="career-item">
+            <div class="career-company">MTG</div>
+            <div class="career-role">新規事業の立ち上げ＆マーケティング責任者</div>
+            <div class="career-achievement">初年度売上10億円、MVP受賞</div>
+          </div>
+          <div class="career-item">
+            <div class="career-company">アクセンチュア</div>
+            <div class="career-role">コンサルタント、データエンジニア</div>
+            <div class="career-achievement">通販事業の売上 年7億円UP / 通信3社のデータ基盤構築</div>
+          </div>
+          <div class="career-item">
+            <div class="career-company">オモシク（omoshiku）</div>
+            <div class="career-role">データ / 業務改善 / AI で、中小企業の変革を支援</div>
+          </div>
+        </div>
+
+        <div class="pillar-grid">
+          <div class="pillar-item">
+            <div class="pillar-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>経営・現場・システムの3つの言語を橋渡しできる。ニッカホームの「営業と施工」「本部と営業所」の間を翻訳します</div>
+          </div>
+          <div class="pillar-item">
+            <div class="pillar-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>戦略だけでなく、Looker Studio・NotebookLM・自動化ツールを実際に手を動かして構築できます</div>
+          </div>
+          <div class="pillar-item">
+            <div class="pillar-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>アクセンチュアでの大規模データ基盤構築と、事業会社で現場を回した経験の両方を持っています</div>
+          </div>
+          <div class="pillar-item">
+            <div class="pillar-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>「使われること」を最も重要視する設計思想。導入しただけで終わらない、現場に定着する仕組みを作ります</div>
+          </div>
+        </div>
+
+        <p style="margin-top:20px; font-size:0.82rem; color:var(--text-3); line-height:1.7;">
+          ご質問やご不明な点がございましたら、お気軽にご連絡ください。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="closing">
+  <p class="closing-msg">データが繋がれば、判断が変わる。判断が変われば、組織が動く。</p>
+  <p class="closing-sub">Confidential &mdash; Prepared for Nikkahome, March 2026</p>
+</footer>
+
+<script>
+// Gnav scroll behavior
+(function() {
+  var gnav = document.getElementById('gnav');
+  var hero = document.querySelector('.hero');
+  var links = gnav.querySelectorAll('.gnav-link');
+  var sections = document.querySelectorAll('section[id]');
+
+  function update() {
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    var pastHero = heroBottom < 0;
+
+    gnav.classList.toggle('visible', heroBottom < 120);
+    gnav.classList.toggle('scrolled', pastHero);
+
+    var currentId = '';
+    sections.forEach(function(s) {
+      if (s.getBoundingClientRect().top < 120) currentId = s.id;
+    });
+    links.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + currentId);
+    });
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+// Intersection Observer for reveal animations
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(function(el) { obs.observe(el); });
+  } else {
+    els.forEach(function(el) { el.classList.add('visible'); });
+  }
+})();
+
+// FAQ accordion
+(function() {
+  var items = document.querySelectorAll('.faq-item');
+  items.forEach(function(item) {
+    var q = item.querySelector('.faq-q');
+    var a = item.querySelector('.faq-a');
+    q.addEventListener('click', function() {
+      var isOpen = item.classList.contains('open');
+      // Close all
+      items.forEach(function(i) {
+        i.classList.remove('open');
+        i.querySelector('.faq-a').style.maxHeight = '0';
+      });
+      // Toggle current
+      if (!isOpen) {
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+})();
+
+// Layer tabs
+(function() {
+  var tabs = document.querySelectorAll('.layer-tab');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var layerId = 'layer-' + tab.getAttribute('data-layer');
+      document.querySelectorAll('.layer-content').forEach(function(lc) {
+        lc.classList.remove('active');
+      });
+      document.getElementById(layerId).classList.add('active');
+    });
+  });
+})();
+</script>
+</body>
+</html>

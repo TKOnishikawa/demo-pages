@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DX Strategy Blueprint | NIKKAHOME</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN SYSTEM — McKinsey-inspired Dark Theme v3
+   Adapted for: Nikkahome DX Strategy Blueprint
+   ============================================================ */
+:root {
+  --bg-base:    #08080d;
+  --bg-surface: #101018;
+  --bg-raised:  #181824;
+  --bg-top:     #222234;
+  --border:       rgba(255,255,255,0.06);
+  --border-focus: rgba(255,255,255,0.12);
+  --text:       #eaeaf2;
+  --text-dim:   #9898ae;
+  --text-muted: #58586e;
+  --blue:   #4a7dff;
+  --cyan:   #22d3ee;
+  --green:  #34d399;
+  --amber:  #f59e0b;
+  --red:    #ef4444;
+  --purple: #a78bfa;
+  --pink:   #f472b6;
+  --grad-hero:    linear-gradient(135deg, #4a7dff 0%, #22d3ee 100%);
+  --grad-success: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+  --grad-warn:    linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
+  --grad-vision:  linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans JP', -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+/* ===== Page Layout (Sidebar + Main) ===== */
+.page-layout {
+  display: flex; gap: 32px; position: relative;
+}
+.main-content { flex: 1; min-width: 0; }
+.toc-sidebar {
+  width: 220px; flex-shrink: 0;
+  position: sticky; top: 24px; align-self: flex-start;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+  padding: 16px 0;
+  scrollbar-width: thin; scrollbar-color: var(--bg-top) transparent;
+}
+.toc-sidebar::-webkit-scrollbar { width: 4px; }
+.toc-sidebar::-webkit-scrollbar-thumb { background: var(--bg-top); border-radius: 2px; }
+.toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+.toc-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 14px; padding: 0 12px;
+}
+.toc-list { list-style: none; }
+.toc-item {
+  display: block; position: relative;
+}
+.toc-link {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 12px; margin-bottom: 2px;
+  font-size: 11px; color: var(--text-muted);
+  text-decoration: none; border-radius: 6px;
+  transition: all 0.15s ease; line-height: 1.5;
+  border-left: 2px solid transparent;
+}
+.toc-link:hover {
+  color: var(--text-dim); background: var(--bg-surface);
+}
+.toc-link.active {
+  color: var(--cyan); background: rgba(34,211,238,0.04);
+  border-left-color: var(--cyan);
+}
+.toc-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  color: var(--text-muted); min-width: 20px;
+  margin-top: 1px;
+}
+.toc-link.active .toc-num { color: var(--cyan); }
+.toc-sep {
+  height: 1px; background: var(--border);
+  margin: 8px 12px;
+}
+@media (max-width: 960px) {
+  .page-layout { flex-direction: column; }
+  .toc-sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 240px; z-index: 100;
+    background: var(--bg-base); border-right: 1px solid var(--border);
+    padding: 24px 8px;
+    transform: translateX(-100%); transition: transform 0.25s ease;
+  }
+  .toc-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+  .toc-toggle {
+    display: flex; position: fixed; left: 12px; top: 12px;
+    z-index: 101; width: 36px; height: 36px;
+    align-items: center; justify-content: center;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text-dim); cursor: pointer;
+    font-size: 16px; box-shadow: var(--shadow-sm);
+  }
+  .toc-overlay {
+    display: none; position: fixed; inset: 0; z-index: 99;
+    background: rgba(0,0,0,0.5);
+  }
+  .toc-overlay.open { display: block; }
+}
+@media (min-width: 961px) {
+  .toc-toggle, .toc-overlay { display: none; }
+}
+.mono { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+/* ===== Section Structure ===== */
+.section { padding: 56px 0 40px; border-bottom: 1px solid var(--border); }
+.section:last-of-type { border-bottom: none; }
+.section-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 3.5px;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.section-eyebrow.asis    { color: var(--amber); }
+.section-eyebrow.success { color: var(--green); }
+.section-eyebrow.issue   { color: var(--red); }
+.section-eyebrow.cr      { color: var(--cyan); }
+.section-eyebrow.tobe    { color: var(--cyan); }
+.section-eyebrow.shift   { color: var(--green); }
+.section-eyebrow.impact  { color: var(--purple); }
+.section-eyebrow.discuss { color: var(--pink); }
+.section-eyebrow.qw      { color: var(--blue); }
+.section-eyebrow.risk    { color: var(--red); }
+.section-eyebrow.invest  { color: var(--amber); }
+.section-eyebrow.strat   { color: var(--purple); }
+.action-title {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 22px; font-weight: 700; line-height: 1.5;
+  margin-bottom: 10px; color: var(--text);
+}
+.section-lead {
+  font-size: 14px; color: var(--text-dim);
+  margin-bottom: 28px; max-width: 740px;
+}
+
+/* ===== So What Callout ===== */
+.sowhat {
+  background: rgba(239,68,68,0.03);
+  border-left: 4px solid var(--red);
+  border-radius: 0 10px 10px 0;
+  padding: 18px 22px; margin: 24px 0;
+  box-shadow: var(--shadow-sm);
+}
+.sowhat-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--red); margin-bottom: 6px;
+}
+.sowhat p { font-size: 13px; line-height: 1.9; color: var(--text-dim); }
+.sowhat strong { color: #f87171; }
+
+/* ===== Hero ===== */
+.hero { padding: 72px 0 20px; text-align: center; position: relative; }
+.hero::before {
+  content: ''; position: absolute; top: -80px; left: 50%;
+  transform: translateX(-50%); width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(74,125,255,0.05) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block; padding: 5px 14px;
+  border: 1px solid rgba(74,125,255,0.25); border-radius: 20px;
+  font-size: 10px; font-weight: 700; color: var(--blue);
+  letter-spacing: 2.5px; text-transform: uppercase;
+  margin-bottom: 18px; background: rgba(74,125,255,0.04);
+}
+.hero h1 {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 30px; font-weight: 900; line-height: 1.4;
+  margin-bottom: 14px;
+  background: var(--grad-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  font-size: 13px; color: var(--text-dim);
+  max-width: 640px; margin: 0 auto 28px; line-height: 1.9;
+}
+.hero-meta {
+  display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+  font-size: 11px; color: var(--text-muted);
+}
+
+/* ===== KPI Cards ===== */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin: 28px 0 20px;
+}
+@media (max-width: 768px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+.kpi-card {
+  background: var(--bg-surface); border-radius: 12px;
+  padding: 22px 16px; text-align: center;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  transition: transform 0.15s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kpi-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px; font-weight: 600; margin-bottom: 4px;
+}
+.kpi-num.warn   { background: var(--grad-warn);    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-num.good   { background: var(--grad-success); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-num.blue   { background: var(--grad-hero);    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-num.vision { background: var(--grad-vision);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-label { font-size: 11px; color: var(--text-dim); font-weight: 500; line-height: 1.6; }
+
+/* ===== Story Arc ===== */
+.story-arc {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; margin: 8px 0 0; font-size: 12px; color: var(--text-muted);
+}
+.story-arc .arc-arrow { color: var(--cyan); font-size: 16px; }
+
+/* ===== Swimlane ===== */
+.swimlane-wrap {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 20px; margin: 20px 0;
+  overflow-x: auto; box-shadow: var(--shadow-sm);
+}
+.swimlane-title {
+  font-size: 14px; font-weight: 700; margin-bottom: 20px; color: var(--text-dim);
+}
+.swimlane {
+  display: grid; grid-template-columns: 100px repeat(7, 1fr);
+  gap: 0; min-width: 960px;
+}
+.swim-label {
+  display: flex; align-items: center; padding: 8px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--text-muted); border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.swim-header {
+  text-align: center; padding: 10px 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+  border-bottom: 2px solid;
+}
+.swim-header.h-acq { border-bottom-color: var(--blue); color: var(--blue); }
+.swim-header.h-est { border-bottom-color: var(--cyan); color: var(--cyan); }
+.swim-header.h-ord { border-bottom-color: var(--amber); color: var(--amber); }
+.swim-header.h-con { border-bottom-color: var(--green); color: var(--green); }
+.swim-header.h-inv { border-bottom-color: var(--red); color: var(--red); }
+.swim-header.h-pay { border-bottom-color: var(--purple); color: var(--purple); }
+.swim-header.h-rep { border-bottom-color: var(--pink); color: var(--pink); }
+.swim-cell {
+  padding: 8px 5px; border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+  align-items: center; min-height: 48px;
+}
+.swim-cell:last-child { border-right: none; }
+.swim-chip {
+  font-size: 9px; padding: 4px 8px; border-radius: 5px;
+  text-align: center; white-space: nowrap;
+  border: 1px solid var(--border); background: var(--bg-raised);
+  color: var(--text-dim);
+}
+.swim-chip.fax {
+  background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.30);
+  color: var(--amber); font-weight: 600;
+}
+.swim-chip.bottleneck {
+  background: rgba(239,68,68,0.10); border-color: rgba(239,68,68,0.30);
+  color: #f87171; font-weight: 700;
+}
+.swim-chip.achieved {
+  background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.25);
+  color: var(--green);
+}
+.swim-chip.andpad {
+  background: rgba(74,125,255,0.08); border-color: rgba(74,125,255,0.25);
+  color: var(--blue); font-weight: 600;
+}
+.swim-chip-sub {
+  font-size: 8px; color: var(--text-muted); text-align: center; line-height: 1.3;
+}
+
+/* ===== Issue Cards ===== */
+.issue-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin: 20px 0;
+}
+@media (max-width: 700px) { .issue-grid { grid-template-columns: 1fr; } }
+.issue-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px; border-left: 4px solid;
+  box-shadow: var(--shadow-sm);
+}
+.issue-card.critical { border-left-color: var(--red); }
+.issue-card.high     { border-left-color: var(--amber); }
+.issue-card.medium   { border-left-color: var(--blue); }
+.issue-card.positive { border-left-color: var(--green); }
+.issue-card.contradiction { border-left-color: var(--amber); }
+.issue-severity {
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 2px 8px;
+  border-radius: 3px; display: inline-block; margin-bottom: 8px;
+}
+.issue-card.critical .issue-severity { background: rgba(239,68,68,0.12); color: var(--red); }
+.issue-card.high .issue-severity     { background: rgba(245,158,11,0.12); color: var(--amber); }
+.issue-card.medium .issue-severity   { background: rgba(74,125,255,0.12); color: var(--blue); }
+.issue-card.positive .issue-severity { background: rgba(52,211,153,0.12); color: var(--green); }
+.issue-card.contradiction .issue-severity { background: rgba(245,158,11,0.12); color: var(--amber); }
+.issue-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.issue-card p  { font-size: 12px; color: var(--text-dim); line-height: 1.8; }
+
+/* ===== Challenge → Response ===== */
+.cr-grid { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.cr-row {
+  display: grid; grid-template-columns: 1fr 48px 1fr;
+  align-items: center; gap: 0;
+}
+@media (max-width: 700px) { .cr-row { grid-template-columns: 1fr; gap: 4px; } }
+.cr-challenge {
+  background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 10px; padding: 14px 18px; font-size: 13px;
+  color: var(--text); line-height: 1.6;
+}
+.cr-arrow {
+  text-align: center; font-family: 'JetBrains Mono', monospace;
+  font-size: 20px; color: var(--cyan); position: relative;
+}
+.cr-arrow::before {
+  content: ''; position: absolute; top: 50%; left: 4px; right: 4px;
+  height: 2px; background: linear-gradient(90deg, rgba(239,68,68,0.3) 0%, var(--cyan) 100%);
+  transform: translateY(-50%); z-index: 0;
+}
+.cr-arrow span { position: relative; z-index: 1; background: var(--bg-base); padding: 0 4px; }
+.cr-response {
+  background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15);
+  border-radius: 10px; padding: 14px 18px; font-size: 13px;
+  color: var(--text); line-height: 1.6;
+}
+
+/* ===== Shift Cards (Before/After) ===== */
+.shift-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 14px; margin: 20px 0;
+}
+.shift-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm);
+}
+.shift-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 600;
+  background: var(--grad-success);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+.shift-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.shift-before, .shift-after {
+  font-size: 11px; padding: 7px 11px; border-radius: 7px;
+  margin-bottom: 5px; line-height: 1.6;
+}
+.shift-before {
+  background: rgba(239,68,68,0.05); border-left: 3px solid var(--red); color: #f87171;
+}
+.shift-after {
+  background: rgba(34,211,238,0.05); border-left: 3px solid var(--cyan); color: var(--cyan);
+}
+
+/* ===== Impact Table ===== */
+.impact-tbl {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); margin: 20px 0;
+}
+.impact-tbl thead th {
+  background: var(--bg-raised); padding: 12px 16px;
+  font-size: 10px; font-weight: 700; text-align: left;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+.impact-tbl tbody td {
+  padding: 12px 16px; font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top; background: var(--bg-surface);
+}
+.impact-tbl tbody tr:last-child td { border-bottom: none; }
+.impact-tbl .m-name   { font-weight: 600; color: var(--text); }
+.impact-tbl .m-before { color: var(--text-muted); }
+.impact-tbl .m-after  { color: var(--green); font-weight: 500; }
+
+/* Status tags */
+.st-tag {
+  font-size: 9px; font-weight: 600; padding: 2px 7px;
+  border-radius: 3px; white-space: nowrap;
+}
+.st-tag.qw     { background: rgba(74,125,255,0.10); color: var(--blue); }
+.st-tag.medium { background: rgba(245,158,11,0.10); color: var(--amber); }
+.st-tag.strat  { background: rgba(167,139,250,0.10); color: var(--purple); }
+.st-tag.low    { background: rgba(52,211,153,0.10); color: var(--green); }
+.st-tag.high   { background: rgba(239,68,68,0.10); color: #f87171; }
+.st-tag.mid    { background: rgba(245,158,11,0.10); color: var(--amber); }
+.st-tag.zero   { background: rgba(52,211,153,0.10); color: var(--green); }
+
+/* ===== Phase Cards ===== */
+.phase-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.phase-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.phase-card .phase-policy {
+  font-size: 12px; color: var(--cyan); font-weight: 600;
+  margin-bottom: 8px; padding: 6px 12px;
+  background: rgba(34,211,238,0.04); border-radius: 6px;
+  display: inline-block;
+}
+.phase-card > p { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; line-height: 1.8; }
+.phase-items { display: flex; flex-direction: column; gap: 5px; }
+.phase-item {
+  font-size: 11px; color: var(--text-dim); padding: 6px 12px;
+  background: var(--bg-raised); border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.6;
+}
+.pi-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+.pi-dot.done { background: var(--green); }
+.pi-dot.wip  { background: var(--cyan); }
+.pi-dot.plan { background: var(--text-muted); }
+.pi-dot.risk { background: var(--red); }
+.pi-dot.qw   { background: var(--blue); }
+
+/* ===== Layer Stack ===== */
+.layer-stack { display: flex; flex-direction: column; gap: 14px; margin: 20px 0; }
+.layer {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.layer-badge {
+  position: absolute; top: -9px; left: 18px;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 2px 10px; border-radius: 4px;
+}
+.layer-badge.l1 { background: var(--amber); color: #000; }
+.layer-badge.l2 { background: var(--cyan); color: #000; }
+.layer-badge.l3 { background: var(--green); color: #000; }
+.layer h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; margin-top: 4px; }
+.layer p  { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; line-height: 1.8; }
+
+/* ===== Migration Table ===== */
+.mig-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); font-size: 12px; margin: 18px 0;
+}
+.mig-table thead th {
+  background: var(--bg-raised); padding: 10px 14px;
+  font-size: 10px; font-weight: 700; text-align: left;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+.mig-table tbody td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  background: var(--bg-surface); vertical-align: top;
+}
+.mig-table tbody tr:last-child td { border-bottom: none; }
+
+/* ===== Discussion Cards ===== */
+.disc-card {
+  background: var(--bg-surface); border: 1px solid rgba(244,114,182,0.15);
+  border-radius: 12px; padding: 22px; margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.disc-num {
+  font-size: 10px; font-weight: 700; color: var(--pink); margin-bottom: 6px;
+}
+.disc-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.disc-card > p { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.disc-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.disc-opt {
+  font-size: 10px; padding: 4px 10px; border-radius: 5px;
+  border: 1px solid var(--border); background: var(--bg-raised); color: var(--text-dim);
+}
+.disc-opt.rec {
+  border-color: rgba(34,211,238,0.35); background: rgba(34,211,238,0.06); color: var(--cyan);
+}
+
+/* ===== Vision Card ===== */
+.vision-card {
+  background: linear-gradient(135deg, rgba(74,125,255,0.04) 0%, rgba(167,139,250,0.04) 100%);
+  border: 1px solid rgba(167,139,250,0.18); border-radius: 12px;
+  padding: 24px; text-align: center; margin-top: 16px;
+}
+.vision-card h3 {
+  font-size: 16px; font-weight: 700; margin-bottom: 10px;
+  background: var(--grad-vision);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.vision-card p { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+.vision-items { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.vision-item {
+  padding: 8px 16px; border-radius: 8px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  font-size: 11px; color: var(--text-dim);
+}
+
+/* ===== Feasibility Matrix ===== */
+.feasibility-matrix {
+  display: grid; grid-template-columns: 40px 1fr 1fr;
+  grid-template-rows: auto 1fr 1fr auto;
+  gap: 0; margin: 24px 0; min-height: 300px;
+}
+.fm-corner { background: transparent; }
+.fm-y-label {
+  writing-mode: vertical-rl; text-orientation: mixed;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  color: var(--text-muted); transform: rotate(180deg);
+}
+.fm-x-label {
+  text-align: center; font-size: 10px; font-weight: 700;
+  color: var(--text-muted); padding: 8px 0;
+}
+.fm-quadrant {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  padding: 16px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  min-height: 140px;
+}
+.fm-quadrant.best { background: rgba(52,211,153,0.04); border-color: rgba(52,211,153,0.15); }
+.fm-quadrant.good { background: rgba(74,125,255,0.04); border-color: rgba(74,125,255,0.15); }
+.fm-quadrant.ok   { background: rgba(245,158,11,0.04); border-color: rgba(245,158,11,0.15); }
+.fm-quadrant.wait { background: rgba(239,68,68,0.04); border-color: rgba(239,68,68,0.15); }
+.fm-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.fm-quadrant.best .fm-label { color: var(--green); }
+.fm-quadrant.good .fm-label { color: var(--blue); }
+.fm-quadrant.ok .fm-label   { color: var(--amber); }
+.fm-quadrant.wait .fm-label { color: var(--red); }
+.fm-item {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  background: var(--bg-raised); border: 1px solid var(--border);
+  color: var(--text-dim); text-align: center;
+}
+
+/* ===== Agenda Table ===== */
+.agenda-tbl {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); margin: 20px 0;
+}
+.agenda-tbl thead th {
+  background: var(--bg-raised); padding: 10px 14px;
+  font-size: 10px; font-weight: 700; text-align: left;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+.agenda-tbl tbody td {
+  padding: 10px 14px; font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface); vertical-align: top;
+}
+.agenda-tbl tbody tr:last-child td { border-bottom: none; }
+
+/* ===== Success Criteria ===== */
+.criteria-list { list-style: none; margin: 16px 0; }
+.criteria-list li {
+  font-size: 12px; color: var(--text-dim);
+  padding: 8px 14px; margin-bottom: 6px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; display: flex; align-items: center; gap: 10px;
+}
+.criteria-check {
+  width: 16px; height: 16px; border-radius: 4px;
+  border: 2px solid var(--text-muted); flex-shrink: 0;
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center; padding: 40px 0 28px;
+  color: var(--text-muted); font-size: 11px;
+  border-top: 1px solid var(--border); margin-top: 40px;
+}
+.footer a { color: var(--blue); text-decoration: none; }
+
+/* ===== Sub-section headings ===== */
+.sub-heading {
+  font-size: 15px; font-weight: 700; margin: 28px 0 14px; color: var(--text-dim);
+}
+
+/* ===== Data Insight Cards (new) ===== */
+.insight-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin: 20px 0;
+}
+@media (max-width: 700px) { .insight-grid { grid-template-columns: 1fr; } }
+.insight-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.insight-card .ic-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px; font-weight: 600; margin-bottom: 4px;
+}
+.insight-card .ic-label { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+.insight-card .ic-detail { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
+/* ===== Key Message Callout (green) ===== */
+.keymsg {
+  background: rgba(52,211,153,0.03);
+  border-left: 4px solid var(--green);
+  border-radius: 0 10px 10px 0;
+  padding: 18px 22px; margin: 24px 0;
+  box-shadow: var(--shadow-sm);
+}
+.keymsg-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--green); margin-bottom: 6px;
+}
+.keymsg p { font-size: 13px; line-height: 1.9; color: var(--text-dim); }
+.keymsg strong { color: var(--green); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Mobile toggle -->
+<button class="toc-toggle" onclick="document.querySelector('.toc-sidebar').classList.toggle('open');document.querySelector('.toc-overlay').classList.toggle('open');">&#9776;</button>
+<div class="toc-overlay" onclick="document.querySelector('.toc-sidebar').classList.remove('open');this.classList.remove('open');"></div>
+
+<div class="page-layout">
+
+<!-- ===== LEFT SIDEBAR NAV ===== -->
+<nav class="toc-sidebar">
+  <div class="toc-title">Agenda</div>
+  <ul class="toc-list">
+    <li class="toc-item"><a class="toc-link active" href="#s0"><span class="toc-num">00</span>Executive Summary</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#s1"><span class="toc-num">01</span>AS-IS 業務フロー</a></li>
+    <li class="toc-item"><a class="toc-link" href="#s2"><span class="toc-num">02</span>Critical Findings</a></li>
+    <li class="toc-item"><a class="toc-link" href="#s3"><span class="toc-num">03</span>GAP Analysis</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#s4"><span class="toc-num">04</span>インパクト &times; 難易度</a></li>
+    <li class="toc-item"><a class="toc-link" href="#s5"><span class="toc-num">05</span>Quick Win (1-3M)</a></li>
+    <li class="toc-item"><a class="toc-link" href="#s6"><span class="toc-num">06</span>中期投資 (3-12M)</a></li>
+    <li class="toc-item"><a class="toc-link" href="#s7"><span class="toc-num">07</span>Strategic (12M+)</a></li>
+    <div class="toc-sep"></div>
+    <li class="toc-item"><a class="toc-link" href="#s8"><span class="toc-num">08</span>クライアント課題整合</a></li>
+    <li class="toc-item"><a class="toc-link" href="#s9"><span class="toc-num">09</span>Risk Matrix</a></li>
+    <li class="toc-item"><a class="toc-link" href="#s10"><span class="toc-num">10</span>3/5 MTG Agenda</a></li>
+  </ul>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content">
+
+<!-- ══════════════════════════════════════════════════════════════
+     S0: EXECUTIVE SUMMARY
+     ══════════════════════════════════════════════════════════════ -->
+<div class="hero" id="s0">
+  <div class="hero-badge">DX Strategy Blueprint</div>
+  <h1>ヒアリングで3つの前提が崩壊<br>戦略を再構成し、投資ゼロのQuick Winから始める</h1>
+  <p class="hero-sub">
+    ニッカホームのDX推進において、事前ヒアリングにより「既存ANDPADの活用」戦略が成立しないことが判明。<br>
+    投資ゼロで即効果のQuick Win施策で成功体験を作り、ANDPAD受発注を戦略的投資として提案する。
+  </p>
+  <div class="hero-meta">
+    <span>ニッカホーム株式会社</span>
+    <span>｜</span>
+    <span>リフォーム業界DX推進</span>
+    <span>｜</span>
+    <span>2026年3月</span>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-num blue">711<small style="font-size:16px">億円</small></div>
+    <div class="kpi-label">売上高（業界3位）<br><small>従業員1,695名 / 117店舗</small></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num warn">2<small style="font-size:16px">ヶ月</small></div>
+    <div class="kpi-label">原価把握のタイムラグ<br><small>請求書到着まで粗利が見えない</small></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num vision">1,500<small style="font-size:16px">社</small></div>
+    <div class="kpi-label">協力会社（電子化対象）<br><small>FAXと紙ベースの受発注</small></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num good">6<small style="font-size:16px">+α</small></div>
+    <div class="kpi-label">サイロ化したシステム<br><small>データ連携ゼロ</small></div>
+  </div>
+</div>
+
+<div class="story-arc">
+  <span>ヒアリング実施</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>仮説3件が崩壊</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>戦略を再構成</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>Quick Winで信頼構築</span>
+  <span class="arc-arrow">&rarr;</span>
+  <span>中期投資の合意形成</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S1: AS-IS — BUSINESS FLOW × SYSTEM MAP
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-eyebrow asis">AS-IS ANALYSIS</div>
+  <div class="action-title">リフォーム業務の10ステップ中7つが手動 or FAX。<br>システム間のデータ連携はゼロ</div>
+  <p class="section-lead">業務プロセスに沿ってシステム全景を可視化する。どのプロセスにどのシステムが関与し、どこにボトルネックが集中しているかを構造的に理解する。</p>
+
+  <div class="swimlane-wrap">
+    <div class="swimlane-title">リフォーム業務フロー &times; システムマップ &mdash; FAX箇所をアンバー、ボトルネックを赤で表示</div>
+    <div class="swimlane">
+      <!-- Header -->
+      <div class="swim-label" style="border-bottom:2px solid var(--border);"></div>
+      <div class="swim-header h-acq">ACQUISITION<br>集客</div>
+      <div class="swim-header h-acq">SALES<br>商談・見積</div>
+      <div class="swim-header h-est">CONTRACT<br>契約</div>
+      <div class="swim-header h-ord">ORDER<br>発注</div>
+      <div class="swim-header h-con">CONSTRUCT<br>施工・引渡</div>
+      <div class="swim-header h-inv">COST<br>原価確定</div>
+      <div class="swim-header h-rep">REPEAT<br>リピート</div>
+
+      <!-- Row 1: ANDPAD -->
+      <div class="swim-label">ANDPAD<br>(チャット)</div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell">
+        <div class="swim-chip fax">FAX半々</div>
+        <div class="swim-chip andpad">チャット</div>
+        <div class="swim-chip-sub">受発注モジュール<br>は未契約</div>
+      </div>
+      <div class="swim-cell">
+        <div class="swim-chip andpad">施工管理</div>
+        <div class="swim-chip-sub">社内400名<br>社外891名</div>
+      </div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+
+      <!-- Row 2: 基幹 + 見積 -->
+      <div class="swim-label">基幹<br>(フルスクラッチ)</div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell">
+        <div class="swim-chip">自社見積</div>
+        <div class="swim-chip-sub">専用システム<br>詳細不明</div>
+      </div>
+      <div class="swim-cell">
+        <div class="swim-chip">顧客/案件</div>
+        <div class="swim-chip-sub">2015年〜<br>API不可</div>
+      </div>
+      <div class="swim-cell">
+        <div class="swim-chip fax">手入力</div>
+        <div class="swim-chip-sub">FAX受領→<br>手動転記</div>
+      </div>
+      <div class="swim-cell">
+        <div class="swim-chip">原価/売上</div>
+      </div>
+      <div class="swim-cell">
+        <div class="swim-chip bottleneck">2ヶ月遅延</div>
+        <div class="swim-chip-sub">請求書到着待ち<br>→粗利把握不可</div>
+      </div>
+      <div class="swim-cell">
+        <div class="swim-chip">蓄積中</div>
+        <div class="swim-chip-sub">リピート管理<br>システム不明</div>
+      </div>
+
+      <!-- Row 3: Excel + SMILE -->
+      <div class="swim-label">Excel /<br>SMILE</div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell">
+        <div class="swim-chip">予実管理</div>
+        <div class="swim-chip-sub">A/B/Cヨミ<br>各店舗で管理</div>
+      </div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell">
+        <div class="swim-chip">SMILE</div>
+        <div class="swim-chip-sub">大塚商会<br>会計処理</div>
+      </div>
+      <div class="swim-cell"></div>
+
+      <!-- Row 4: GBP + Google Workspace -->
+      <div class="swim-label">GBP /<br>Google WS</div>
+      <div class="swim-cell">
+        <div class="swim-chip achieved">GBP</div>
+        <div class="swim-chip-sub">各支社で<br>バラバラ管理</div>
+      </div>
+      <div class="swim-cell">
+        <div class="swim-chip achieved">Gemini</div>
+        <div class="swim-chip-sub">Drive検索<br>に活用中</div>
+      </div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+      <div class="swim-cell"></div>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>
+      リフォーム業務の<strong>10ステップのうち、7つが手動 or FAX</strong>。6つのシステムは完全にサイロ化し、データ連携がゼロ。原価管理の<strong>2ヶ月遅延は「請求書が届くまで粗利がわからない」という構造的な問題</strong>であり、受発注プロセスの電子化なしには解消できない。一方、ANDPADの施工管理チャットは社内外1,300名以上が利用しており、<strong>デジタル基盤としての定着は進んでいる</strong>。
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S2: CRITICAL FINDINGS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-eyebrow issue">CRITICAL FINDINGS</div>
+  <div class="action-title">ヒアリングで3つの前提が崩壊。<br>一方で、4つのポジティブサプライズも発見</div>
+  <p class="section-lead">事前システムヒアリング（32項目）の結果、既存リサーチの前提に重大な修正が必要と判明。しかし同時に、DX推進に有利な想定以上の基盤も確認された。</p>
+
+  <h3 class="sub-heading" style="color:var(--red);">CRITICAL &mdash; 提案の根幹を変える修正（3件）</h3>
+  <div class="issue-grid">
+    <div class="issue-card critical">
+      <div class="issue-severity">Critical #1</div>
+      <h4>ANDPAD受発注は「未契約」</h4>
+      <p>仮説では「契約済みだが定着していない」と想定。実態は<strong>未契約</strong>。「今あるものを使い切る」Quick Win戦略が成立しない。受発注モジュールの追加契約＋1,500社への展開が必要。</p>
+    </div>
+    <div class="issue-card critical">
+      <div class="issue-severity">Critical #2</div>
+      <h4>基幹はフルスクラッチ、API不可</h4>
+      <p>仮説ではパッケージ製品を想定。実態は<strong>2015年からのフルスクラッチ開発、クラウドだがAPI不可</strong>。ANDPAD&harr;基幹の自動連携は技術的に不可能。CSV手動連携が現実解。</p>
+    </div>
+    <div class="issue-card critical">
+      <div class="issue-severity">Critical #3</div>
+      <h4>会計はSMILE（別システム）</h4>
+      <p>仮説では基幹の一部と想定。実態は<strong>大塚商会SMILE（別製品）</strong>。データフローが3段階（ANDPAD&rarr;基幹&rarr;SMILE）に。原価リアルタイム化のハードルが2-3倍。</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading" style="color:var(--amber);">HIGH &mdash; 実行計画に影響する修正（4件）</h3>
+  <div class="issue-grid">
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>協力会社1,500社</h4>
+      <p>電子化展開の規模感が判明。段階的ロールアウトに<strong>12-18ヶ月</strong>が必要。</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>見積は自社専用システム</h4>
+      <p>6つ目のシステムサイロ。基幹の一部か別システムかは未確認。</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>IT体制は社内2名＋外注</h4>
+      <p>1,695名規模に対して極めて薄い。DX推進の内部リソースが課題。</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">High</div>
+      <h4>複合機は富士ゼロックス</h4>
+      <p>FAX&rarr;メール転送機能の活用余地あり。電子化の橋渡しになる可能性。</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading" style="color:var(--green);">POSITIVE &mdash; 想定以上に良い発見（4件）</h3>
+  <div class="issue-grid">
+    <div class="issue-card positive">
+      <div class="issue-severity">Positive</div>
+      <h4>ANDPAD管理者4名</h4>
+      <p>想定の4倍。推進体制が厚く、属人化リスクが低い。展開の基盤あり。</p>
+    </div>
+    <div class="issue-card positive">
+      <div class="issue-severity">Positive</div>
+      <h4>社内400名＋社外891名がアクティブ</h4>
+      <p>ANDPADの定着基盤がすでにある。受発注モジュール追加時の展開がスムーズ。</p>
+    </div>
+    <div class="issue-card positive">
+      <div class="issue-severity">Positive</div>
+      <h4>リピート管理を「蓄積中」</h4>
+      <p>白紙ではなく、すでにデータ蓄積フェーズ。CRM構築のスタートラインが前進。</p>
+    </div>
+    <div class="issue-card positive">
+      <div class="issue-severity">Positive</div>
+      <h4>GeminiでDrive検索を活用中</h4>
+      <p>DXマインドがある。NotebookLMの提案が刺さりやすい土壌。</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading" style="color:var(--amber);">未解決の矛盾 &mdash; 3/5 MTGで要確認（3件）</h3>
+  <div class="issue-grid">
+    <div class="issue-card contradiction">
+      <div class="issue-severity">? Contradiction</div>
+      <h4>受発注「未契約」なのに「半々でANDPAD」</h4>
+      <p>ANDPADチャットでの連絡・指示を受発注と混同している可能性が高い。確認方法：「ANDPADで行っている受発注業務は具体的にどの機能ですか？」</p>
+    </div>
+    <div class="issue-card contradiction">
+      <div class="issue-severity">? Contradiction</div>
+      <h4>基幹が「クラウド」なのに「API不可」</h4>
+      <p>クラウドVMにデプロイされた古いWebアプリの可能性。SaaS型ではなくIaaS上のカスタムアプリと推測。保守ベンダーの確認が必要。</p>
+    </div>
+    <div class="issue-card contradiction">
+      <div class="issue-severity">? Contradiction</div>
+      <h4>「自社専用見積システム」の位置づけ</h4>
+      <p>基幹フルスクラッチの一機能か、完全に別システムか不明。見積データが基幹に自動連携されるか、別ログインが必要かで対応が変わる。</p>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>
+      <strong>「今あるものを使い切れば効果が出る」という旧戦略は成立しない</strong>。ANDPAD受発注は未契約であり、基幹はAPI非対応。しかし、ANDPAD管理者4名・アクティブユーザー1,300名超・Gemini活用中という<strong>定着基盤と推進体制は想定以上に整っている</strong>。戦略の転換が必要だが、実行の土壌は肥沃である。
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S3: GAP ANALYSIS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-eyebrow cr">GAP ANALYSIS</div>
+  <div class="action-title">5つのバリューストリームごとに、<br>AS-IS → TO-BEのギャップと解決方向を明確化</div>
+  <p class="section-lead">問題は「やるかやらないか」ではなく「どの順番で、どれだけ投資するか」。すべてのギャップに対して具体的な解決パスが存在する。</p>
+
+  <!-- Value Stream × Speed Matrix -->
+  <div class="swimlane-wrap" style="padding:20px;">
+    <div class="swimlane-title">バリューストリーム &times; 実現スピード マトリクス</div>
+    <table class="impact-tbl" style="margin:0;">
+      <thead>
+        <tr>
+          <th style="width:20%;">バリューストリーム</th>
+          <th style="width:27%;"><span class="st-tag qw">Quick Win</span> 1-3ヶ月</th>
+          <th style="width:27%;"><span class="st-tag medium">Medium</span> 3-12ヶ月</th>
+          <th style="width:26%;"><span class="st-tag strat">Strategic</span> 12ヶ月+</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="m-name">&#x2460; 営業生産性</td>
+          <td>月次速報の自動化</td>
+          <td>営業フロー標準化＋SFA検討</td>
+          <td>成約率改善プログラム</td>
+        </tr>
+        <tr>
+          <td class="m-name">&#x2461; 原価可視化</td>
+          <td>業務フロー可視化＋課題MAP</td>
+          <td><strong>ANDPAD受発注・引合粗利管理</strong></td>
+          <td>原価リアルタイム化＋基幹連携</td>
+        </tr>
+        <tr>
+          <td class="m-name">&#x2462; 顧客資産</td>
+          <td>リピート管理の現状棚卸し</td>
+          <td>CRM/顧客DB構築</td>
+          <td>LTVマネジメント</td>
+        </tr>
+        <tr>
+          <td class="m-name">&#x2463; ナレッジ</td>
+          <td>Gemini/NotebookLM拡張</td>
+          <td>施工ナレッジDB構築</td>
+          <td>職人学校DX</td>
+        </tr>
+        <tr>
+          <td class="m-name">&#x2464; IT基盤</td>
+          <td>現状システム全体図の確定</td>
+          <td>データ連携アーキテクチャ設計</td>
+          <td>基幹刷新判断</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Challenge → Response -->
+  <h3 class="sub-heading">課題 &rarr; 解決策の1対1マッピング</h3>
+  <div class="cr-grid">
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>営業月次速報</strong>を営業が手作業で作成（全37営業所）</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response">基幹CSV &rarr; <strong>Google Sheets＋Looker Studio</strong>で自動ダッシュボード化</div>
+    </div>
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>原価管理に2ヶ月</strong>のタイムラグ（FAX→手入力→請求書待ち）</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response"><strong>ANDPAD受発注</strong>で発注時に原価が即時反映。請求書待ちが不要に</div>
+    </div>
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>リピート管理</strong>が営業個人の記憶に依存。LTVが未計測</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response">基幹の顧客データ＋施工履歴を構造化 &rarr; <strong>「そろそろ提案」リスト</strong>自動生成</div>
+    </div>
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>ナレッジが属人化</strong>。離職率25-33%でベテラン知識が流出</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response">既存Gemini活用を拡張 &rarr; <strong>NotebookLM</strong>でマニュアル・過去事例をチャット検索可能に</div>
+    </div>
+    <div class="cr-row">
+      <div class="cr-challenge"><strong>6つのシステム</strong>がサイロ化。データ連携ゼロ、手動転記が常態化</div>
+      <div class="cr-arrow"><span>&rarr;</span></div>
+      <div class="cr-response">まず<strong>システム全体図を確定</strong> &rarr; CSV連携でデータフローを構築 &rarr; 将来は基幹刷新判断</div>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>
+      すべてのギャップに対して<strong>具体的な解決パスが存在する</strong>。しかし「経営層のDX意識が弱い」とクライアント自身が認識している以上、<strong>いきなり大型投資を提案しても通らない</strong>。まずQuick Winで小さな成功を見せ、信頼を構築してから中期投資の合意を得る二段階戦略が必要。
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S4: IMPACT × FEASIBILITY
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-eyebrow impact">SOLUTION REQUIREMENTS</div>
+  <div class="action-title">全施策を「インパクト &times; 難易度」で評価し、<br>着手順序を明確にする</div>
+  <p class="section-lead">感覚ではなく構造で判断する。投資対効果と実現難易度の2軸で全施策を位置づけ、最適な着手順序を導出する。</p>
+
+  <table class="impact-tbl">
+    <thead>
+      <tr>
+        <th>施策</th>
+        <th>インパクト</th>
+        <th>投資</th>
+        <th>難易度</th>
+        <th>フェーズ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="m-name">QW-1: 月次速報の自動化</td>
+        <td>年間数百時間の工数削減<br><small>37営業所 &times; 管理職の月数時間</small></td>
+        <td><span class="st-tag zero">ゼロ</span><br><small>Google Workspace既存契約内</small></td>
+        <td><span class="st-tag low">低</span></td>
+        <td><span class="st-tag qw">Quick Win</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">QW-2: NotebookLMナレッジ</td>
+        <td>新人教育の効率化<br><small>ベテラン知識の構造化・流出防止</small></td>
+        <td><span class="st-tag zero">ゼロ</span><br><small>Google Workspace既存契約内</small></td>
+        <td><span class="st-tag low">低</span></td>
+        <td><span class="st-tag qw">Quick Win</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">QW-3: GBP一元可視化</td>
+        <td>来店・電話問合せ5-10%増<br><small>低コスト集客チャネル</small></td>
+        <td><span class="st-tag zero">月数千円</span></td>
+        <td><span class="st-tag low">低</span></td>
+        <td><span class="st-tag qw">Quick Win</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">QW-4: 業務フロー可視化</td>
+        <td>DXの「共通言語」形成<br><small>中期投資の意思決定基盤</small></td>
+        <td><span class="st-tag zero">コンサル工数のみ</span></td>
+        <td><span class="st-tag low">低</span></td>
+        <td><span class="st-tag qw">Quick Win</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">M-1: ANDPAD受発注導入</td>
+        <td><strong>原価2ヶ月 &rarr; 数日</strong><br><small>受発注業務の負担1/10（事例）</small></td>
+        <td><span class="st-tag mid">要見積</span><br><small>IT導入補助金 最大450万円</small></td>
+        <td><span class="st-tag high">高</span><br><small>1,500社への段階展開</small></td>
+        <td><span class="st-tag medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">M-2: CRM/顧客DB構築</td>
+        <td>リピート率5%改善<br><small>年間数十億のインパクト可能性</small></td>
+        <td><span class="st-tag mid">中</span></td>
+        <td><span class="st-tag mid">中</span></td>
+        <td><span class="st-tag medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">M-3: 営業フロー標準化</td>
+        <td>成約率1%改善<br><small>年間数億のインパクト</small></td>
+        <td><span class="st-tag mid">中</span></td>
+        <td><span class="st-tag mid">中</span></td>
+        <td><span class="st-tag medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td class="m-name">S-1: 基幹システム刷新</td>
+        <td>全体最適化<br><small>10年間の技術的負債の解消</small></td>
+        <td><span class="st-tag high">高</span></td>
+        <td><span class="st-tag high">最高</span></td>
+        <td><span class="st-tag strat">Strategic</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Feasibility Matrix -->
+  <h3 class="sub-heading">インパクト &times; 難易度マトリクス</h3>
+  <div class="feasibility-matrix">
+    <div class="fm-corner"></div>
+    <div class="fm-x-label">難易度 低</div>
+    <div class="fm-x-label">難易度 高</div>
+
+    <div class="fm-y-label">インパクト 高</div>
+    <div class="fm-quadrant best">
+      <div class="fm-label">BEST &mdash; 最優先で着手</div>
+      <div class="fm-item">QW-1: 月次速報自動化</div>
+      <div class="fm-item">QW-2: NotebookLM</div>
+      <div class="fm-item">QW-4: 業務フロー可視化</div>
+    </div>
+    <div class="fm-quadrant good">
+      <div class="fm-label">INVEST &mdash; ROI確認後に投資判断</div>
+      <div class="fm-item">M-1: ANDPAD受発注</div>
+      <div class="fm-item">M-2: CRM構築</div>
+      <div class="fm-item">M-3: 営業SFA</div>
+    </div>
+
+    <div class="fm-y-label">インパクト 低</div>
+    <div class="fm-quadrant ok">
+      <div class="fm-label">EASY &mdash; 余裕があれば実施</div>
+      <div class="fm-item">QW-3: GBP一元化</div>
+    </div>
+    <div class="fm-quadrant wait">
+      <div class="fm-label">HOLD &mdash; 時期を見て判断</div>
+      <div class="fm-item">S-1: 基幹刷新</div>
+    </div>
+
+    <div class="fm-corner"></div>
+    <div class="fm-x-label"></div>
+    <div class="fm-x-label"></div>
+  </div>
+
+  <div class="keymsg">
+    <div class="keymsg-label">Key Message</div>
+    <p>Quick Win 4施策は<strong>「投資ゼロ &times; 低難易度 &times; 即効果」の最強ポジション</strong>。経営層のDX意識が弱い現状では、まずここで成功体験を作ることが最優先。ANDPAD受発注は「投資判断」象限だが、<strong>原価2ヶ月→数日は経営インパクトが最大</strong>であり、IT導入補助金の活用で初期投資を抑制できる。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S5: QUICK WIN ROADMAP
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-eyebrow qw">QUICK WIN ROADMAP</div>
+  <div class="action-title">投資ゼロで始められる4施策 &mdash; 1-3ヶ月で成功体験を作る</div>
+  <p class="section-lead">「経営層のDX意識が弱い」とクライアント自身が認識している。まず小さな成功を数値で見せ、中期投資への信頼を構築する。</p>
+
+  <div class="phase-card">
+    <h3>QW-1: 営業月次速報の自動化</h3>
+    <div class="phase-policy">投資ゼロ &mdash; 1-2ヶ月で実現</div>
+    <p>営業が手作業で作成している月次速報を、基幹データから自動ダッシュボード化。37営業所 &times; 管理職の月数時間 = 年間数百時間の工数を削減する。</p>
+    <div class="phase-items">
+      <div class="phase-item"><div class="pi-dot qw"></div>課題: 営業が月次速報を自分で作成。工数がかかっている</div>
+      <div class="phase-item"><div class="pi-dot wip"></div>打ち手: 基幹データ（受注・完工）&rarr; Google Sheets＋Looker Studioで自動ダッシュボード</div>
+      <div class="phase-item"><div class="pi-dot plan"></div>前提: 基幹からCSV出力 or 画面コピーが可能であること（3/5で確認）</div>
+      <div class="phase-item"><div class="pi-dot done"></div>投資: ゼロ（Google Workspace既存契約内）</div>
+    </div>
+  </div>
+
+  <div class="phase-card">
+    <h3>QW-2: Gemini/NotebookLMによるナレッジ活用拡張</h3>
+    <div class="phase-policy">投資ゼロ &mdash; 1ヶ月で実現</div>
+    <p>建設業の広範なナレッジが属人化。離職率25-33%でナレッジ流出リスクが高い。既にGeminiでDrive検索を活用中の土壌を活かし、NotebookLMで施工マニュアル・FAQ・過去事例をチャット検索可能にする。</p>
+    <div class="phase-items">
+      <div class="phase-item"><div class="pi-dot qw"></div>課題: 毎年15-20名が退社 → ベテラン知識が流出</div>
+      <div class="phase-item"><div class="pi-dot wip"></div>打ち手: NotebookLMで施工マニュアル・過去事例をAIチャットで検索可能に</div>
+      <div class="phase-item"><div class="pi-dot done"></div>効果: 新人教育の効率化、ベテラン知識の構造化</div>
+      <div class="phase-item"><div class="pi-dot done"></div>投資: ゼロ（Google Workspace既存契約内）</div>
+    </div>
+  </div>
+
+  <div class="phase-card">
+    <h3>QW-3: GBPの本部一元可視化</h3>
+    <div class="phase-policy">月数千円 &mdash; 1-2ヶ月で実現</div>
+    <p>各支社がバラバラにGBP（Googleビジネスプロフィール）を管理。統一されたモニタリングがない。37営業所の情報を一覧化し、定期モニタリングの仕組みを構築する。</p>
+    <div class="phase-items">
+      <div class="phase-item"><div class="pi-dot qw"></div>課題: 各支社がバラバラにGBPを管理。横断的な比較ができない</div>
+      <div class="phase-item"><div class="pi-dot wip"></div>打ち手: 37営業所のGBP情報を一覧化＋定期モニタリング</div>
+      <div class="phase-item"><div class="pi-dot done"></div>効果: 来店・電話問い合わせ5-10%増（低コスト集客）</div>
+    </div>
+  </div>
+
+  <div class="phase-card">
+    <h3>QW-4: 業務フロー可視化＋課題MAP</h3>
+    <div class="phase-policy">コンサル工数のみ &mdash; 3/5 MTGで着手</div>
+    <p>受領した営業フローpdf＋業務効率化課題pptxをベースに、AS-IS業務フロー図＋システム対応表＋課題MAPを共同作成する。中期投資の意思決定に必要な「現状の共通理解」を形成。</p>
+    <div class="phase-items">
+      <div class="phase-item"><div class="pi-dot qw"></div>課題: DXの全体像を共有する「共通言語」がない</div>
+      <div class="phase-item"><div class="pi-dot wip"></div>打ち手: 3/5 MTGで営業フローpdfを確認しながら共同作成</div>
+      <div class="phase-item"><div class="pi-dot done"></div>効果: 中期投資の意思決定に必要な「共通理解」の形成</div>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>
+      4施策すべてが<strong>投資ゼロ（または月数千円）で即効果</strong>。「経営層のDX意識が弱い」というクライアント自身の認識は、Quick Winの重要性をさらに高める。<strong>まず小さな成功を見せて、中期投資への経営層の合意を取りつける</strong>必要がある。増田さんは役員として推進者だが、他の経営層を巻き込むためのエビデンスが必要。
+    </p>
+  </div>
+
+  <div style="margin-top:24px; padding:20px 24px; background:var(--bg-raised); border:1px solid var(--border-focus); border-radius:12px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
+    <div>
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--cyan); margin-bottom:4px;">Deep Dive</div>
+      <div style="font-size:15px; font-weight:600;">Quick Win 4施策 — 実装アプローチ比較・定着設計・ヒアリング論点の詳細</div>
+      <div style="font-size:13px; color:var(--text-dim); margin-top:4px;">各施策のツール比較、推奨ステップ、ROI精緻化、組織変革マネジメント、定着リスク対策を網羅</div>
+    </div>
+    <a href="quickwin.html" style="flex-shrink:0; display:inline-flex; align-items:center; gap:8px; padding:10px 20px; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#fff; text-decoration:none; border-radius:8px; font-size:14px; font-weight:600; white-space:nowrap; transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(34,211,238,0.3)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">実装詳細を見る &rarr;</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S6: MEDIUM-TERM INVESTMENT
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-eyebrow invest">MEDIUM-TERM INVESTMENT</div>
+  <div class="action-title">ANDPAD受発注の導入が全てのボトルネック &mdash;<br>受発注が動けば、原価リアルタイム化は自動的に実現する</div>
+  <p class="section-lead">「引合粗利管理は受発注ができれば問題ない」というヒアリング回答は非常に重要。受発注データがANDPADに入れば、原価管理は自動的に機能する。</p>
+
+  <div class="layer-stack">
+    <div class="layer">
+      <div class="layer-badge l1">Layer 1 &mdash; 最優先</div>
+      <h4>ANDPAD受発注＋引合粗利管理の導入</h4>
+      <p>FAXと手入力による受発注を電子化し、発注した瞬間に原価がシステムに反映される世界を実現する。「請求書が届くまで粗利がわからない」問題が構造的に解消される。</p>
+      <div class="shift-card" style="margin-top:12px;">
+        <h4>原価管理の構造変革</h4>
+        <div class="shift-before">Before: 発注(FAX/紙) &rarr; 工事完了 &rarr; 請求書到着(遅延) &rarr; 手入力 &rarr; 基幹 &rarr; 粗利把握 【約2ヶ月】</div>
+        <div class="shift-after">After: 発注(ANDPAD) &rarr; 原価自動計上(即時) &rarr; 工事完了 &rarr; 請求(ANDPAD上) &rarr; 粗利リアルタイム 【即日〜数日】</div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-badge l2">Layer 2</div>
+      <h4>CRM/顧客DB構築</h4>
+      <p>基幹の顧客データ＋施工履歴を構造化し、「そろそろ提案」リストを自動生成。リピート率5%改善は年間数十億のインパクト。ANDPAD引合粗利管理のCRM機能を第一候補として検証。</p>
+    </div>
+    <div class="layer">
+      <div class="layer-badge l3">Layer 3</div>
+      <h4>営業フロー標準化＋SFA</h4>
+      <p>受領した営業フローpdfをベースに標準プロセスを定義。SFAで商談管理＋失注分析。成約率1%改善は年間数億のインパクト。</p>
+    </div>
+  </div>
+
+  <!-- ANDPAD Migration Table -->
+  <h3 class="sub-heading">ANDPAD受発注 &mdash; 1,500社への段階展開計画</h3>
+  <table class="mig-table">
+    <thead><tr><th>Phase</th><th>対象</th><th>社数</th><th>期間</th><th>ポイント</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Phase 1</strong></td>
+        <td>意欲的な協力会社</td>
+        <td style="text-align:center;"><span class="mono">100社</span></td>
+        <td>3ヶ月</td>
+        <td>成功体験を蓄積。デジタル対応可能な企業から先行</td>
+      </tr>
+      <tr>
+        <td><strong>Phase 2</strong></td>
+        <td>デジタル対応可能</td>
+        <td style="text-align:center;"><span class="mono">800社</span></td>
+        <td>6ヶ月</td>
+        <td>Phase 1の成功事例を横展開。職人向け説明会実施</td>
+      </tr>
+      <tr>
+        <td><strong>Phase 3</strong></td>
+        <td>全社（FAX併用期間含む）</td>
+        <td style="text-align:center;"><span class="mono">1,500社</span></td>
+        <td>12ヶ月</td>
+        <td>FAX利用の職人向けスマホ操作支援。完全電子化</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Data Insight: 受領資料分析 -->
+  <h3 class="sub-heading">受領資料からのデータインサイト</h3>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="ic-num" style="background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">9,652<small style="font-size:12px">件</small></div>
+      <div class="ic-label">関東支社 受注件数（8ヶ月）</div>
+      <div class="ic-detail">月平均約1,200件<br>横浜南421件 vs 水戸6件 = 70倍の差</div>
+    </div>
+    <div class="insight-card">
+      <div class="ic-num" style="background:var(--grad-warn);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">25-33<small style="font-size:12px">%</small></div>
+      <div class="ic-label">離職率（推定）</div>
+      <div class="ic-detail">60名入社/年 vs 15-20名退社<br>ナレッジ流出リスクが高い</div>
+    </div>
+    <div class="insight-card">
+      <div class="ic-num" style="background:var(--grad-vision);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">450<small style="font-size:12px">万円</small></div>
+      <div class="ic-label">IT導入補助金（最大）</div>
+      <div class="ic-detail">ANDPAD受発注が対象<br>初期投資の大幅抑制が可能</div>
+    </div>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">So What</div>
+    <p>
+      <strong>受発注の導入 = 引合粗利管理の前提条件 = 原価リアルタイム化の唯一の道</strong>。これが全てのボトルネック。ナカジツの事例では受発注業務の負担が1/10に削減。月間1,200件の受注に対するインパクトは甚大。IT導入補助金（最大450万円）の活用で初期投資を大幅に抑制可能。
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S7: STRATEGIC ROADMAP
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-eyebrow strat">STRATEGIC ROADMAP</div>
+  <div class="action-title">基幹システム刷新は「今は決めない」 &mdash;<br>ANDPAD受発注の運用実態を見てから判断する</div>
+  <p class="section-lead">フルスクラッチの基幹システム（2015年〜、API不可）は10年間の技術的負債を抱える。しかし、大規模刷新の前にまずANDPAD導入で業務を安定させることが先決。</p>
+
+  <div class="disc-card">
+    <div class="disc-num">DISCUSSION POINT</div>
+    <h4>基幹システム刷新の3つの選択肢</h4>
+    <p>ANDPAD受発注の導入後（12ヶ月目安）、運用実態を踏まえて判断する。「保守ベンダーが一社しかいない」状態であればリスク大。</p>
+    <div class="disc-opts">
+      <div class="disc-opt rec">Option A: CSV橋渡しで延命（低コスト・低リスク）</div>
+      <div class="disc-opt">Option B: API層を外付け構築（中コスト）</div>
+      <div class="disc-opt">Option C: クラウドERPリプレイス（高コスト・高効果）</div>
+    </div>
+  </div>
+
+  <div class="vision-card">
+    <h3>2028年ビジョン &mdash; 167店舗体制のDXパッケージ</h3>
+    <p>現117店舗 &rarr; 2028年167店舗（+50店舗）に向け、新店舗の立ち上がりをDXで加速する標準パッケージを構築。</p>
+    <div class="vision-items">
+      <div class="vision-item">採用DX</div>
+      <div class="vision-item">教育DX（NotebookLM）</div>
+      <div class="vision-item">集客DX（GBP＋広告）</div>
+      <div class="vision-item">営業DX（SFA）</div>
+      <div class="vision-item">施工DX（ANDPAD）</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S8: CLIENT ALIGNMENT
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="section-eyebrow shift">CLIENT ALIGNMENT</div>
+  <div class="action-title">クライアント自身が挙げた5つの課題に、<br>すべて対応する提案が存在する</div>
+  <p class="section-lead">業務効率化課題pptxで増田さんが挙げた課題と、我々の提案の1対1対応を確認。「これは御社が感じている課題そのものに対する解決策です」と伝える。</p>
+
+  <div class="shift-grid">
+    <div class="shift-card">
+      <div class="shift-num">01</div>
+      <h4>労働時間が長い</h4>
+      <div class="shift-before">Before: 月次速報の手作業＋FAX受発注＋二重管理の工数</div>
+      <div class="shift-after">After: QW-1（速報自動化）＋ M-1（受発注電子化）で大幅な工数削減</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">02</div>
+      <h4>マルチタスク &rarr; ミスが出る</h4>
+      <div class="shift-before">Before: FAX/手入力による転記ミス、Excel二重管理の不整合</div>
+      <div class="shift-after">After: M-1（ANDPAD受発注）で電子化 &rarr; 手入力エラーを構造的に排除</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">03</div>
+      <h4>コミュニケーションエラー</h4>
+      <div class="shift-before">Before: 説明不足・指示不足で現場トラブル発生</div>
+      <div class="shift-after">After: M-1（ANDPAD受発注）で発注内容を電子的に明確化。証跡が残る</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">04</div>
+      <h4>離職率25-33%</h4>
+      <div class="shift-before">Before: 毎年15-20名が退社。ベテランの暗黙知が流出</div>
+      <div class="shift-after">After: QW-2（NotebookLM）でナレッジを構造化。退社しても知識は残る</div>
+    </div>
+    <div class="shift-card">
+      <div class="shift-num">05</div>
+      <h4>経営層のDX意識が弱い</h4>
+      <div class="shift-before">Before: DX推進への社内合意が不十分。大型投資の稟議が通りにくい</div>
+      <div class="shift-after">After: Quick Win全体で成功体験 &rarr; 数値でROIを証明 &rarr; 中期投資の合意形成</div>
+    </div>
+  </div>
+
+  <div class="keymsg">
+    <div class="keymsg-label">Key Message</div>
+    <p>クライアント自身が認識している<strong>5つの課題すべてに対応する提案が存在</strong>する。しかも、最も重要な「経営層のDX意識」に対しても、Quick Winで成功体験を作るという<strong>戦略的なアプローチ</strong>で対応している。これは偶然ではなく、<strong>クライアントの声から構造的に導出された提案</strong>である。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S9: RISK MATRIX
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="section-eyebrow risk">RISK MATRIX</div>
+  <div class="action-title">想定リスクと対策を事前に整理し、<br>プロアクティブに備える</div>
+
+  <div class="issue-grid">
+    <div class="issue-card critical">
+      <div class="issue-severity">高影響 / 中確率</div>
+      <h4>ANDPAD受発注が高額で投資判断が遅れる</h4>
+      <p>対策: IT導入補助金（最大450万円）の提案＋段階的導入（最小構成100社スタート）で初期投資を抑制。</p>
+    </div>
+    <div class="issue-card critical">
+      <div class="issue-severity">高影響 / 中確率</div>
+      <h4>経営層の合意が得られない</h4>
+      <p>対策: Quick Winで小さな成功体験 &rarr; 数値でROIを証明 &rarr; 中期投資の稟議をサポート。</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">高影響 / 低確率</div>
+      <h4>基幹システムがCSV出力すらできない</h4>
+      <p>対策: DB直接参照 or 画面スクレイピング or 手入力ルールの標準化。3/5 MTGで確認。</p>
+    </div>
+    <div class="issue-card high">
+      <div class="issue-severity">中影響 / 高確率</div>
+      <h4>1,500社の協力会社が電子化に抵抗</h4>
+      <p>対策: ボトムアップ浸透（成功体験のある協力会社から段階展開）。ANDPADナカジツ事例を参考。インボイス制度対応がインセンティブに。</p>
+    </div>
+    <div class="issue-card medium">
+      <div class="issue-severity">中影響 / 中確率</div>
+      <h4>増田さん以外のステークホルダーが関与してこない</h4>
+      <p>対策: 3/5 MTGで主要ステークホルダーの特定＋巻き込み戦略を協議。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     S10: 3/5 MTG AGENDA
+     ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s10">
+  <div class="section-eyebrow discuss">3/5 MTG AGENDA</div>
+  <div class="action-title">90分で「共通理解の確立」と「Quick Win着手合意」を達成する</div>
+  <p class="section-lead">ヒアリング結果のすり合わせ＋業務フロー共同確認＋Quick Win合意＋中期投資の方向性ディスカッション。</p>
+
+  <table class="agenda-tbl">
+    <thead><tr><th>時間</th><th>テーマ</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">0-10分</td><td><strong>オープニング</strong></td><td>挨拶＋本日のアジェンダ確認</td></tr>
+      <tr><td class="mono">10-25分</td><td><strong>ヒアリング結果の確認</strong></td><td>矛盾3件の解消＋追加確認事項（H1-H8）</td></tr>
+      <tr><td class="mono">25-45分</td><td><strong>業務フロー共同確認</strong></td><td>受領pdf/pptxをベースに、AS-IS業務フローとシステム対応表を確認</td></tr>
+      <tr><td class="mono">45-60分</td><td><strong>Quick Win提案</strong></td><td>月次速報自動化＋NotebookLM＋GBP。「投資ゼロで3ヶ月で効果実感」</td></tr>
+      <tr><td class="mono">60-80分</td><td><strong>中期投資の方向性</strong></td><td>ANDPAD受発注の導入提案（概算ROI＋IT補助金）。CRM構築の方向性</td></tr>
+      <tr><td class="mono">80-90分</td><td><strong>ネクストアクション</strong></td><td>次回までのタスク＋スケジュール確認</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-heading">確認事項（優先度順）</h3>
+  <div class="disc-card">
+    <div class="disc-num">H1 ★★★</div>
+    <h4>ANDPAD受発注は「契約済み未利用」or「未契約」？</h4>
+    <p>事前確認推奨。回答次第で提案の方向性が大きく変わる。</p>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">H2 ★★★</div>
+    <h4>基幹フルスクラッチの保守ベンダーは？内製？外注？</h4>
+    <p>拡張・連携の技術的実現性を左右する。ベンダーロックインのリスク判断に必要。</p>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">H3 ★★</div>
+    <h4>見積システムは基幹の一部か、別システムか？</h4>
+    <p>システムランドスケープの正確性に影響。別ログインが必要かで対応が変わる。</p>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">H4 ★★</div>
+    <h4>SMILE &harr; 基幹の連携方法は？</h4>
+    <p>CSV？手入力？原価 &rarr; PLのデータフロー把握に必要。</p>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">H5 ★★</div>
+    <h4>リピート管理「蓄積」のシステムとデータ項目は？</h4>
+    <p>CRM構築のスタートライン把握。蓄積しているデータの内容・形式を確認。</p>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">H6 ★★</div>
+    <h4>月次速報の工数（1店舗あたり何時間？）</h4>
+    <p>Quick Win（QW-1: 速報自動化）のROI試算に必要。</p>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">H7 ★★</div>
+    <h4>営業フローpdf/pptxの詳細確認</h4>
+    <p>24ページの営業フローpdfは画像ベースでテキスト抽出不可。MTG内で確認しながらファネル分析と突合。</p>
+  </div>
+  <div class="disc-card">
+    <div class="disc-num">H8 ★</div>
+    <h4>ANDPAD CSM（カスタマーサクセス担当者）との関係性</h4>
+    <p>ANDPAD受発注導入時のサポート体制把握。ANDPAD社との協力が鍵。</p>
+  </div>
+
+  <h3 class="sub-heading">成功基準</h3>
+  <ul class="criteria-list">
+    <li><div class="criteria-check"></div>矛盾3件が解消され、システムランドスケープが確定する</li>
+    <li><div class="criteria-check"></div>Quick Win（月次速報自動化）の着手が合意される</li>
+    <li><div class="criteria-check"></div>ANDPAD受発注の検討を進めることが合意される（見積取得のアクション）</li>
+    <li><div class="criteria-check"></div>次回MTGの日程が決まる</li>
+  </ul>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════ -->
+<div class="footer">
+  <p>DX Strategy Blueprint &mdash; NIKKAHOME &mdash; 2026-03-01</p>
+  <p style="margin-top:8px;">
+    ソース: システムヒアリング分析 / ポストヒアリングDX戦略 / ANDPAD機能分析 / ファネルDX優先順位 / KPI戦略 / 企業分析
+  </p>
+  <p style="margin-top:4px;">
+    <a href="https://tkonishikawa.github.io/dx-projects/">dx-projects</a> &mdash; Generated with AI-assisted analysis
+  </p>
+</div>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+</div><!-- /.container -->
+
+<script>
+// Intersection Observer for active TOC highlighting
+document.addEventListener('DOMContentLoaded', () => {
+  const sections = document.querySelectorAll('[id^="s"]');
+  const tocLinks = document.querySelectorAll('.toc-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(link => link.classList.remove('active'));
+        const activeLink = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+
+  // Smooth scroll
+  tocLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Close mobile sidebar
+        document.querySelector('.toc-sidebar')?.classList.remove('open');
+        document.querySelector('.toc-overlay')?.classList.remove('open');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

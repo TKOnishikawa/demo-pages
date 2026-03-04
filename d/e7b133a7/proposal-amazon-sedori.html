@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon ブランド保護 & 在庫監視 統合プラン — 大和書房 × オモシク</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --navy-light: #2a2a44;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --success-bg: rgba(52,211,153,0.08);
+  --green: #27ae60;
+  --green-bg: rgba(39,174,96,0.08);
+  --red: #c04040;
+  --red-bg: rgba(192,64,64,0.08);
+  --blue: #3498db;
+  --blue-bg: rgba(52,152,219,0.08);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.08);
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6,182,212,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-warm);
+  color: var(--text-1);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative; min-height: 55vh;
+  display: flex; align-items: center; justify-content: center;
+  background: #0a0a14; overflow: hidden; text-align: center;
+  padding: 80px 28px 64px;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,148,74,0.3), transparent);
+}
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg::before {
+  content: ''; position: absolute; top: -40%; right: -20%;
+  width: 900px; height: 900px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,148,74,0.18) 0%, transparent 65%);
+  animation: float-orb 10s ease-in-out infinite;
+}
+.hero-bg::after {
+  content: ''; position: absolute; bottom: -25%; left: -15%;
+  width: 750px; height: 750px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,64,64,0.12) 0%, transparent 65%);
+  animation: float-orb 13s ease-in-out infinite reverse;
+}
+.hero-bg-extra {
+  position: absolute; top: 30%; left: 40%;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(42,122,110,0.1) 0%, transparent 60%);
+  animation: float-orb 16s ease-in-out infinite 3s; z-index: 0;
+}
+.hero-mesh {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.06;
+  background-image:
+    linear-gradient(30deg, transparent 48%, rgba(232,148,74,0.4) 49%, rgba(232,148,74,0.4) 51%, transparent 52%),
+    linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.15) 49%, rgba(255,255,255,0.15) 51%, transparent 52%);
+  background-size: 80px 80px; animation: mesh-drift 25s linear infinite;
+}
+.hero-scanlines {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+}
+.hero-particles { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.particle {
+  position: absolute; border-radius: 50%; opacity: 0;
+  animation: particle-drift 8s linear infinite;
+}
+.particle-amber { background: var(--accent-light); }
+.particle-white { background: rgba(255,255,255,0.5); }
+.hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 18px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; color: var(--accent-light);
+  border: 1px solid rgba(232,148,74,0.25); border-radius: 20px;
+  margin-bottom: 28px; opacity: 0; animation: hero-fade-in 1s 0.3s forwards;
+}
+.hero h1 {
+  font-family: var(--font-en), var(--font-jp);
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 800; color: #f0ece6; line-height: 1.5;
+  margin-bottom: 20px; letter-spacing: -0.01em;
+  opacity: 0; animation: hero-fade-in 1s 0.5s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero .lead {
+  font-size: 0.88rem; color: rgba(240,236,230,0.55);
+  font-weight: 300; line-height: 1.9; max-width: 580px; margin: 0 auto;
+  opacity: 0; animation: hero-fade-in 1s 0.7s forwards;
+}
+.hero-footer {
+  margin-top: 36px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  opacity: 0; animation: hero-fade-in 1s 0.9s forwards;
+}
+.hero-footer .meta { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); }
+.hero-footer .meta strong { color: rgba(240,236,230,0.5); font-weight: 500; }
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.08); }
+  66% { transform: translate(-30px, 30px) scale(0.94); }
+}
+@keyframes particle-drift {
+  0% { opacity: 0; transform: translateY(0) scale(1); }
+  10% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-100vh) scale(0.4); }
+}
+@keyframes mesh-drift { 0% { transform: translate(0,0); } 100% { transform: translate(80px,80px); } }
+@keyframes hero-fade-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Page Layout ─── */
+.page-layout {
+  display: flex; gap: 36px; align-items: flex-start;
+  max-width: 1120px; margin: 0 auto; padding: 40px 28px 0;
+}
+.main-content { flex: 1; min-width: 0; }
+
+/* ─── TOC Sidebar ─── */
+.toc-sidebar {
+  position: sticky; top: 24px;
+  width: 220px; flex-shrink: 0;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 16px;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+.toc-sidebar::-webkit-scrollbar { width: 3px; }
+.toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+.toc-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.toc-title {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+.toc-part {
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 14px; margin-bottom: 6px; padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+.toc-part:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.toc-part-a { color: var(--accent); }
+.toc-part-b { color: var(--cyan); }
+.toc-part-c { color: var(--green); }
+.toc-part-d { color: var(--purple); }
+
+.toc-link {
+  display: block; font-size: 0.72rem; color: var(--text-3);
+  text-decoration: none; padding: 3px 0 3px 10px;
+  border-left: 2px solid transparent;
+  line-height: 1.4; transition: all 0.15s;
+}
+.toc-link:hover { color: var(--text-1); }
+.toc-link.active { font-weight: 600; }
+.toc-link.active.toc-a { color: var(--accent-dark); border-left-color: var(--accent); }
+.toc-link.active.toc-b { color: var(--cyan); border-left-color: var(--cyan); }
+.toc-link.active.toc-c { color: var(--green); border-left-color: var(--green); }
+.toc-link.active.toc-d { color: var(--purple); border-left-color: var(--purple); }
+
+.toc-num {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--text-3); margin-right: 4px;
+}
+
+/* ─── Part Divider ─── */
+.part-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 56px 0 28px; padding-bottom: 12px;
+}
+.part-divider:first-child { margin-top: 0; }
+.part-badge {
+  font-family: var(--font-en); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 4px; color: #fff;
+}
+.part-badge-a { background: var(--accent); }
+.part-badge-b { background: var(--cyan); }
+.part-badge-c { background: var(--green); }
+.part-badge-d { background: var(--purple); }
+.part-name { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+
+/* ─── Section ─── */
+.sec { padding: 40px 0 48px; border-bottom: 1px solid var(--border-light); }
+.sec:last-child { border-bottom: none; }
+.sec[id] { scroll-margin-top: 24px; }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--font-en); font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 8px;
+}
+.section-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-label-cyan { color: var(--cyan); }
+.section-label-cyan::before { background: var(--cyan); }
+.section-label-green { color: var(--green); }
+.section-label-green::before { background: var(--green); }
+.section-label-purple { color: var(--purple); }
+.section-label-purple::before { background: var(--purple); }
+
+.section-title {
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem); font-weight: 800;
+  color: var(--text-1); margin-bottom: 8px; line-height: 1.4;
+}
+.section-subtitle {
+  font-size: 0.86rem; color: var(--text-2); margin-bottom: 32px; line-height: 1.8;
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-card); border-radius: 12px; padding: 24px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 16px;
+}
+.card-accent { border-left: 3px solid var(--accent); }
+.card-green { border-left: 3px solid var(--green); }
+.card-red { border-left: 3px solid var(--red); }
+.card-blue { border-left: 3px solid var(--blue); }
+.card-purple { border-left: 3px solid var(--purple); }
+.card-cyan { border-left: 3px solid var(--cyan); }
+.card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.card-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.card-icon-accent { background: var(--accent-bg); }
+.card-icon-green { background: var(--green-bg); }
+.card-icon-red { background: var(--red-bg); }
+.card-icon-blue { background: var(--blue-bg); }
+.card-icon-purple { background: var(--purple-bg); }
+.card-icon-cyan { background: var(--cyan-bg); }
+.card h4 { font-size: 0.95rem; font-weight: 700; }
+.card p { font-size: 0.84rem; color: var(--text-2); margin-bottom: 6px; line-height: 1.7; }
+.card p:last-child { margin-bottom: 0; }
+
+/* ─── Challenge Grid ─── */
+.challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.challenge-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-top: 3px solid var(--accent); border-radius: 0 0 12px 12px;
+  padding: 22px 18px; transition: transform 0.2s, box-shadow 0.2s;
+}
+.challenge-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.challenge-card h3 { font-size: 0.88rem; font-weight: 700; color: var(--text-1); margin-bottom: 8px; line-height: 1.4; }
+.challenge-card .symptom { font-size: 0.8rem; color: var(--text-2); margin-bottom: 12px; line-height: 1.7; }
+.challenge-card .impact-tag {
+  font-size: 0.75rem; color: var(--accent-dark); font-weight: 600;
+  padding: 6px 10px; background: var(--accent-bg); border-radius: 6px; line-height: 1.5;
+}
+.challenge-card-red { border-top-color: var(--red); }
+.challenge-card-red .impact-tag { color: var(--red); background: var(--red-bg); }
+
+/* ─── Impact Grid ─── */
+.impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.impact-item {
+  background: var(--bg-card); border-radius: 12px; padding: 20px; text-align: center;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+}
+.impact-number {
+  font-family: var(--font-mono); font-size: 1.7rem; font-weight: 700; color: var(--accent); line-height: 1.2;
+}
+.impact-label { font-size: 0.72rem; color: var(--text-3); margin-top: 4px; }
+
+/* ─── Flow Diagram ─── */
+.flow-diagram {
+  background: var(--navy); border-radius: 12px; padding: 24px 16px; margin: 20px 0; color: #fff; text-align: center;
+}
+.flow-step { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 4px; }
+.flow-arrow { text-align: center; color: var(--accent-light); font-size: 18px; margin: 4px 0; }
+.flow-box {
+  display: inline-block; padding: 8px 16px; border-radius: 8px;
+  font-size: 0.8rem; font-weight: 500; max-width: 380px;
+}
+.flow-official { background: rgba(39,174,96,0.2); border: 1px solid rgba(39,174,96,0.4); }
+.flow-sedori { background: rgba(192,64,64,0.2); border: 1px solid rgba(192,64,64,0.4); }
+.flow-algo { background: rgba(52,152,219,0.2); border: 1px solid rgba(52,152,219,0.4); }
+.flow-loss { background: rgba(232,148,74,0.2); border: 1px solid rgba(232,148,74,0.4); }
+
+/* ─── Comparison Table ─── */
+.compare-box {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: var(--shadow-sm); margin: 16px 0;
+}
+.compare-box table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.compare-box thead th {
+  background: var(--accent-bg); padding: 10px 14px; text-align: left;
+  font-weight: 600; color: var(--accent-dark); border-bottom: 1px solid var(--accent-border); font-size: 0.75rem;
+}
+.compare-box tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); color: var(--text-2); }
+.compare-box tbody tr:last-child td { border-bottom: none; }
+.compare-box tbody td:first-child { font-weight: 600; color: var(--text-1); }
+.compare-box .recommended { background: rgba(52,211,153,0.05); }
+.compare-box .recommended td { color: var(--text-1); font-weight: 500; }
+.compare-box-cyan thead th { background: var(--cyan-bg); color: var(--cyan); border-bottom-color: rgba(6,182,212,0.2); }
+.compare-box-green thead th { background: var(--green-bg); color: var(--green); border-bottom-color: rgba(39,174,96,0.2); }
+.compare-box-purple thead th { background: var(--purple-bg); color: var(--purple); border-bottom-color: rgba(139,92,246,0.2); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; }
+.tag-high { background: var(--green-bg); color: var(--green); }
+.tag-mid { background: var(--blue-bg); color: var(--blue); }
+.tag-low { background: var(--red-bg); color: var(--red); }
+.tag-free { background: var(--green-bg); color: var(--green); }
+.tag-new { background: var(--purple-bg); color: var(--purple); }
+
+/* ─── Accordion ─── */
+.accordion-section { margin-top: 20px; }
+.accordion-item {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 8px; overflow: hidden; transition: box-shadow 0.2s;
+}
+.accordion-item:hover { box-shadow: var(--shadow-sm); }
+.accordion-summary {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; cursor: pointer; font-size: 0.84rem; font-weight: 600;
+  color: var(--text-1); list-style: none; user-select: none; gap: 12px;
+}
+.accordion-summary::-webkit-details-marker { display: none; }
+.accordion-summary::after {
+  content: '+'; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 400;
+  color: var(--accent); flex-shrink: 0; transition: transform 0.2s;
+}
+details[open] > .accordion-summary::after { content: '\2212'; }
+.accordion-body {
+  padding: 0 18px 16px; font-size: 0.8rem; color: var(--text-2); line-height: 1.8;
+}
+.accordion-body p { margin-bottom: 8px; }
+.accordion-body ul { padding-left: 18px; margin-bottom: 8px; }
+.accordion-body li { margin-bottom: 4px; }
+.accordion-body strong { color: var(--text-1); }
+
+/* ─── Step Cards ─── */
+.step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 16px 0; }
+.step-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px 18px; text-align: center; transition: transform 0.2s, box-shadow 0.2s;
+}
+.step-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.step-num {
+  font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.06em; color: var(--accent); margin-bottom: 4px;
+}
+.step-card h4 { font-size: 0.84rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+.step-card p { font-size: 0.78rem; color: var(--text-2); line-height: 1.65; margin: 0; }
+.step-card .step-meta { font-size: 0.7rem; color: var(--text-3); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-light); }
+
+/* ─── Callout ─── */
+.callout {
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: 10px; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.84rem; color: var(--text-1);
+}
+.callout strong { color: var(--accent-dark); }
+.callout-green { background: var(--green-bg); border-color: rgba(39,174,96,0.2); }
+.callout-green strong { color: var(--green); }
+.callout-red { background: var(--red-bg); border-color: rgba(192,64,64,0.2); }
+.callout-red strong { color: var(--red); }
+
+/* ─── Two Column ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+/* ─── Feature Table ─── */
+.feature-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 10px 0; }
+.feature-table th {
+  text-align: left; padding: 8px 10px; font-weight: 600;
+  color: var(--text-3); font-size: 0.7rem; letter-spacing: 0.06em;
+  border-bottom: 2px solid var(--border);
+}
+.feature-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); color: var(--text-2); }
+.feature-table td:first-child { font-weight: 500; color: var(--text-1); }
+
+/* ─── Action Checklist ─── */
+.action-list { list-style: none; padding: 0; margin: 12px 0; }
+.action-list li {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px;
+  background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 10px;
+  margin-bottom: 8px; font-size: 0.82rem; color: var(--text-2); line-height: 1.6;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.action-list li:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.action-num {
+  flex-shrink: 0; width: 26px; height: 26px;
+  background: var(--accent-bg); color: var(--accent-dark);
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.action-list li strong { color: var(--text-1); }
+
+/* ─── Roadmap ─── */
+.roadmap-timeline { position: relative; padding-left: 28px; margin: 20px 0; }
+.roadmap-timeline::before {
+  content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--green), var(--purple));
+}
+.roadmap-phase { position: relative; margin-bottom: 24px; }
+.roadmap-dot {
+  position: absolute; left: -28px; top: 4px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg-card); border: 3px solid var(--accent); z-index: 1;
+}
+.roadmap-phase:nth-child(3) .roadmap-dot { border-color: var(--green); }
+.roadmap-phase:last-child .roadmap-dot { border-color: var(--purple); }
+.roadmap-time {
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+  color: var(--accent); letter-spacing: 0.05em; margin-bottom: 2px;
+}
+.roadmap-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; }
+.roadmap-desc { font-size: 0.82rem; color: var(--text-2); line-height: 1.7; }
+
+/* ─── Architecture Diagram (CSS) ─── */
+.arch-diagram {
+  background: var(--navy); border-radius: 12px; padding: 28px 20px; margin: 20px 0;
+  color: #fff; font-size: 0.78rem;
+}
+.arch-row { display: flex; justify-content: center; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+.arch-box {
+  padding: 12px 16px; border-radius: 8px; text-align: center;
+  min-width: 140px; max-width: 200px; flex: 1;
+}
+.arch-box h5 { font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; }
+.arch-box p { font-size: 0.7rem; opacity: 0.7; margin: 0; line-height: 1.4; }
+.arch-source { background: rgba(52,152,219,0.2); border: 1px solid rgba(52,152,219,0.4); }
+.arch-process { background: rgba(232,148,74,0.2); border: 1px solid rgba(232,148,74,0.4); }
+.arch-output { background: rgba(39,174,96,0.2); border: 1px solid rgba(39,174,96,0.4); }
+.arch-arrow { text-align: center; color: var(--accent-light); font-size: 18px; margin: 4px 0; }
+
+/* ─── Tsukomi Card ─── */
+.tsukomi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 20px; margin-bottom: 14px; border-left: 3px solid var(--green);
+}
+.tsukomi-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.tsukomi-num {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--green-bg);
+  color: var(--green); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.tsukomi-title { font-size: 0.9rem; font-weight: 700; }
+.tsukomi-conclusion {
+  font-size: 0.82rem; color: var(--green); font-weight: 600;
+  margin-bottom: 6px; padding: 6px 10px; background: var(--green-bg); border-radius: 6px;
+}
+.tsukomi-body { font-size: 0.8rem; color: var(--text-2); line-height: 1.7; }
+.tsukomi-body ul { padding-left: 18px; margin: 4px 0; }
+.tsukomi-body li { margin-bottom: 2px; }
+
+/* ─── Global Nav (mobile only) ─── */
+.gnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(246,243,238,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%); transition: transform 0.35s ease;
+  display: none;
+}
+.gnav.visible { transform: translateY(0); }
+.gnav-inner {
+  max-width: 960px; margin: 0 auto; padding: 0 20px;
+  display: flex; align-items: center; height: 44px; gap: 4px;
+}
+.gnav-logo {
+  font-family: var(--font-en); font-size: 0.65rem; font-weight: 700;
+  color: var(--text-1); letter-spacing: 0.05em; margin-right: auto; white-space: nowrap;
+}
+.gnav-link {
+  font-size: 0.65rem; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 5px 8px; border-radius: 4px;
+  transition: color 0.2s, background 0.2s; white-space: nowrap;
+}
+.gnav-link:hover { color: var(--text-1); background: rgba(0,0,0,0.04); }
+.gnav-link.active { color: var(--accent); font-weight: 600; }
+
+/* ─── Footer ─── */
+.closing { background: var(--navy); padding: 44px 28px 28px; text-align: center; }
+.closing-msg { font-size: 1rem; font-weight: 600; color: rgba(240,236,230,0.75); margin-bottom: 10px; }
+.closing-sub { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); letter-spacing: 0.05em; }
+
+/* ─── Responsive ─── */
+@media (max-width: 960px) {
+  .toc-sidebar { display: none; }
+  .page-layout { display: block; padding: 24px 20px 0; }
+  .gnav { display: block; }
+  .sec[id] { scroll-margin-top: 56px; }
+}
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .challenge-grid { grid-template-columns: 1fr; }
+  .gnav-link { font-size: 0.58rem; padding: 5px 5px; }
+  .gnav-logo { font-size: 0.58rem; }
+}
+@media print {
+  .hero { min-height: auto; padding: 40px 20px; }
+  .toc-sidebar { display: none; }
+  .gnav { display: none; }
+  .page-layout { display: block; }
+  .sec { padding: 24px 0; }
+  .flow-diagram, .arch-diagram { background: #333; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ MOBILE NAV ═══════════════ -->
+<nav class="gnav" id="gnav">
+  <div class="gnav-inner">
+    <span class="gnav-logo">大和書房 &times; オモシク</span>
+    <a href="#sec01" class="gnav-link">課題</a>
+    <a href="#sec03" class="gnav-link">保護</a>
+    <a href="#sec06" class="gnav-link">監視</a>
+    <a href="#sec09" class="gnav-link">実行</a>
+    <a href="#sec11" class="gnav-link">Action</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bg-extra"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">Amazon ブランド保護 &amp; 在庫監視 統合プラン</div>
+    <h1>ロングテール商品の<br><em>ブランド保護</em>と<em>在庫の見える化</em></h1>
+    <p class="lead">「商標登録」&times;「Brand Registry」&times;「在庫監視の自動化」で<br>せどり対策と在庫管理を一気に解決する</p>
+    <div class="hero-footer">
+      <div class="meta"><strong>Date</strong> 2026.03</div>
+      <div class="meta"><strong>By</strong> 西川太雄 / オモシク代表</div>
+      <div class="meta"><strong>Status</strong> 打ち合わせ資料</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ PAGE LAYOUT ═══════════════ -->
+<div class="page-layout">
+
+<!-- ─── TOC Sidebar ─── -->
+<nav class="toc-sidebar" id="toc">
+  <div class="toc-title">Contents</div>
+
+  <div class="toc-part toc-part-a">Part A &mdash; 課題</div>
+  <a href="#sec01" class="toc-link toc-a"><span class="toc-num">01</span>せどりカート奪取問題</a>
+  <a href="#sec02" class="toc-link toc-a"><span class="toc-num">02</span>在庫管理の課題</a>
+
+  <div class="toc-part toc-part-b">Part B &mdash; ブランド保護</div>
+  <a href="#sec03" class="toc-link toc-b"><span class="toc-num">03</span>商標登録ガイド</a>
+  <a href="#sec04" class="toc-link toc-b"><span class="toc-num">04</span>Brand Registry</a>
+  <a href="#sec05" class="toc-link toc-b"><span class="toc-num">05</span>Project Zero + 構造対策</a>
+
+  <div class="toc-part toc-part-c">Part C &mdash; 在庫監視</div>
+  <a href="#sec06" class="toc-link toc-c"><span class="toc-num">06</span>要件の前に考えること</a>
+  <a href="#sec07" class="toc-link toc-c"><span class="toc-num">07</span>実装方針</a>
+  <a href="#sec08" class="toc-link toc-c"><span class="toc-num">08</span>ダッシュボード設計</a>
+
+  <div class="toc-part toc-part-d">Part D &mdash; 実行計画</div>
+  <a href="#sec09" class="toc-link toc-d"><span class="toc-num">09</span>統合ロードマップ</a>
+  <a href="#sec10" class="toc-link toc-d"><span class="toc-num">10</span>コスト・効果</a>
+  <a href="#sec11" class="toc-link toc-d"><span class="toc-num">11</span>アクション一覧</a>
+</nav>
+
+<!-- ─── Main Content ─── -->
+<div class="main-content">
+
+<!-- ══════════ PART A: 課題の全体像 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-a">Part A</span>
+  <span class="part-name">課題の全体像</span>
+</div>
+
+<!-- SEC 01: せどりカート奪取問題 -->
+<section class="sec" id="sec01">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title">せどりカート奪取問題</h2>
+  <p class="section-subtitle">大和書房の書籍はロングテールで売れ続ける良書が多数。しかしAmazonでは、せどり業者にカートを奪われ、販売機会を逸失しています。</p>
+
+  <div class="challenge-grid">
+    <div class="challenge-card">
+      <h3>カート（Buy Box）を<br>せどりに奪われる</h3>
+      <p class="symptom">古書店・ブックオフで安く仕入れた書籍を「新品」として出品。定価で売る公式が価格競争で不利に。</p>
+      <div class="impact-tag">対象: 数十銘柄</div>
+    </div>
+    <div class="challenge-card">
+      <h3>手動メールの<br>「もぐら叩き」状態</h3>
+      <p class="symptom">本部長が目視で発見 &rarr; Amazonに1件ずつメール &rarr; 排除 &rarr; また別の業者が出品。終わらない。</p>
+      <div class="impact-tag">確認済み: 2/28ヒアリング</div>
+    </div>
+    <div class="challenge-card">
+      <h3>損失額が<br>見えていない</h3>
+      <p class="symptom">「かなりある」は感覚値。何冊のカートが取られ、いくらの売上を逸失しているか定量化が必要。</p>
+      <div class="impact-tag">まず: 見える化が最優先</div>
+    </div>
+  </div>
+
+  <div class="flow-diagram" style="margin-top:24px">
+    <div class="flow-step"><span class="flow-box flow-official">大和書房（公式）が定価で出品</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-sedori">せどり業者が安価で相乗り出品</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-algo">Buy Box アルゴリズム: 価格 &times; 評価 &times; 配送</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-loss">せどりがカート獲得 &rarr; 公式の販売機会が失われる</span></div>
+  </div>
+
+  <div class="callout">
+    <strong>重要な確認事項:</strong>
+    貴社は「ブランド登録はした」と認識されていますが、<strong>スポンサーブランド広告のための登録</strong>と<strong>Amazon Brand Registry（ブランド保護プログラム）</strong>は別物です。Brand Registryに正式参加しているかの確認が最優先です。
+  </div>
+</section>
+
+<!-- SEC 02: 在庫管理の課題 ★NEW -->
+<section class="sec" id="sec02">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title">在庫管理の課題</h2>
+  <p class="section-subtitle">3/3ヒアリングで判明した在庫管理・カート監視の現状課題です。せどり対策と密接に関連しています。</p>
+
+  <div class="challenge-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+    <div class="challenge-card challenge-card-red">
+      <h3>2日前の情報しか<br>見えない</h3>
+      <p class="symptom">在庫確認してから表示を確認するが、現在のデータは常に2日遅れ。リアルタイム性が欠如している。</p>
+      <div class="impact-tag">原因: レポートの更新頻度</div>
+    </div>
+    <div class="challenge-card challenge-card-red">
+      <h3>2,000点を手動で<br>ISBNチェック</h3>
+      <p class="symptom">在庫が少ないものをISBNで一つ一つ確認。稼働点数2,000点では物理的に不可能。</p>
+      <div class="impact-tag">手動 &rarr; 自動化が必須</div>
+    </div>
+    <div class="challenge-card challenge-card-red">
+      <h3>売上データと在庫データが<br>分離</h3>
+      <p class="symptom">売上と在庫を別々のソースから取得。統合されていないため「残日数」の算出ができない。</p>
+      <div class="impact-tag">統合 &rarr; 自動で可能</div>
+    </div>
+    <div class="challenge-card challenge-card-red">
+      <h3>「在庫0」と「カート落ち」を<br>区別できていない</h3>
+      <p class="symptom">在庫0件 &rarr; Amazonで確認 &rarr; 在庫有無とカート奪取を同時に確認。2つの状態が混同されている。</p>
+      <div class="impact-tag">判別が対策の大前提</div>
+    </div>
+    <div class="challenge-card challenge-card-red">
+      <h3>discover社にリスト作成で<br>数万円/回</h3>
+      <p class="symptom">Amazon広告代理店のdiscover社にリスト作成を依頼すると、それだけで数万円が発生。</p>
+      <div class="impact-tag">自動化で月約8,000円に</div>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>最重要の論点:</strong>
+    「<strong>在庫0（欠品）</strong>」と「<strong>カート落ち（他者にBuy Boxを取られた）</strong>」は<strong>別の問題</strong>です。在庫がないからカートに表示されないのか、在庫はあるがせどりに取られているのか &mdash; 原因によって対策が全く異なります。
+  </div>
+
+  <div class="compare-box" style="margin-top:16px;">
+    <table>
+      <thead><tr><th>状態</th><th>意味</th><th>原因</th><th>対策</th></tr></thead>
+      <tbody>
+        <tr><td><strong>在庫0（欠品）</strong></td><td>Amazon倉庫に在庫がない</td><td>発注遅れ / 売れすぎ</td><td>補充指示・発注アラート</td></tr>
+        <tr><td><strong>カート落ち</strong></td><td>在庫はあるがBuy Boxを奪われた</td><td>せどりの安値出品</td><td>Brand Registry / 侵害報告</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════ PART B: ブランド保護戦略 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-b">Part B</span>
+  <span class="part-name">ブランド保護戦略</span>
+</div>
+
+<!-- SEC 03: 商標登録ガイド -->
+<section class="sec" id="sec03">
+  <div class="section-label section-label-cyan">Section 03</div>
+  <h2 class="section-title">商標登録ガイド &mdash; 何を、どう登録すべきか</h2>
+  <p class="section-subtitle">Amazon Brand Registryを利用するには商標登録が前提です。大和書房にとって最適な登録戦略を整理しました。</p>
+
+  <div class="card card-green">
+    <div class="card-header">
+      <div class="card-icon card-icon-green">&#x2705;</div>
+      <h4>確認済みの商標</h4>
+    </div>
+    <p><strong>「だいわ文庫」は登録済み</strong>です（登録番号: 4976928、第16類、2006年登録、存続中）。さらに2026年1月に第9類（電子出版物）・第41類（教育サービス）で追加出願中。</p>
+  </div>
+
+  <div class="card card-accent">
+    <div class="card-header">
+      <div class="card-icon card-icon-accent">&#x26A0;</div>
+      <h4>「大和書房」の商標登録が必要</h4>
+    </div>
+    <p>単行本は「だいわ文庫」レーベルではなく<strong>「大和書房」名義で出版</strong>されています。単行本のせどり対策には「大和書房」での商標登録 &rarr; Brand Registry申請が必要です。</p>
+    <p><strong>理由:</strong> Brand Registryは「ブランド名が商品に表示されている」ことを求めます。背表紙・奥付に記載されている出版社名（大和書房）がブランド名として認められます。</p>
+  </div>
+
+  <div class="compare-box compare-box-cyan">
+    <table>
+      <thead><tr><th>商標名</th><th>区分</th><th>カバー範囲</th><th>優先度</th><th>ステータス</th></tr></thead>
+      <tbody>
+        <tr class="recommended"><td><strong>大和書房</strong></td><td>第16類</td><td>全単行本・新刊</td><td><strong>最優先</strong></td><td>未登録 &rarr; 要出願</td></tr>
+        <tr><td>だいわ文庫</td><td>第16類</td><td>文庫シリーズ</td><td>登録済み</td><td>登録4976928</td></tr>
+        <tr><td>大和書房</td><td>第9類</td><td>電子書籍</td><td>次点</td><td>将来的に検討</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="accordion-section">
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">商標登録の手順（特許庁への出願）</summary>
+      <div class="accordion-body">
+        <p><strong>出願方法は3つ:</strong></p>
+        <ul>
+          <li><strong>&#9312; 弁理士に依頼</strong>（推奨）&mdash; 費用: 約5〜10万円（手数料+印紙代）。手続きを全て代行</li>
+          <li><strong>&#9313; 自分で電子出願</strong> &mdash; 費用: 約1.2〜3万円（印紙代のみ）。特許庁 電子出願ソフトを使用</li>
+          <li><strong>&#9314; 紙で出願</strong> &mdash; 費用: 約1.5〜3.5万円（印紙代+電子化手数料&yen;2,400）</li>
+        </ul>
+        <p style="margin-top:8px"><strong>費用の内訳（第16類・1区分の場合）:</strong></p>
+        <ul>
+          <li>出願料: &yen;3,400 + &yen;8,600 = <strong>&yen;12,000</strong></li>
+          <li>登録料（審査通過後）: <strong>&yen;32,900</strong>（10年分）</li>
+          <li>審査期間: 約6〜8ヶ月（ただしBrand Registryには出願中で申請可能）</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="accordion-item">
+      <summary class="accordion-summary">「大和出版」との混同リスクについて</summary>
+      <div class="accordion-body">
+        <p>「大和出版」は<strong>大和書房とは別の出版社</strong>です。Amazon上で消費者が混同する可能性があり、商標登録しておくことで区別が明確になります。</p>
+        <p>商標審査では類似商標が存在すると拒絶される場合がありますが、「大和書房」と「大和出版」は<strong>名称が異なるため、共存登録が可能</strong>と考えられます。</p>
+      </div>
+    </details>
+
+    <details class="accordion-item">
+      <summary class="accordion-summary">ニース分類（区分）の解説</summary>
+      <div class="accordion-body">
+        <p>商標は「どの種類の商品・サービスに使うか」を区分（クラス）で指定します。</p>
+        <table class="feature-table">
+          <thead><tr><th>区分</th><th>内容</th><th>対象</th></tr></thead>
+          <tbody>
+            <tr><td><strong>第16類</strong></td><td>印刷物</td><td>紙の書籍・雑誌 &rarr; <strong>最優先</strong></td></tr>
+            <tr><td>第9類</td><td>電子出版物</td><td>電子書籍・ダウンロード可能な出版物</td></tr>
+            <tr><td>第41類</td><td>教育・娯楽</td><td>出版サービス・セミナー・イベント</td></tr>
+          </tbody>
+        </table>
+        <p><strong>推奨:</strong> まず第16類のみで出願（費用最小）。Kindle版も保護したい場合は第9類を追加。</p>
+      </div>
+    </details>
+
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">商標登録の確認方法（J-PlatPat）</summary>
+      <div class="accordion-body">
+        <p>既存の商標登録は<strong>J-PlatPat</strong>で無料で検索できます。</p>
+        <ul>
+          <li><strong>URL:</strong> <a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener" style="color:var(--cyan)">https://www.j-platpat.inpit.go.jp/</a></li>
+          <li><strong>操作:</strong> トップページ &rarr; 「商標」 &rarr; 「商標検索」 &rarr; キーワードを入力</li>
+          <li><strong>24時間利用可能</strong>、ユーザー登録不要</li>
+        </ul>
+        <table class="feature-table" style="margin-top:8px">
+          <thead><tr><th>キーワード</th><th>確認目的</th></tr></thead>
+          <tbody>
+            <tr><td>大和書房</td><td>自社名が登録済みか・他社に取られていないか</td></tr>
+            <tr><td>だいわ文庫</td><td>登録済み区分・存続期間の確認</td></tr>
+            <tr><td>大和出版</td><td>競合他社の登録状況（混同リスクの把握）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="accordion-item">
+      <summary class="accordion-summary">出願中でもBrand Registryに申請できる仕組み</summary>
+      <div class="accordion-body">
+        <p>Amazon Brand Registryは2024年から<strong>出願中（pending）の商標でも申請を受け付ける</strong>ようになりました。</p>
+        <ul>
+          <li>商標出願後に取得する<strong>「出願番号」</strong>をBrand Registry申請フォームに入力</li>
+          <li>審査は通常2〜4週間で完了</li>
+          <li>商標が正式登録されるのを待たずに<strong>ブランド保護機能を利用開始</strong>できる</li>
+        </ul>
+        <p><strong>つまり: 商標を出願したその日にBrand Registry申請が可能</strong>です。</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- SEC 04: Amazon Brand Registry -->
+<section class="sec" id="sec04">
+  <div class="section-label section-label-cyan">Section 04</div>
+  <h2 class="section-title">Amazon Brand Registry &mdash; 根本対策</h2>
+  <p class="section-subtitle">Amazonの公式プログラムでせどり業者の参入障壁を構造的に上げます。費用は無料です。</p>
+
+  <div class="card card-green">
+    <div class="card-header">
+      <div class="card-icon card-icon-green">&#x1F6E1;</div>
+      <h4>Brand Registryの最大の効果</h4>
+    </div>
+    <p>ブランド登録すると、他の出品者が出品する際に<strong>卸売請求書（180日以内・10点以上）の提出を義務付ける</strong>ことができます。個人せどり業者は書類を用意できないため、<strong>事実上出品不可</strong>になります。</p>
+    <p>2024年10月以降、<strong>複数の日本の出版社が導入済み</strong>です。</p>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin:24px 0 12px;">Brand Registry で使える6つの機能</h3>
+
+  <div class="compare-box compare-box-cyan">
+    <table>
+      <thead><tr><th>機能</th><th>説明</th><th>効果</th></tr></thead>
+      <tbody>
+        <tr><td><strong>出品承認制</strong></td><td>他セラーに卸売請求書の提出を要求</td><td><span class="tag tag-high">最高</span></td></tr>
+        <tr><td><strong>侵害報告ツール</strong></td><td>1クリックでせどり出品を通報。ML学習で自動ブロック進化</td><td><span class="tag tag-high">高</span></td></tr>
+        <tr><td><strong>IP Alert</strong></td><td>侵害疑いの出品を毎日自動通知</td><td><span class="tag tag-high">高</span></td></tr>
+        <tr><td><strong>A+コンテンツ</strong></td><td>商品ページの編集権限独占。検索上位にも影響</td><td><span class="tag tag-mid">中</span></td></tr>
+        <tr><td><strong>ブランドストア</strong></td><td>大和書房専用の販売ページを構築</td><td><span class="tag tag-mid">中</span></td></tr>
+        <tr><td><strong>Transparency</strong></td><td>個品ごとにQRコードを付与。偽造品を完全排除</td><td><span class="tag tag-high">高</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="accordion-section">
+    <details class="accordion-item">
+      <summary class="accordion-summary">1つのアカウントで複数ブランドを管理できますか？</summary>
+      <div class="accordion-body">
+        <p><strong>はい、1つのBrand Registryアカウントで複数のブランドを管理できます。</strong></p>
+        <p>「だいわ文庫」で先行登録し、後から「大和書房」を追加登録することが可能です。それぞれのブランドに対して個別に保護機能を設定できます。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">Brand Registryのデメリット・注意点</summary>
+      <div class="accordion-body">
+        <ul>
+          <li>古書店・個人の<strong>合法的な再販も制限</strong>してしまう場合がある</li>
+          <li>Seller Centralフォーラムで批判的な議論もある</li>
+          <li>ただし<strong>既に複数の出版社が導入済み</strong>で、業界トレンドとしては正当</li>
+        </ul>
+        <p><strong>対応方針:</strong> 古書市場への影響も認識した上で、新品せどり対策として誠実に活用します。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">Amazonに直接確認が必要な事項</summary>
+      <div class="accordion-body">
+        <table class="feature-table">
+          <thead><tr><th>項目</th><th>確認</th><th>説明</th></tr></thead>
+          <tbody>
+            <tr><td>Brand Registry申請</td><td><span class="tag tag-free">不要</span></td><td>セルフサービスで申請可能</td></tr>
+            <tr><td>商標の出願</td><td><span class="tag tag-free">不要</span></td><td>特許庁への手続き</td></tr>
+            <tr><td><strong>Brand Gating</strong></td><td><span class="tag tag-high">要確認</span></td><td>出品制限にはAmazonの審査が必要</td></tr>
+            <tr><td><strong>Transparency</strong></td><td><span class="tag tag-high">要確認</span></td><td>書籍への適用可否はAmazonに確認</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- SEC 05: Project Zero + 構造的対策 -->
+<section class="sec" id="sec05">
+  <div class="section-label section-label-cyan">Section 05</div>
+  <h2 class="section-title">Project Zero + 構造的対策</h2>
+  <p class="section-subtitle">Brand Registry承認後に使えるさらに強力な機能と、価格・物流面の構造的対策です。</p>
+
+  <div class="card card-purple">
+    <div class="card-header">
+      <div class="card-icon card-icon-purple">&#x1F680;</div>
+      <h4>Project Zero（Brand Registry承認後に申請可能）</h4>
+    </div>
+    <p>自社で直接、不正出品を<strong>即時削除</strong>できる権限を取得。AmazonのMLが学習し、新規せどり出品を<strong>自動でブロック</strong>。</p>
+    <p><strong>99%の自動削除率</strong>（Amazon公式発表）。費用は無料です。</p>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin:24px 0 12px;">構造的な対策（Buy Box獲得率を上げる）</h3>
+
+  <div class="two-col">
+    <div class="card card-blue">
+      <div class="card-header">
+        <div class="card-icon card-icon-blue">&#x1F4E6;</div>
+        <h4>FBA活用</h4>
+      </div>
+      <p>FBA（Amazonが配送）を利用するとBuy Box獲得率が上がります。せどり業者は自己配送が多いため、FBAで差別化。</p>
+    </div>
+    <div class="card card-accent">
+      <div class="card-header">
+        <div class="card-icon card-icon-accent">&#x1F4B0;</div>
+        <h4>価格戦略の見直し</h4>
+      </div>
+      <p>Buy Boxアルゴリズムは「最安値」だけでなく「総合評価」で判定。FBA + 公式出品者の信頼性で、定価でもカート獲得は可能。</p>
+    </div>
+  </div>
+
+  <div class="accordion-section">
+    <details class="accordion-item">
+      <summary class="accordion-summary">中古品せどりと新品せどりの法的な違い</summary>
+      <div class="accordion-body">
+        <table class="feature-table">
+          <thead><tr><th>種別</th><th>法的根拠</th><th>排除可能性</th></tr></thead>
+          <tbody>
+            <tr><td><strong>中古品せどり</strong></td><td>著作権消尽原則で合法</td><td>排除不可。共存するしかない</td></tr>
+            <tr><td><strong>新品横流しせどり</strong></td><td>コンディションガイドライン違反の可能性</td><td>「新品」表示で出品 &rarr; 違反申告可能</td></tr>
+            <tr><td><strong>偽造・海賊版</strong></td><td>知的財産権侵害</td><td>Brand Registry / Project Zeroで即削除</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ══════════ PART C: 在庫監視の自動化 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-c">Part C</span>
+  <span class="part-name">在庫監視の自動化</span>
+</div>
+
+<!-- SEC 06: ツッコミ7本 -->
+<section class="sec" id="sec06">
+  <div class="section-label section-label-green">Section 06</div>
+  <h2 class="section-title">要件の前に考えるべきこと &mdash; 7つの論点</h2>
+  <p class="section-subtitle">在庫監視の仕組みを作る前に、ヒアリング内容に対して検討すべき重要な論点を整理しました。</p>
+
+  <div class="tsukomi-card">
+    <div class="tsukomi-header">
+      <div class="tsukomi-num">1</div>
+      <div class="tsukomi-title">「Amazonのページから拾う」はスクレイピング = 規約違反</div>
+    </div>
+    <div class="tsukomi-conclusion">結論: APIを使うべき。スクレイピングは絶対ダメ。</div>
+    <div class="tsukomi-body">
+      <ul>
+        <li>Amazon利用規約でスクレイピングは明確に禁止</li>
+        <li>検出されるとVendor Centralアカウント停止リスク</li>
+        <li><strong>正規ルート:</strong> SP-API（Selling Partner API）= 無料、公式、Vendor Central対応</li>
+        <li><strong>補助ルート:</strong> Keepa API = 月&euro;49〜で公開データ（Buy Box・出品者情報）を取得</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tsukomi-card">
+    <div class="tsukomi-header">
+      <div class="tsukomi-num">2</div>
+      <div class="tsukomi-title">「2日前の情報しか知れない」の真因は何か？</div>
+    </div>
+    <div class="tsukomi-conclusion">仮説: Vendor Central標準レポートの更新頻度が原因</div>
+    <div class="tsukomi-body">
+      <ul>
+        <li>Vendor Central標準レポート = <strong>週次・月次</strong> &rarr; 遅い</li>
+        <li><strong>Real-Time Inventory Report</strong>を使えば<strong>60〜120分遅延</strong>に改善可能</li>
+        <li>ただしSP-APIの開発者登録が必要（貴社側のアクション）</li>
+      </ul>
+      <p>&rarr; <strong>確認事項:</strong> 現在どのレポートを使っているか？ 取次からのデータ？</p>
+    </div>
+  </div>
+
+  <div class="tsukomi-card">
+    <div class="tsukomi-header">
+      <div class="tsukomi-num">3</div>
+      <div class="tsukomi-title">「在庫0」と「カート落ち」は別問題 &mdash; 混同していないか？</div>
+    </div>
+    <div class="tsukomi-conclusion">最重要の論点。2つの状態を明確に分けるべき。</div>
+    <div class="tsukomi-body">
+      <ul>
+        <li><strong>在庫0 &rarr; カート落ちに見える:</strong> 在庫切れだからカートに表示されない（本当の品切れ）</li>
+        <li><strong>在庫あり &rarr; カート落ち:</strong> せどりに取られた（ブランド保護の問題）</li>
+      </ul>
+      <p>&rarr; <strong>2つのデータソースが必要:</strong> SP-API（正確な在庫数）+ Keepa（Buy Box状態）</p>
+    </div>
+  </div>
+
+  <div class="tsukomi-card">
+    <div class="tsukomi-header">
+      <div class="tsukomi-num">4</div>
+      <div class="tsukomi-title">2,000点を手動ISBNチェックは物理的に不可能</div>
+    </div>
+    <div class="tsukomi-conclusion">バッチ処理で全件自動チェックすべき。手動ゼロ化が目標。</div>
+    <div class="tsukomi-body">
+      <ul>
+        <li>SP-API: 1回のリクエストで<strong>全ASIN取得可能</strong>（レポート生成&rarr;ダウンロード）</li>
+        <li>Keepa API: 100 ASINまでバッチクエリ可能 &rarr; 2,000点 = 20回で完了（約5分）</li>
+        <li>毎日自動実行 &rarr; Google Sheetsに書き出し &rarr; アラート通知</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tsukomi-card">
+    <div class="tsukomi-header">
+      <div class="tsukomi-num">5</div>
+      <div class="tsukomi-title">「売上と在庫は別々で落としている」は統合すべき</div>
+    </div>
+    <div class="tsukomi-conclusion">SP-APIなら同じパイプラインで取得・結合可能。</div>
+    <div class="tsukomi-body">
+      <ul>
+        <li><code>GET_VENDOR_REAL_TIME_INVENTORY_REPORT</code> &mdash; 在庫数（時間単位）</li>
+        <li><code>GET_VENDOR_REAL_TIME_SALES_REPORT</code> &mdash; 売上数（時間単位）</li>
+        <li>ASINキーで結合すれば「在庫 &divide; 日販 = 残日数」を自動計算</li>
+        <li><strong>残日数 &lt; 閾値 &rarr; アラート</strong>が実現可能</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tsukomi-card">
+    <div class="tsukomi-header">
+      <div class="tsukomi-num">6</div>
+      <div class="tsukomi-title">discover社に「リスト作成で数万円/回」は高すぎる</div>
+    </div>
+    <div class="tsukomi-conclusion">自動化すれば月約8,000円で毎日自動生成。</div>
+    <div class="tsukomi-body">
+      <ul>
+        <li><strong>現状:</strong> discover社に依頼 &rarr; 数万円/回 &rarr; 手動リスト</li>
+        <li><strong>提案:</strong> Keepa API Plan月約8,000円 + Python自動化 &rarr; 毎日自動更新</li>
+        <li>discover社には広告「運用」に専念してもらい、データ取得・分析は内製化</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tsukomi-card">
+    <div class="tsukomi-header">
+      <div class="tsukomi-num">7</div>
+      <div class="tsukomi-title">A+コンテンツ・バナー自動生成はスコープを分けるべき</div>
+    </div>
+    <div class="tsukomi-conclusion">在庫監視とは別プロジェクト。混ぜると進捗が遅くなる。</div>
+    <div class="tsukomi-body">
+      <ul>
+        <li>A+コンテンツ &rarr; Brand Registry登録が前提（商標登録と連動）</li>
+        <li>バナー自動生成 &rarr; 書影データ + テンプレート + 画像生成</li>
+        <li><strong>優先順位:</strong> Phase 1: 在庫監視 / Phase 2: A+ / Phase 3: バナー</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SEC 07: 実装方針 -->
+<section class="sec" id="sec07">
+  <div class="section-label section-label-green">Section 07</div>
+  <h2 class="section-title">実装方針 &mdash; SP-API + Keepa ハイブリッド</h2>
+  <p class="section-subtitle">在庫の「正確な数量」はSP-API、Buy Boxの「取得状態」はKeepa API。2つを組み合わせて全体像を把握します。</p>
+
+  <div class="arch-diagram">
+    <div style="font-size:0.7rem;opacity:0.5;margin-bottom:12px;letter-spacing:0.1em">ARCHITECTURE</div>
+    <div class="arch-row">
+      <div class="arch-box arch-source">
+        <h5>SP-API</h5>
+        <p>在庫数 / 売上数<br>無料・公式</p>
+      </div>
+      <div class="arch-box arch-source">
+        <h5>Keepa API</h5>
+        <p>Buy Box / 出品者<br>月&euro;49〜</p>
+      </div>
+    </div>
+    <div class="arch-arrow">&#8595;</div>
+    <div class="arch-row">
+      <div class="arch-box arch-process" style="max-width:320px;">
+        <h5>Python 統合スクリプト</h5>
+        <p>在庫取得 &rarr; Buy Boxチェック &rarr; 売上結合 &rarr; アラート判定</p>
+      </div>
+    </div>
+    <div class="arch-arrow">&#8595;</div>
+    <div class="arch-row">
+      <div class="arch-box arch-output">
+        <h5>Google Sheets</h5>
+        <p>ダッシュボード</p>
+      </div>
+      <div class="arch-box arch-output">
+        <h5>Slack / メール</h5>
+        <p>アラート通知</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin:24px 0 12px;">技術選定</h3>
+
+  <div class="compare-box compare-box-green">
+    <table>
+      <thead><tr><th>コンポーネント</th><th>選定</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>在庫データ取得</td><td><strong>SP-API</strong></td><td>無料・公式・正確な在庫数</td></tr>
+        <tr><td>Buy Box監視</td><td><strong>Keepa API</strong></td><td>Buy Box状態・出品者情報を取得可能</td></tr>
+        <tr><td>実行言語</td><td><strong>Python</strong></td><td>SP-API SDK・keepaライブラリが充実</td></tr>
+        <tr><td>出力先</td><td><strong>Google Sheets</strong></td><td>貴社が操作しやすい・共有容易</td></tr>
+        <tr><td>通知</td><td><strong>Slack or メール</strong></td><td>既存インフラ活用</td></tr>
+        <tr><td>実行環境</td><td><strong>ローカル &rarr; Cloud Functions</strong></td><td>まずPoC、安定したらクラウド移行</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>なぜハイブリッド？:</strong>
+    SP-APIだけでは「Buy Boxを誰が持っているか」がわからず、KeepaだけではAmazon倉庫の「正確な在庫数」がわかりません。<strong>2つを組み合わせて初めて「在庫0 vs カート落ち」を正確に判別</strong>できます。
+  </div>
+
+  <div class="accordion-section">
+    <details class="accordion-item">
+      <summary class="accordion-summary">ISBN &rarr; ASIN変換について</summary>
+      <div class="accordion-body">
+        <p>日本の書籍はISBN-10がそのままASINとして使われるケースが多いです。</p>
+        <ul>
+          <li>貴社が持つのはISBNリスト（出版物の場合）</li>
+          <li>ISBN-13 &rarr; ISBN-10変換が必要な場合あり</li>
+          <li>Keepa APIは<strong>ISBN-13でも直接検索可能</strong></li>
+        </ul>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">SP-API開発者登録の手順</summary>
+      <div class="accordion-body">
+        <p>SP-APIを使うには、貴社のVendor Central内で開発者プロファイルを作成する必要があります。</p>
+        <ul>
+          <li><strong>手順:</strong> Vendor Central &rarr; Integration &rarr; API Integration &rarr; 開発者プロファイル作成</li>
+          <li><strong>リスク:</strong> 社内IT担当者の協力と承認が必要</li>
+          <li><strong>回避策:</strong> Phase 1はKeepa APIだけで始め、SP-APIはPhase 2に回す</li>
+        </ul>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">Keepa APIだけでMVPは可能か？</summary>
+      <div class="accordion-body">
+        <p><strong>可能です。</strong>ただし在庫の「正確な数量」は取れません。</p>
+        <ul>
+          <li>Keepa &rarr; 在庫「あり/なし」+ Buy Box保持者 + 出品者数 + 価格</li>
+          <li>SP-API &rarr; 在庫「正確な数量」（sellable units）</li>
+          <li>MVP段階では「在庫あり/なし + カート状態」がわかれば十分</li>
+          <li>「残日数」計算にはSP-APIの正確な在庫数が必要（Phase 2）</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">&#x1F4CB; SP-API 開発者登録の具体的手順（貴社側の作業）</summary>
+      <div class="accordion-body">
+        <p><strong>所要時間:</strong> 約1〜2時間（本人確認の承認待ちを除く）</p>
+
+        <p style="margin-top:10px"><strong>STEP 1: 前提条件の準備</strong></p>
+        <ul>
+          <li>有効な<strong>Vendor Centralアカウント</strong>（amazon.co.jp）</li>
+          <li><strong>AWSアカウント</strong>の作成（無料枠で可。IAMユーザー作成が必要）</li>
+          <li>自社の<strong>プライバシーポリシーURL</strong>（サイトにない場合は作成が必要）</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>STEP 2: AWSでIAMユーザーを作成</strong></p>
+        <ul>
+          <li>AWSコンソール &rarr; IAM &rarr; ユーザー &rarr; 「ユーザーの作成」</li>
+          <li>ユーザー名を入力し、ARN（Amazon Resource Name）を控える</li>
+          <li>「セキュリティ認証情報」タブ &rarr; アクセスキーIDとシークレットアクセスキーを生成</li>
+          <li><strong>注意: これらは一度しか表示されません。即座に保存してください</strong></li>
+          <li>IAMポリシー（<code>execute-api:Invoke</code>を許可）を作成し、ユーザーにアタッチ</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>STEP 3: ソリューションプロバイダーポータルで開発者登録</strong></p>
+        <ul>
+          <li><a href="https://developer.amazonservices.co.jp/" target="_blank" rel="noopener" style="color:var(--green)">ソリューションプロバイダーポータル</a>にVendor Centralの認証情報でサインイン</li>
+          <li><strong>本人確認</strong>を完了（約20分）</li>
+          <li>開発者プロファイルを作成: 組織名、URL、連絡先、プライバシーポリシーURLを入力</li>
+          <li>「プライベート開発者」として登録（自社利用の場合）</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>STEP 4: アプリケーション登録 &amp; LWA認証情報の取得</strong></p>
+        <ul>
+          <li>ポータルの「アプリの開発」 &rarr; 「新しいアプリを追加」</li>
+          <li>アプリケーション名を入力、タイプは「プライベート」を選択</li>
+          <li>必要なロール（在庫・売上レポート用）にチェック</li>
+          <li>登録完了後、<strong>LWA クライアントID</strong>と<strong>クライアントシークレット</strong>が発行される</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>STEP 5: 自己認可（リフレッシュトークン取得）</strong></p>
+        <ul>
+          <li>Vendor Central &rarr; 「Integration」 &rarr; 「API Integration」</li>
+          <li>作成したアプリの「認証」を選択</li>
+          <li><strong>リフレッシュトークン</strong>が発行される（一度しか表示されない！）</li>
+          <li>このトークンを開発者に安全な方法で共有</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>&#x26A0; よくあるつまずきポイント:</strong></p>
+        <ul>
+          <li><strong>クライアントシークレットは180日ごとに更新が必要</strong>（忘れるとAPI停止）</li>
+          <li>リージョン設定ミス: 日本は <code>fe</code>（Far East）リージョン</li>
+          <li>ロール不足: レポートAPIにアクセスできない場合は適切なロールが付与されているか確認</li>
+          <li>設定変更の反映に1時間程度かかる場合がある</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>discover社が管理している場合:</strong></p>
+        <ul>
+          <li>discover社がVendor Centralの管理者権限を持っている場合、上記STEP 2-5の一部をdiscover社に委任可能</li>
+          <li>ただしAPIキーの管理権限は<strong>大和書房側で保持</strong>することを推奨</li>
+          <li>代理店にアクセスさせる場合は「パブリックアプリケーション」のOAuth認証フローを使用</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">&#x1F511; Keepa API 利用開始の手順（貴社側の作業）</summary>
+      <div class="accordion-body">
+        <p><strong>所要時間:</strong> 約15分 / <strong>費用:</strong> &euro;49/月〜（約8,000円）</p>
+
+        <div class="callout callout-red" style="margin:10px 0">
+          <strong>重要: Keepaには2種類の有料プランがあります</strong><br>
+          &bull; <strong>Data Access（&euro;19/月）</strong> = ブラウザ拡張機能用。APIは1トークン/分しか発生せず、<strong>自動クエリには使えません</strong><br>
+          &bull; <strong>API Plan（&euro;49/月〜）</strong> = システム連携用。2,000件/日の自動クエリにはこちらが必須
+        </div>
+
+        <p style="margin-top:10px"><strong>STEP 1: Keepaアカウント作成</strong>（貴社）</p>
+        <ul>
+          <li><a href="https://keepa.com/" target="_blank" rel="noopener" style="color:var(--green)">keepa.com</a> にアクセス</li>
+          <li>右上の「Register」 &rarr; メールアドレス・パスワードを入力して登録</li>
+          <li>メールアドレス認証を完了</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>STEP 2: API Planに申し込み</strong>（貴社）</p>
+        <ul>
+          <li><a href="https://keepa.com/#!api" target="_blank" rel="noopener" style="color:var(--green)">keepa.com/#!api</a> にログイン状態でアクセス</li>
+          <li>「PRICING PLANS」セクション &rarr; <strong>API Plan 20（&euro;49/月）</strong>を選択</li>
+          <li>「SUBSCRIBE」 &rarr; 請求先情報を<strong>英語</strong>で入力</li>
+          <li>クレジットカード or Google Payで決済</li>
+          <li>年払いオプションはなし（月払い固定、通貨はユーロ固定）</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>STEP 3: APIキーを取得して開発者に共有</strong>（貴社 &rarr; 開発者）</p>
+        <ul>
+          <li><a href="https://keepa.com/#!api" target="_blank" rel="noopener" style="color:var(--green)">keepa.com/#!api</a> の「YOUR ACCESS」セクション</li>
+          <li>「<strong>Private API access key</strong>」をコピー</li>
+          <li>開発者に<strong>安全な方法</strong>で共有（パスワードマネージャー等推奨）</li>
+          <li>キーは再発行可能（アカウント設定から）</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>トークンシステムの仕組み:</strong></p>
+        <table class="feature-table">
+          <thead><tr><th>プラン</th><th>トークン発生</th><th>最大保持</th><th>月額</th></tr></thead>
+          <tbody>
+            <tr><td><strong>API Plan 20</strong></td><td>20/分</td><td>1,200</td><td><strong>&euro;49（推奨）</strong></td></tr>
+            <tr><td>API Plan 60</td><td>60/分</td><td>3,600</td><td>&euro;129</td></tr>
+          </tbody>
+        </table>
+        <ul style="margin-top:6px">
+          <li>基本データ取得: 1トークン/商品。Buy Boxデータ付き: 3トークン/商品</li>
+          <li>2,000件/日（基本）= 2,000トークン &rarr; API Plan 20（28,800トークン/日上限）で十分</li>
+          <li>Buy Boxデータ付き = 6,000トークン/日 &rarr; API Plan 20でもカバー可能</li>
+          <li>ISBN-13で直接クエリ可能（ASIN変換不要）</li>
+        </ul>
+
+        <p style="margin-top:10px"><strong>貴社 vs 開発者の役割分担:</strong></p>
+        <table class="feature-table">
+          <thead><tr><th>担当</th><th>作業内容</th></tr></thead>
+          <tbody>
+            <tr><td><strong>貴社</strong></td><td>アカウント作成 / API Plan決済 / APIキー共有 / 月次費用負担</td></tr>
+            <tr><td><strong>開発者</strong></td><td>APIキーでクエリ実装 / amazon.co.jp（domain=5）設定 / バッチ設計 / エラー処理</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- SEC 08: ダッシュボード設計 -->
+<section class="sec" id="sec08">
+  <div class="section-label section-label-green">Section 08</div>
+  <h2 class="section-title">ダッシュボード設計</h2>
+  <p class="section-subtitle">Google Sheetsで貴社が日常的に確認できるダッシュボードを構築します。</p>
+
+  <div class="step-grid">
+    <div class="step-card">
+      <div class="step-num">TAB 1</div>
+      <h4>全商品一覧</h4>
+      <p>ASIN, ISBN, 書名, 在庫数, Buy Box保持者, 残日数, 売上</p>
+      <div class="step-meta">2,000点の全量データ</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">TAB 2</div>
+      <h4>アラート一覧</h4>
+      <p>要対応ASINのみ表示。在庫少・カート落ち・欠品を色分け</p>
+      <div class="step-meta">毎朝確認するシート</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">TAB 3</div>
+      <h4>週次サマリー</h4>
+      <p>KPI推移グラフ。カート取得率, 欠品率, アラート件数の推移</p>
+      <div class="step-meta">経営報告用</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin:24px 0 12px;">アラート条件</h3>
+
+  <div class="compare-box compare-box-green">
+    <table>
+      <thead><tr><th>条件</th><th>意味</th><th>通知</th><th>対策</th></tr></thead>
+      <tbody>
+        <tr><td><strong>在庫 &le; 5冊</strong></td><td>欠品リスク</td><td>Slack &rarr; 営業担当</td><td>補充発注</td></tr>
+        <tr><td><strong>在庫 = 0</strong></td><td>品切れ</td><td>Slack &rarr; 本部長</td><td>緊急発注</td></tr>
+        <tr><td><strong>在庫あり + カート非保持</strong></td><td>せどりに奪われた</td><td>Slack &rarr; 本部長</td><td>侵害報告</td></tr>
+        <tr><td><strong>残日数 &lt; 14日</strong></td><td>2週間で枯渇する</td><td>メール &rarr; 営業</td><td>発注計画見直し</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin:24px 0 12px;">実装フェーズ</h3>
+
+  <div class="step-grid">
+    <div class="step-card">
+      <div class="step-num">PHASE 1</div>
+      <h4>MVP</h4>
+      <p>Keepa APIで在庫有無 + カート状態を一括取得。Google Sheetsに出力。</p>
+      <div class="step-meta">Week 1-2 / 月約8,000円</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">PHASE 2</div>
+      <h4>SP-API統合</h4>
+      <p>正確な在庫数 + 売上データを取得。残日数算出。アラート自動化。</p>
+      <div class="step-meta">Week 3-6 / 月約8,000円</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">PHASE 3</div>
+      <h4>定常運用</h4>
+      <p>GAS Timer日次実行。週次レポート自動生成。Cloud Functions移行。</p>
+      <div class="step-meta">Week 7-8 / 月約9,000円</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PART D: 実行計画 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-d">Part D</span>
+  <span class="part-name">実行計画</span>
+</div>
+
+<!-- SEC 09: 統合ロードマップ -->
+<section class="sec" id="sec09">
+  <div class="section-label section-label-purple">Section 09</div>
+  <h2 class="section-title">統合ロードマップ</h2>
+  <p class="section-subtitle">ブランド保護と在庫監視を同時進行で進めます。商標出願が全ての起点です。</p>
+
+  <div class="roadmap-timeline">
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">WEEK 1-2（3月上旬）</div>
+      <div class="roadmap-title">商標出願 + Keepa MVP</div>
+      <div class="roadmap-desc">
+        J-PlatPatで「大和書房」の商標状況を確認。弁理士 or 自身で第16類出願。出願番号を取得次第、Brand Registry申請を開始。<br>
+        <span class="tag tag-new">NEW</span> 並行してKeepa APIで2,000 ASINの在庫状況・Buy Box状態を一括チェック。Google Sheetsにダッシュボードを構築。
+      </div>
+    </div>
+
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">WEEK 3-4（3月中旬〜下旬）</div>
+      <div class="roadmap-title">Brand Registry + SP-API準備</div>
+      <div class="roadmap-desc">
+        「だいわ文庫」商標（登録済み）でBrand Registry先行申請。「大和書房」は出願番号で追加申請。<br>
+        <span class="tag tag-new">NEW</span> 貴社にVendor Central開発者プロファイル作成を依頼。SP-API OAuth認証のセットアップ準備。
+      </div>
+    </div>
+
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">MONTH 2-3（4〜5月）</div>
+      <div class="roadmap-title">在庫監視自動化 + Brand Registry運用</div>
+      <div class="roadmap-desc">
+        Brand Registry承認後、侵害報告 + IP Alert活用でせどり排除。<br>
+        <span class="tag tag-new">NEW</span> SP-API統合完了。Real-Time Inventory + Sales Report取得を自動化。「在庫 &lt; 閾値」&rarr; Slackアラート。「在庫あり + カート非保持」&rarr; カート落ちアラート。残日数の自動計算開始。
+      </div>
+    </div>
+
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">MONTH 4〜（6月以降）</div>
+      <div class="roadmap-title">Project Zero + A+コンテンツ</div>
+      <div class="roadmap-desc">
+        Project Zero申請で自動削除権限を取得。A+コンテンツ適用で検索上位を確保。<br>
+        <span class="tag tag-new">NEW</span> ダッシュボード定常運用。週次レポート自動配信。バナー自動生成の検討開始。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEC 10: コスト・効果 -->
+<section class="sec" id="sec10">
+  <div class="section-label section-label-purple">Section 10</div>
+  <h2 class="section-title">コスト・効果</h2>
+  <p class="section-subtitle">Brand Registryは無料。在庫監視は月約8,000円から始められます。</p>
+
+  <div class="impact-grid">
+    <div class="impact-item">
+      <div class="impact-number">&yen;0</div>
+      <div class="impact-label">Brand Registry 月額費用</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number">+20〜50%</div>
+      <div class="impact-label">Buy Box 奪還率</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number">&yen;8,000</div>
+      <div class="impact-label">在庫監視 月額</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number">90%&darr;</div>
+      <div class="impact-label">手動作業の工数削減</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin:24px 0 12px;">discover社との比較</h3>
+
+  <div class="compare-box compare-box-purple">
+    <table>
+      <thead><tr><th>項目</th><th>現状（discover社）</th><th>提案後（自動化）</th></tr></thead>
+      <tbody>
+        <tr><td>リスト作成</td><td>数万円/回（手動依頼）</td><td><strong>自動生成（毎日更新）</strong></td></tr>
+        <tr><td>月額コスト</td><td>依頼頻度 &times; 数万円</td><td><strong>約8,000〜9,000円/月</strong></td></tr>
+        <tr><td>更新頻度</td><td>依頼時のみ</td><td><strong>日次〜2時間ごと</strong></td></tr>
+        <tr><td>データ鮮度</td><td>作成日の時点</td><td><strong>60〜120分遅延</strong></td></tr>
+        <tr><td>カバー範囲</td><td>依頼範囲のみ</td><td><strong>全2,000 ASIN</strong></td></tr>
+        <tr><td>アラート</td><td>なし</td><td><strong>Slack/メール自動通知</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin:24px 0 12px;">Phase別コスト推移</h3>
+
+  <div class="compare-box compare-box-purple">
+    <table>
+      <thead><tr><th>項目</th><th>Phase 1 (MVP)</th><th>Phase 2 (統合)</th><th>Phase 3 (定常)</th></tr></thead>
+      <tbody>
+        <tr><td>Keepa API</td><td>&euro;49/月（約8,000円）</td><td>&euro;49/月</td><td>&euro;49/月</td></tr>
+        <tr><td>SP-API</td><td>&mdash;</td><td>無料</td><td>無料</td></tr>
+        <tr><td>Cloud Functions</td><td>&mdash;</td><td>&mdash;</td><td>&yen;500〜1,000/月</td></tr>
+        <tr><td>Google Sheets</td><td>無料</td><td>無料</td><td>無料</td></tr>
+        <tr class="recommended"><td><strong>合計</strong></td><td><strong>約8,000円/月</strong></td><td><strong>約8,000円/月</strong></td><td><strong>約9,000円/月</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>投資対効果:</strong>
+    discover社への1回の依頼分（数万円）で、<strong>年間の自動監視が運用可能</strong>。Brand Registry・Project Zeroはすべて無料。月約8,000円の投資で2,000商品の常時監視を実現します。
+  </div>
+</section>
+
+<!-- SEC 11: アクション一覧 -->
+<section class="sec" id="sec11">
+  <div class="section-label section-label-purple">Section 11</div>
+  <h2 class="section-title">大和書房さまにお願いしたいこと</h2>
+  <p class="section-subtitle">以下のアクションを順番に進めていただくことで、ブランド保護と在庫監視の両方を最短ルートで開始できます。</p>
+
+  <h3 style="font-size:0.92rem;font-weight:700;margin-bottom:12px;color:var(--accent-dark)">すぐにやること（今週中）</h3>
+  <ul class="action-list">
+    <li>
+      <div class="action-num">1</div>
+      <div><strong>J-PlatPatで「大和書房」を検索</strong><br>
+      <a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener" style="color:var(--accent);font-size:0.78rem">https://www.j-platpat.inpit.go.jp/</a> で「大和書房」が商標登録済みか確認。</div>
+    </li>
+    <li>
+      <div class="action-num">2</div>
+      <div><strong>Brand Registryの正確なステータスを確認</strong><br>
+      <a href="https://brandservices.amazon.co.jp/" target="_blank" rel="noopener" style="color:var(--accent);font-size:0.78rem">brandservices.amazon.co.jp</a> で「だいわ文庫」がBrand Registryに登録されているか確認。</div>
+    </li>
+    <li>
+      <div class="action-num">3</div>
+      <div><strong>Amazonアカウント種別の確認</strong><br>
+      Seller Central / Vendor Central のどちらを使用しているか確認。</div>
+    </li>
+    <li>
+      <div class="action-num">4</div>
+      <div><strong>ISBNリスト（全2,000点）をExcel等で提供</strong> <span class="tag tag-new">NEW</span><br>
+      在庫監視の入力データとして必要です。Keepa APIで一括チェックします。</div>
+    </li>
+    <li>
+      <div class="action-num">5</div>
+      <div><strong>「2日前の情報」の出所を確認</strong> <span class="tag tag-new">NEW</span><br>
+      Vendor Centralダッシュボード？ 取次からのデータ？ 改善方法が変わります。</div>
+    </li>
+  </ul>
+
+  <h3 style="font-size:0.92rem;font-weight:700;margin:28px 0 12px;color:var(--accent-dark)">今月中にやること</h3>
+  <ul class="action-list">
+    <li>
+      <div class="action-num">6</div>
+      <div><strong>「大和書房」を第16類（印刷物）で商標出願</strong><br>
+      弁理士に依頼 or 電子出願。出願番号を取得次第、Brand Registry申請が可能に。</div>
+    </li>
+    <li>
+      <div class="action-num">7</div>
+      <div><strong>「だいわ文庫」でBrand Registryを先行申請</strong><br>
+      登録済み商標（4976928）を使って即日申請可能。承認まで2〜4週間。</div>
+    </li>
+    <li>
+      <div class="action-num">8</div>
+      <div><strong>discover社のアカウント権限範囲を確認</strong> <span class="tag tag-new">NEW</span><br>
+      Vendor Centralの管理者アクセスを持っているか。SP-API開発者登録に必要。</div>
+    </li>
+    <li>
+      <div class="action-num">9</div>
+      <div><strong>アラート通知先を決定</strong> <span class="tag tag-new">NEW</span><br>
+      Slack? メール? LINE? 担当者は誰？ 通知チャネルの設計に必要です。</div>
+    </li>
+    <li>
+      <div class="action-num">10</div>
+      <div><strong>Keepa APIトライアル（2,000 ASINの一括チェック）</strong> <span class="tag tag-new">NEW</span><br>
+      Keepa APIアカウント（月額約8,000円）を取得し、全稼働ASINの在庫状況・Buy Box状態を一括確認。結果はGoogle Sheetsに出力します。</div>
+    </li>
+  </ul>
+
+  <h3 style="font-size:0.92rem;font-weight:700;margin:28px 0 12px;color:var(--text-3)">確認・共有いただきたい情報</h3>
+  <ul class="action-list">
+    <li>
+      <div class="action-num">11</div>
+      <div><strong>在庫の閾値を決定</strong> <span class="tag tag-new">NEW</span><br>
+      何冊以下でアラートを出すか。商品カテゴリごとに異なる場合はそれも共有ください。</div>
+    </li>
+  </ul>
+
+  <div class="callout" style="margin-top:24px">
+    <strong>こちらで対応すること:</strong>
+    Google Sheetsダッシュボード構築、Brand Registry申請サポート、テンプレメール生成フロー整備、SP-API認証セットアップ支援。Keepa APIトライアルは貴社にてアカウント取得後、こちらで設定・チェックを実施します。
+  </div>
+</section>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+
+<!-- ═══════════════ Footer ═══════════════ -->
+<footer class="closing">
+  <p class="closing-msg">カートを取り戻すことは、売上を取り戻すこと。</p>
+  <p class="closing-sub" style="margin-bottom:12px">omoshiku &mdash; "想い"と"仕組み"で"面白く"</p>
+  <p class="closing-sub">大和書房 &times; オモシク &mdash; Amazon ブランド保護 &amp; 在庫監視 統合プラン</p>
+  <p class="closing-sub" style="margin-top: 8px;">Confidential | 2026-03</p>
+</footer>
+
+<script>
+(function() {
+  /* ─── Particles ─── */
+  var pc = document.getElementById('particles');
+  for (var i = 0; i < 45; i++) {
+    var p = document.createElement('div');
+    var isAmber = Math.random() > 0.4;
+    p.className = 'particle ' + (isAmber ? 'particle-amber' : 'particle-white');
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-10px';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (5 + Math.random() * 7) + 's';
+    var size = 1.5 + Math.random() * 2.5;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    pc.appendChild(p);
+  }
+
+  /* ─── TOC Sidebar: IntersectionObserver ─── */
+  var tocLinks = document.querySelectorAll('.toc-link');
+  var sections = [];
+  tocLinks.forEach(function(a) {
+    var target = document.querySelector(a.getAttribute('href'));
+    if (target) sections.push({ el: target, link: a });
+  });
+
+  if (sections.length) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          tocLinks.forEach(function(l) { l.classList.remove('active'); });
+          var match = sections.find(function(s) { return s.el === e.target; });
+          if (match) match.link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+
+    sections.forEach(function(s) { io.observe(s.el); });
+  }
+
+  /* ─── Mobile Nav: show/hide ─── */
+  var gnav = document.getElementById('gnav');
+  var hero = document.querySelector('.hero');
+  var gnavLinks = gnav ? gnav.querySelectorAll('.gnav-link') : [];
+  var allSections = document.querySelectorAll('.sec[id]');
+
+  function updateMobileNav() {
+    if (!gnav || window.innerWidth > 960) return;
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    gnav.classList.toggle('visible', heroBottom < 60);
+
+    var currentId = '';
+    allSections.forEach(function(s) {
+      if (s.getBoundingClientRect().top < 100) currentId = s.id;
+    });
+    gnavLinks.forEach(function(a) {
+      var href = a.getAttribute('href').replace('#', '');
+      a.classList.toggle('active', href === currentId);
+    });
+  }
+
+  window.addEventListener('scroll', updateMobileNav, { passive: true });
+  window.addEventListener('resize', updateMobileNav, { passive: true });
+  updateMobileNav();
+})();
+</script>
+</body>
+</html>
