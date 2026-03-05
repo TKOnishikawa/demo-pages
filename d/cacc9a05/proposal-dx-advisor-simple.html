@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ニッカホーム DX伴走支援のご提案（概要版）</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+@page {
+  size: A4;
+  margin: 18mm 16mm 14mm 16mm;
+}
+
+:root {
+  --accent: #e8944a;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --bg-warm: #f6f3ee;
+  --bg-card: #ffffff;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-jp);
+  background: #fff;
+  color: var(--text-1);
+  line-height: 1.65;
+  font-size: 10pt;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 16mm 16mm 14mm 16mm;
+  background: #fff;
+  position: relative;
+}
+.page + .page { page-break-before: always; }
+
+@media screen {
+  body { background: #e8e4de; padding: 20px 0; }
+  .page { box-shadow: 0 2px 20px rgba(0,0,0,0.1); margin-bottom: 24px; }
+}
+
+/* ─── HEADER ─── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6mm;
+  padding-bottom: 3mm;
+  border-bottom: 2px solid var(--accent);
+}
+.header-left { font-family: var(--font-en); font-size: 9pt; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; }
+.header-right { text-align: right; font-size: 8.5pt; color: var(--text-3); }
+.header-right .to { font-size: 10pt; color: var(--text-1); font-weight: 600; }
+
+/* ─── TITLE ─── */
+.main-title { text-align: center; margin-bottom: 5mm; }
+.main-title h1 { font-size: 17pt; font-weight: 800; color: var(--navy); line-height: 1.4; margin-bottom: 1mm; }
+.main-title h1 em { font-style: normal; color: var(--accent); }
+.main-title .sub { font-size: 9.5pt; color: var(--text-2); letter-spacing: 0.15em; }
+
+/* ─── SECTION HEADING ─── */
+.sh { display: flex; align-items: center; gap: 8px; margin-bottom: 2.5mm; margin-top: 4mm; }
+.sh-bar { width: 4px; height: 14px; background: var(--accent); border-radius: 2px; }
+.sh-bar.navy { background: var(--navy-mid); }
+.sh h2 { font-size: 10.5pt; font-weight: 800; color: var(--navy); }
+
+/* ─── TABLES ─── */
+table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 3.5mm; }
+th { background: var(--navy); color: #fff; font-weight: 600; padding: 4px 7px; text-align: left; font-size: 8pt; }
+td { padding: 4px 7px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+tr:nth-child(even) td { background: rgba(246,243,238,0.5); }
+.td-label { font-weight: 700; color: var(--text-1); white-space: nowrap; width: 20%; }
+.td-impact { color: var(--accent-dark); font-weight: 600; }
+
+/* ─── GROWTH THEME ─── */
+.growth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2mm;
+  margin-bottom: 3.5mm;
+}
+.growth-card {
+  padding: 3mm;
+  border-left: 3px solid var(--navy-mid);
+  background: rgba(26,26,46,0.03);
+  border-radius: 0 4px 4px 0;
+}
+.growth-card h4 { font-size: 8.5pt; font-weight: 700; color: var(--navy); margin-bottom: 1px; }
+.growth-card p { font-size: 7.5pt; color: var(--text-2); line-height: 1.45; }
+
+/* ─── WHY NOW LIST ─── */
+.why-now-list {
+  list-style: none; padding: 0; margin-bottom: 0;
+  display: grid; grid-template-columns: 1fr; gap: 1.5mm;
+}
+.why-now-list li { font-size: 8.5pt; color: var(--text-2); line-height: 1.45; padding-left: 12px; position: relative; }
+.why-now-list li::before { content: ''; position: absolute; left: 1px; top: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+/* ─── ROADMAP ─── */
+.roadmap-strip { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-radius: 4px; overflow: hidden; margin-bottom: 3.5mm; }
+.rm-cell { padding: 4px 7px; text-align: center; font-size: 8pt; line-height: 1.4; }
+.rm-cell.q1 { background: var(--accent); color: #fff; }
+.rm-cell.q2 { background: var(--accent-dark); color: #fff; }
+.rm-cell.q3 { background: var(--navy-mid); color: rgba(240,236,230,0.85); }
+.rm-label { font-family: var(--font-en); font-weight: 600; font-size: 7pt; letter-spacing: 0.1em; opacity: 0.8; }
+.rm-title { font-weight: 700; margin-top: 1px; }
+
+/* ─── MIDTERM ─── */
+.midterm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2mm;
+  margin-bottom: 3.5mm;
+}
+.mt-card {
+  padding: 3mm;
+  border-left: 3px solid var(--accent-dark);
+  background: var(--accent-bg);
+  border-radius: 0 4px 4px 0;
+}
+.mt-card h4 { font-size: 8.5pt; font-weight: 700; color: var(--text-1); margin-bottom: 1px; }
+.mt-card p { font-size: 7.5pt; color: var(--text-2); line-height: 1.45; }
+
+/* ─── COST ─── */
+.cost-box { background: var(--bg-card); border: 2px solid var(--accent); border-radius: 6px; padding: 3.5mm 5mm; margin-bottom: 3.5mm; }
+.cost-main { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1.5mm; }
+.cost-amount { font-family: var(--font-mono); font-size: 20pt; font-weight: 700; color: var(--accent); line-height: 1; }
+.cost-unit { font-size: 9.5pt; color: var(--text-2); }
+.cost-detail { font-size: 8pt; color: var(--text-2); line-height: 1.55; }
+.cost-detail strong { color: var(--text-1); }
+
+/* ─── ROI ─── */
+.roi-strip { margin-bottom: 3.5mm; padding: 2.5mm 4mm; background: var(--accent-bg); border-radius: 4px; font-size: 8.5pt; line-height: 1.55; color: var(--text-1); }
+.roi-strip strong { color: var(--accent-dark); }
+
+/* ─── WHY US ─── */
+.whyus-compact { display: grid; grid-template-columns: 1fr; gap: 1.5mm; margin-bottom: 3.5mm; }
+.wu-row { display: flex; align-items: flex-start; gap: 7px; padding: 2.5mm 3.5mm; background: rgba(246,243,238,0.6); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; }
+.wu-num { font-family: var(--font-en); font-size: 7.5pt; font-weight: 700; color: var(--accent); flex-shrink: 0; width: 14px; }
+.wu-content h4 { font-size: 9pt; font-weight: 700; color: var(--text-1); margin-bottom: 0; }
+.wu-content p { font-size: 7.5pt; color: var(--text-2); line-height: 1.45; }
+
+/* ─── PROFILE ─── */
+.profile-compact { display: flex; gap: 4mm; align-items: flex-start; padding: 3mm 4mm; background: linear-gradient(135deg, var(--navy), var(--navy-mid)); border-radius: 6px; color: #f0ece6; margin-bottom: 4mm; }
+.pc-info { flex: 1; }
+.pc-name { font-size: 10.5pt; font-weight: 800; margin-bottom: 0.5mm; }
+.pc-title { font-size: 7.5pt; color: rgba(240,236,230,0.5); margin-bottom: 1.5mm; }
+.pc-career { font-size: 7pt; color: rgba(240,236,230,0.6); line-height: 1.5; }
+.pc-career span { color: rgba(240,236,230,0.85); font-weight: 600; }
+
+/* ─── REFERENCES ─── */
+.ref-links { margin-bottom: 3.5mm; }
+.ref-link { display: flex; align-items: center; gap: 8px; padding: 2.5mm 3.5mm; background: var(--accent-bg); border: 1.5px solid var(--accent-border); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; margin-bottom: 1.5mm; text-decoration: none; color: var(--text-1); transition: all 0.2s; cursor: pointer; }
+.ref-link:hover { background: rgba(232,148,74,0.15); border-color: var(--accent); transform: translateX(2px); }
+.ref-link .ref-icon { flex-shrink: 0; width: 22px; height: 22px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; }
+.ref-link h4 { font-size: 8.5pt; font-weight: 600; margin-bottom: 0; color: var(--accent-dark); }
+.ref-link p { font-size: 7pt; color: var(--text-3); }
+.ref-link .ref-cta { flex-shrink: 0; margin-left: auto; font-size: 7pt; font-weight: 700; color: #fff; background: var(--accent); border-radius: 4px; padding: 2px 8px; white-space: nowrap; letter-spacing: 0.05em; }
+
+/* ─── CLOSING ─── */
+.closing-simple { text-align: center; padding: 3mm 0 1mm; border-top: 1px solid var(--border); }
+.closing-simple p { font-size: 10pt; font-weight: 600; color: var(--navy); line-height: 1.55; margin-bottom: 1.5mm; }
+.closing-simple .contact { font-size: 7.5pt; color: var(--text-3); font-family: var(--font-en); }
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .page { box-shadow: none; margin: 0; width: auto; min-height: auto; padding: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ PAGE 1 ═══ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">omoshiku</div>
+    <div class="header-right">
+      <div class="to">ニッカホーム 様</div>
+      2026年3月
+    </div>
+  </div>
+
+  <div class="main-title">
+    <h1>DXによる<em>仕組みづくり</em>が、次の<em>事業成長</em>のドライバーになる</h1>
+    <div class="sub">─ DX伴走支援のご提案 ─</div>
+  </div>
+
+  <!-- 課題 -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>御社の構造的課題</h2>
+  </div>
+  <table>
+    <thead>
+      <tr><th>課題</th><th>現状</th><th>インパクト</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-label">原価が2ヶ月遅れる</td>
+        <td>請求書が届いて初めて粗利がわかる</td>
+        <td class="td-impact">低粗利案件の放置 → 年間数千万円の利益毀損</td>
+      </tr>
+      <tr>
+        <td class="td-label">成約率が属人化</td>
+        <td>営業ノウハウが個人の頭の中。教育は完全OJT</td>
+        <td class="td-impact">成約率1%改善 ＝ 年間数千万円</td>
+      </tr>
+      <tr>
+        <td class="td-label">リピート未開拓</td>
+        <td>顧客DBにデータはあるが定期提案の仕組みなし</td>
+        <td class="td-impact">リピート率5%改善 ＝ 年間数億円</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 成長戦略×DX -->
+  <div class="sh">
+    <div class="sh-bar navy"></div>
+    <h2>今後の成長戦略に、DXでの仕組みづくりが欠かせない</h2>
+  </div>
+  <div class="growth-grid">
+    <div class="growth-card">
+      <h4>店舗拡大 × 仕組み化</h4>
+      <p>日常の定型業務を仕組みで自動化すれば、営業は"売る・提案する"に集中できる。人が増えても品質が落ちない組織の土台になる。</p>
+    </div>
+    <div class="growth-card">
+      <h4>顧客リピート・LTV最大化の仕組み</h4>
+      <p>一度ご縁のあったお客様に、最適なタイミングで次の提案ができる仕組み。中長期の成長ドライバーです。</p>
+    </div>
+    <div class="growth-card">
+      <h4>原価管理 × 利益率向上</h4>
+      <p>原価をリアルタイムで見えるようにするだけで、利益率改善の打ち手が見えてきます。伸びしろが大きい領域です。</p>
+    </div>
+  </div>
+
+  <!-- なぜ今か -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>なぜ「今」なのか</h2>
+  </div>
+  <ul class="why-now-list">
+    <li>関東が中部を抜いて売上No.1に ── 関東主導で仕組みを作る好機</li>
+    <li>ANDPAD受発注が未契約 ── 受発注投資の最適タイミング</li>
+    <li>リフォーム業界全体でDXが加速 ── 今動くかどうかが、3年後の競争力を左右する</li>
+  </ul>
+
+  <!-- 中長期 -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>中長期で取り組むテーマ</h2>
+  </div>
+  <div class="midterm-grid">
+    <div class="mt-card">
+      <h4>原価管理リアルタイム化</h4>
+      <p>ANDPAD受発注導入で、請求書を待たずに原価を把握。案件ごとの粗利をリアルタイムで管理できる状態に。</p>
+    </div>
+    <div class="mt-card">
+      <h4>顧客LTV向上の仕組み構築</h4>
+      <p>顧客データを活用し、定期点検・リピート提案の仕組みを構築。「一度きり」を「生涯のお客様」に。</p>
+    </div>
+  </div>
+
+  <!-- Quick Win -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>まず最初の3ヶ月で見える成果</h2>
+    <span style="font-size:7pt;color:var(--text-3);margin-left:2px;">※ 実施テーマは、着手前のヒアリングを踏まえて御社と一緒に決定します</span>
+  </div>
+  <table>
+    <thead>
+      <tr><th>施策</th><th>やること</th><th>成果</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-label">月次速報の自動化</td>
+        <td>Sheets + Looker Studioで営業所別パフォーマンスを自動可視化</td>
+        <td class="td-impact">年間数百時間の手作業削減</td>
+      </tr>
+      <tr>
+        <td class="td-label">AIナレッジ基盤</td>
+        <td>NotebookLM / Geminiで営業マニュアル・見積ノウハウを即検索</td>
+        <td class="td-impact">夜間の見積停止問題を解消</td>
+      </tr>
+      <tr>
+        <td class="td-label">WEB集客の効率化</td>
+        <td>37営業所のGoogleビジネスプロフィールを一元モニタリング</td>
+        <td class="td-impact">来店+電話問合せ 5〜10%増</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══ PAGE 2 ═══ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">omoshiku</div>
+    <div class="header-right">
+      <div class="to">ニッカホーム 様</div>
+      2026年3月
+    </div>
+  </div>
+
+  <!-- ロードマップ -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>12ヶ月の進め方</h2>
+  </div>
+  <div class="roadmap-strip">
+    <div class="rm-cell q1">
+      <div class="rm-label">Q1 — 1-3ヶ月</div>
+      <div class="rm-title">Quick Win 実施</div>
+      月次自動化・AIナレッジ・GBP
+    </div>
+    <div class="rm-cell q2">
+      <div class="rm-label">Q2 — 4-6ヶ月</div>
+      <div class="rm-title">ANDPAD受発注導入</div>
+      原価リアルタイム化
+    </div>
+    <div class="rm-cell q3">
+      <div class="rm-label">Q3-Q4 — 7-12ヶ月</div>
+      <div class="rm-title">LTV向上・営業標準化</div>
+      LTV向上・成約率の仕組み化
+    </div>
+  </div>
+
+  <!-- 費用 -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>費用・契約形態</h2>
+  </div>
+  <div class="cost-box">
+    <div class="cost-main">
+      <span class="cost-amount">60</span>
+      <span class="cost-unit">万円 / 月（税別）</span>
+    </div>
+    <div class="cost-detail">
+      <strong>6ヶ月更新型・12ヶ月推奨</strong> ── 週次定例・施策実行・ダッシュボード構築・ANDPAD導入支援を含む<br>
+      6ヶ月ごとに成果レビュー。成果が出なければ更新しない選択肢が常にあります。
+    </div>
+  </div>
+
+  <!-- ROI -->
+  <div class="roi-strip">
+    年間投資 <strong>720万円</strong> に対して ──<br>
+    ・成約率1%改善 → <strong>年間数千万円</strong>の売上インパクト<br>
+    ・原価可視化 2ヶ月遅れ → <strong>リアルタイム</strong>化で粗利改善<br>
+    ・リピート率改善の種まき → 中長期で<strong>年間数億円</strong>規模
+  </div>
+
+  <!-- なぜ西川か -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>なぜオモシク西川なのか</h2>
+  </div>
+  <div class="whyus-compact">
+    <div class="wu-row">
+      <span class="wu-num">①</span>
+      <div class="wu-content">
+        <h4>大手コンサル品質を約1/6の費用で</h4>
+        <p>アクセンチュアで月350万円/人×2年リピートの実績。同品質を月60万円で提供。</p>
+      </div>
+    </div>
+    <div class="wu-row">
+      <span class="wu-num">②</span>
+      <div class="wu-content">
+        <h4>戦略づくり・システム実装・現場浸透を一気通貫で支援</h4>
+        <p>DXでは、システム実装以上に、前後フェーズの戦略づくりと、実装後の社内浸透/カルチャーづくりが重要。それぞれ発注すると月500万円以上かかります。</p>
+      </div>
+    </div>
+    <div class="wu-row">
+      <span class="wu-num">③</span>
+      <div class="wu-content">
+        <h4>経営・現場・システムを縦横で橋渡し</h4>
+        <p>マーケ・営業・事業開発・エンジニアリング・PM・コンサルの多職種経験で、DXによる組織変革にコミット。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div class="profile-compact">
+    <div class="pc-info">
+      <div class="pc-name">西川 太雄</div>
+      <div class="pc-title">オモシク（omoshiku）代表｜"想い"を"仕組み"で"面白く"</div>
+      <div class="pc-career">
+        前職は<span>アクセンチュア</span>で、マーケ/DXコンサルを3.5年経験。売上年7億UP実績有り。<br>
+        事業会社で、新規事業立ち上げとマーケティング責任者を担い初年<span>10億円</span>売上に貢献（MVP受賞）。
+      </div>
+    </div>
+  </div>
+
+  <!-- 参考資料 -->
+  <div class="sh">
+    <div class="sh-bar"></div>
+    <h2>参考資料</h2>
+  </div>
+  <div class="ref-links">
+    <a href="https://tkonishikawa.github.io/demo-pages/d/5daf4f7f/dx-report.html" class="ref-link" target="_blank">
+      <span class="ref-icon">→</span>
+      <div>
+        <h4>業務改善 診断レポート</h4>
+        <p>ヒアリング・データ分析に基づく現状診断</p>
+      </div>
+      <span class="ref-cta">詳しく見る →</span>
+    </a>
+    <a href="https://tkonishikawa.github.io/demo-pages/d/37f50f1f/crm-ltv-blueprint.html" class="ref-link" target="_blank">
+      <span class="ref-icon">→</span>
+      <div>
+        <h4>顧客管理の仕組みの理想像</h4>
+        <p>CRM・LTV向上のブループリント</p>
+      </div>
+      <span class="ref-cta">詳しく見る →</span>
+    </a>
+  </div>
+
+  <!-- Closing -->
+  <div class="closing-simple">
+    <p>まず3ヶ月で「数字で見える成果」を出します。</p>
+    <div class="contact">nishikawa@omoshiku.jp</div>
+  </div>
+</div>
+
+</body>
+</html>
