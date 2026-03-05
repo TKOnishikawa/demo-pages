@@ -4,195 +4,200 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>原価管理リアルタイム化 実装プレイブック | NIKKAHOME</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-base:#08080d;--bg-surface:#101018;--bg-raised:#181824;--bg-top:#222234;
-  --border:rgba(255,255,255,0.06);--border-focus:rgba(255,255,255,0.12);
-  --text:#eaeaf2;--text-dim:#9898ae;--text-muted:#58586e;
-  --blue:#4a7dff;--cyan:#22d3ee;--green:#34d399;--amber:#f59e0b;
-  --red:#ef4444;--purple:#a78bfa;--pink:#f472b6;
-  --grad-hero:linear-gradient(135deg,#4a7dff 0%,#22d3ee 100%);
-  --grad-success:linear-gradient(135deg,#34d399 0%,#22d3ee 100%);
-  --grad-warn:linear-gradient(135deg,#ef4444 0%,#f59e0b 100%);
-  --shadow-sm:0 1px 3px rgba(0,0,0,0.4);--shadow-md:0 4px 16px rgba(0,0,0,0.5);
+  --accent:#e8944a;--accent-light:#f4a96b;--accent-dark:#c97a3a;
+  --accent-bg:rgba(232,148,74,0.08);--accent-border:rgba(232,148,74,0.2);
+  --navy:#0b0b12;--navy-mid:#1a1a2e;--navy-light:#2a2a44;
+  --bg-warm:#f6f3ee;--bg-warm-2:#efe9e0;--bg-card:#ffffff;--bg-hero:#0a0a14;
+  --text-1:#1a1a2e;--text-2:#555566;--text-3:#8a8a9a;
+  --border:#e4ddd4;--border-light:#ede7df;
+  --blue:#2563eb;--blue-light:#3b82f6;--cyan:#0891b2;
+  --green:#059669;--amber:#d97706;--red:#dc2626;--purple:#7c3aed;
+  --success:#34d399;
+  --grad-hero:linear-gradient(135deg,#e8944a 0%,#d4582f 50%,#c04040 100%);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.06),0 2px 4px rgba(0,0,0,0.04);
+  --font-jp:'Noto Sans JP',sans-serif;--font-en:'Sora',sans-serif;--font-mono:'JetBrains Mono',monospace;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-base);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-jp);background:var(--bg-warm);color:var(--text-1);line-height:1.8;-webkit-font-smoothing:antialiased}
 .container{max-width:1080px;margin:0 auto;padding:0 28px}
 .page-layout{display:flex;gap:32px;position:relative}
 .main-content{flex:1;min-width:0}
 
 /* TOC Sidebar */
-.toc-sidebar{width:230px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto;padding:16px 0;scrollbar-width:thin;scrollbar-color:var(--bg-top) transparent}
+.toc-sidebar{width:230px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto;padding:16px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 .toc-sidebar::-webkit-scrollbar{width:4px}
-.toc-sidebar::-webkit-scrollbar-thumb{background:var(--bg-top);border-radius:2px}
-.toc-title{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;padding:0 12px}
+.toc-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.toc-title{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;padding:0 12px}
 .toc-list{list-style:none}
-.toc-link{display:flex;align-items:flex-start;gap:8px;padding:6px 12px;margin-bottom:2px;font-size:11px;color:var(--text-muted);text-decoration:none;border-radius:6px;transition:all .15s;line-height:1.5;border-left:2px solid transparent}
-.toc-link:hover{color:var(--text-dim);background:var(--bg-surface)}
-.toc-link.active{color:var(--cyan);background:rgba(34,211,238,0.04);border-left-color:var(--cyan)}
-.toc-num{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--text-muted);min-width:20px;margin-top:1px}
-.toc-link.active .toc-num{color:var(--cyan)}
-.toc-sep{height:1px;background:var(--border);margin:8px 12px}
-.toc-toggle{display:none;position:fixed;top:16px;left:16px;z-index:1001;width:40px;height:40px;border-radius:10px;background:var(--bg-raised);border:1px solid var(--border-focus);align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:18px}
-.toc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999}
+.toc-link{display:flex;align-items:flex-start;gap:8px;padding:6px 12px;margin-bottom:2px;font-size:11px;color:var(--text-3);text-decoration:none;border-radius:6px;transition:all .15s;line-height:1.5;border-left:2px solid transparent}
+.toc-link:hover{color:var(--text-2);background:var(--bg-warm-2)}
+.toc-link.active{color:var(--accent);background:var(--accent-bg);border-left-color:var(--accent)}
+.toc-num{font-family:var(--font-mono);font-size:9px;font-weight:600;color:var(--text-3);min-width:20px;margin-top:1px}
+.toc-link.active .toc-num{color:var(--accent)}
+.toc-sep{height:1px;background:var(--border-light);margin:8px 12px}
+.toc-toggle{display:none;position:fixed;top:16px;left:16px;z-index:1001;width:40px;height:40px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border);align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);font-size:18px}
+.toc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:999}
 @media(max-width:960px){
   .page-layout{flex-direction:column}
-  .toc-sidebar{display:none;position:fixed;left:0;top:0;width:260px;height:100vh;background:var(--bg-surface);z-index:1000;padding:60px 0 24px;border-right:1px solid var(--border-focus)}
+  .toc-sidebar{display:none;position:fixed;left:0;top:0;width:260px;height:100vh;background:var(--bg-card);z-index:1000;padding:60px 0 24px;border-right:1px solid var(--border)}
   .toc-sidebar.open{display:block}
   .toc-toggle{display:flex}
   .toc-overlay.open{display:block}
 }
 
 /* Hero */
-.hero{padding:60px 0 48px;text-align:center;border-bottom:1px solid var(--border)}
-.hero-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(74,125,255,0.12);color:var(--blue);margin-bottom:16px}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2rem);font-weight:900;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.3;margin-bottom:12px}
-.hero-sub{font-size:14px;color:var(--text-dim);max-width:680px;margin:0 auto;line-height:1.8}
-.hero-back{display:inline-flex;align-items:center;gap:6px;margin-top:20px;padding:8px 18px;border-radius:8px;font-size:12px;color:var(--cyan);background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);text-decoration:none;transition:all .2s}
-.hero-back:hover{background:rgba(34,211,238,0.12)}
+.hero{padding:60px 0 48px;text-align:center;background:var(--bg-hero);border-radius:0 0 16px 16px;margin:-1px -28px 0;padding-left:28px;padding-right:28px}
+.hero-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(232,148,74,0.15);color:var(--accent-light);margin-bottom:16px}
+.hero h1{font-family:var(--font-en);font-size:clamp(1.5rem,4vw,2rem);font-weight:700;color:#f0ece6;line-height:1.3;margin-bottom:12px}
+.hero-sub{font-size:14px;color:#aaa;max-width:680px;margin:0 auto;line-height:1.8}
+.hero-sub strong{color:#f0ece6}
+.hero-back{display:inline-flex;align-items:center;gap:6px;margin-top:20px;padding:8px 18px;border-radius:8px;font-size:12px;color:var(--accent-light);background:rgba(232,148,74,0.1);border:1px solid rgba(232,148,74,0.25);text-decoration:none;transition:all .2s}
+.hero-back:hover{background:rgba(232,148,74,0.2)}
 
 /* Section */
-.section{padding:56px 0;border-bottom:1px solid var(--border)}
-.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+.section{padding:56px 0;border-bottom:1px solid var(--border-light)}
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;font-family:var(--font-en)}
 .section-eyebrow.layer0{color:var(--red)}.section-eyebrow.layer1{color:var(--cyan)}
 .section-eyebrow.layer2{color:var(--blue)}.section-eyebrow.layer3{color:var(--amber)}
 .section-eyebrow.layer4{color:var(--purple)}
-.action-title{font-size:clamp(1.2rem,3vw,1.5rem);font-weight:700;line-height:1.35;margin-bottom:8px}
-.section-lead{font-size:14px;color:var(--text-dim);margin-bottom:32px;max-width:720px}
+.action-title{font-size:clamp(1.2rem,3vw,1.5rem);font-weight:700;line-height:1.35;margin-bottom:8px;color:var(--text-1)}
+.section-lead{font-size:14px;color:var(--text-2);margin-bottom:32px;max-width:720px}
 
 /* Approach Comparison Table */
-.approach-tbl{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;margin:24px 0;font-size:13px}
-.approach-tbl thead th{background:var(--bg-top);padding:12px 16px;text-align:left;font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border-focus)}
-.approach-tbl tbody td{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-surface);vertical-align:top}
+.approach-tbl{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;margin:24px 0;font-size:13px;box-shadow:var(--shadow-sm)}
+.approach-tbl thead th{background:var(--navy-mid);padding:12px 16px;text-align:left;font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#bbb;border-bottom:1px solid rgba(255,255,255,0.1)}
+.approach-tbl tbody td{padding:10px 16px;border-bottom:1px solid var(--border-light);background:var(--bg-card);vertical-align:top;color:var(--text-2)}
 .approach-tbl tbody tr:last-child td{border-bottom:none}
-.approach-tbl .recommend{background:rgba(74,125,255,0.06)}
+.approach-tbl .recommend{background:rgba(37,99,235,0.04)}
 .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;letter-spacing:.5px}
-.tag.best{background:rgba(74,125,255,0.15);color:var(--blue)}
-.tag.ok{background:rgba(52,211,153,0.12);color:var(--green)}
-.tag.ng{background:rgba(239,68,68,0.12);color:var(--red)}
-.tag.warn{background:rgba(245,158,11,0.12);color:var(--amber)}
+.tag.best{background:rgba(37,99,235,0.1);color:var(--blue)}
+.tag.ok{background:rgba(5,150,105,0.1);color:var(--green)}
+.tag.ng{background:rgba(220,38,38,0.08);color:var(--red)}
+.tag.warn{background:rgba(217,119,6,0.1);color:var(--amber)}
 
 /* Cards */
 .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:24px 0}
-.card{background:var(--bg-raised);border-radius:12px;padding:22px;border:1px solid var(--border);transition:transform .2s,box-shadow .2s}
+.card{background:var(--bg-card);border-radius:12px;padding:22px;border:1px solid var(--border-light);transition:transform .2s,box-shadow .2s;box-shadow:var(--shadow-sm)}
 .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.card h4{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.card p,.card li{font-size:13px;color:var(--text-dim);line-height:1.7}
+.card h4{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;color:var(--text-1)}
+.card p,.card li{font-size:13px;color:var(--text-2);line-height:1.7}
 .card ul{padding-left:16px;margin-top:6px}
 .card-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
 
 /* Step Flow */
 .step-flow{display:flex;flex-direction:column;gap:12px;margin:24px 0}
-.step{display:flex;gap:16px;align-items:flex-start;padding:16px 20px;background:var(--bg-raised);border-radius:10px;border:1px solid var(--border)}
-.step-num{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--blue);min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(74,125,255,0.1);border-radius:8px}
-.step-body h5{font-size:13px;font-weight:600;margin-bottom:4px}
-.step-body p{font-size:12px;color:var(--text-dim)}
+.step{display:flex;gap:16px;align-items:flex-start;padding:16px 20px;background:var(--bg-card);border-radius:10px;border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
+.step-num{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--accent);min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--accent-bg);border-radius:8px}
+.step-body h5{font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text-1)}
+.step-body p{font-size:12px;color:var(--text-2)}
 
 /* Hearing Items */
 .hearing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:24px 0}
-.hearing-item{padding:14px 18px;background:var(--bg-raised);border-radius:10px;border-left:3px solid var(--amber);font-size:13px}
+.hearing-item{padding:14px 18px;background:var(--bg-card);border-radius:10px;border-left:3px solid var(--amber);font-size:13px;box-shadow:var(--shadow-sm)}
 .hearing-item .q{font-weight:600;color:var(--amber);margin-bottom:4px}
-.hearing-item .why{font-size:11px;color:var(--text-muted)}
+.hearing-item .why{font-size:11px;color:var(--text-3)}
 
 /* Risk Matrix */
 .risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:24px 0}
-.risk-card{padding:16px;background:var(--bg-raised);border-radius:10px;border:1px solid var(--border)}
+.risk-card{padding:16px;background:var(--bg-card);border-radius:10px;border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
 .risk-card.high{border-left:3px solid var(--red)}
 .risk-card.med{border-left:3px solid var(--amber)}
 .risk-card.low{border-left:3px solid var(--green)}
-.risk-card h5{font-size:13px;font-weight:600;margin-bottom:4px}
-.risk-card p{font-size:12px;color:var(--text-dim)}
-.risk-card .mitigation{font-size:12px;color:var(--cyan);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.risk-card h5{font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text-1)}
+.risk-card p{font-size:12px;color:var(--text-2)}
+.risk-card .mitigation{font-size:12px;color:var(--cyan);margin-top:6px;padding-top:6px;border-top:1px solid var(--border-light)}
 
 /* Adoption Callout */
-.adopt-callout{background:rgba(34,211,238,0.04);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
+.adopt-callout{background:rgba(8,145,178,0.05);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
 .adopt-callout .label{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
-.adopt-callout p{font-size:13px;line-height:1.8}
+.adopt-callout p{font-size:13px;line-height:1.8;color:var(--text-1)}
 
 /* Adopt Card */
-.adopt-card{background:var(--bg-raised);border-radius:12px;padding:22px;border:1px solid rgba(34,211,238,0.15);margin:24px 0}
+.adopt-card{background:var(--bg-card);border-radius:12px;padding:22px;border:1px solid rgba(8,145,178,0.2);margin:24px 0;box-shadow:var(--shadow-sm)}
 .adopt-card h4{font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .adopt-card .checklist{list-style:none;padding:0}
-.adopt-card .checklist li{padding:6px 0;font-size:13px;color:var(--text-dim);display:flex;gap:8px;align-items:flex-start}
+.adopt-card .checklist li{padding:6px 0;font-size:13px;color:var(--text-2);display:flex;gap:8px;align-items:flex-start}
 .adopt-card .checklist li::before{content:'';display:inline-block;width:16px;height:16px;min-width:16px;border-radius:4px;border:1.5px solid var(--cyan);margin-top:3px}
 
 /* Phase Timeline */
 .timeline{display:flex;gap:12px;margin:24px 0;overflow-x:auto;padding-bottom:8px}
-.tl-phase{flex:1;min-width:200px;background:var(--bg-raised);border-radius:12px;padding:18px;border:1px solid var(--border)}
-.tl-phase h5{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.tl-phase .tl-period{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:8px}
+.tl-phase{flex:1;min-width:200px;background:var(--bg-card);border-radius:12px;padding:18px;border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
+.tl-phase h5{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;color:var(--text-1)}
+.tl-phase .tl-period{font-family:var(--font-mono);font-size:10px;color:var(--text-3);margin-bottom:8px}
 .tl-phase ul{list-style:none;padding:0}
-.tl-phase li{font-size:12px;color:var(--text-dim);padding:3px 0;padding-left:12px;position:relative}
-.tl-phase li::before{content:'';position:absolute;left:0;top:9px;width:4px;height:4px;border-radius:50%;background:var(--blue)}
-.tl-gate{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:10px 14px;margin-top:10px}
+.tl-phase li{font-size:12px;color:var(--text-2);padding:3px 0;padding-left:12px;position:relative}
+.tl-phase li::before{content:'';position:absolute;left:0;top:9px;width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.tl-gate{background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.15);border-radius:8px;padding:10px 14px;margin-top:10px}
 .tl-gate p{font-size:11px;color:var(--red);font-weight:600}
 
 /* ROI Box */
 .roi-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:24px 0}
-.roi-card{background:var(--bg-raised);border-radius:10px;padding:18px;text-align:center;border:1px solid var(--border)}
-.roi-num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
-.roi-label{font-size:11px;color:var(--text-muted)}
+.roi-card{background:var(--bg-card);border-radius:10px;padding:18px;text-align:center;border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
+.roi-num{font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.roi-label{font-size:11px;color:var(--text-3)}
 
 /* Mockup */
-.mockup{background:var(--bg-top);border-radius:12px;padding:20px;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;color:var(--text-dim);white-space:pre-wrap;overflow-x:auto;border:1px solid var(--border-focus)}
+.mockup{background:var(--navy-mid);border-radius:12px;padding:20px;margin:24px 0;font-family:var(--font-mono);font-size:11px;line-height:1.5;color:#bbb;white-space:pre-wrap;overflow-x:auto;border:1px solid var(--navy-light)}
 
 /* So What */
-.sowhat{background:rgba(239,68,68,0.04);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
+.sowhat{background:rgba(220,38,38,0.04);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
 .sowhat-label{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:6px}
-.sowhat p{font-size:13px;line-height:1.8}
+.sowhat p{font-size:13px;line-height:1.8;color:var(--text-1)}
 
 /* Org Change */
-.org-card{background:var(--bg-raised);border-radius:12px;padding:22px;border:1px solid rgba(167,139,250,0.15);margin:24px 0}
+.org-card{background:var(--bg-card);border-radius:12px;padding:22px;border:1px solid rgba(124,58,237,0.15);margin:24px 0;box-shadow:var(--shadow-sm)}
 .org-card h4{font-size:14px;font-weight:700;color:var(--purple);margin-bottom:12px}
-.org-card p,.org-card li{font-size:13px;color:var(--text-dim);line-height:1.7}
+.org-card p,.org-card li{font-size:13px;color:var(--text-2);line-height:1.7}
 
 /* Data Box */
-.data-box{background:var(--bg-raised);border-radius:12px;padding:22px;margin:24px 0;border:1px solid var(--border)}
+.data-box{background:var(--bg-card);border-radius:12px;padding:22px;margin:24px 0;border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
 .data-box h4{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--amber)}
 .data-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
-.data-tbl th{text-align:left;padding:8px;border-bottom:1px solid var(--border-focus);color:var(--text-dim);font-size:11px;font-weight:600}
-.data-tbl td{padding:8px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+.data-tbl th{text-align:left;padding:8px;border-bottom:2px solid var(--border);color:var(--text-2);font-size:11px;font-weight:600}
+.data-tbl td{padding:8px;border-bottom:1px solid var(--border-light);color:var(--text-2)}
 
 /* Journey Compare */
 .journey-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;margin:24px 0;align-items:start}
 .journey-card{border-radius:12px;padding:20px}
-.journey-card.before{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15)}
-.journey-card.after{background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15)}
+.journey-card.before{background:rgba(220,38,38,0.04);border:1px solid rgba(220,38,38,0.12)}
+.journey-card.after{background:rgba(8,145,178,0.04);border:1px solid rgba(8,145,178,0.15)}
 .journey-card h4{margin-bottom:14px;font-size:14px;font-weight:700}
 .journey-card ul{list-style:none;padding:0}
-.journey-card li{padding:6px 0;font-size:13px;color:var(--text-dim);display:flex;gap:8px;align-items:flex-start}
-.journey-arrow{display:flex;align-items:center;font-size:32px;color:var(--cyan);padding-top:60px}
+.journey-card li{padding:6px 0;font-size:13px;color:var(--text-2);display:flex;gap:8px;align-items:flex-start}
+.journey-arrow{display:flex;align-items:center;font-size:32px;color:var(--accent);padding-top:60px}
 
 /* Kill Criteria Box */
-.kill-box{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:20px;margin:24px 0}
+.kill-box{background:rgba(220,38,38,0.04);border:1px solid rgba(220,38,38,0.12);border-radius:12px;padding:20px;margin:24px 0}
 .kill-box h4{color:var(--red);font-size:14px;font-weight:700;margin-bottom:12px}
-.kill-box li{font-size:13px;color:var(--text-dim);line-height:1.7;padding:4px 0}
+.kill-box li{font-size:13px;color:var(--text-2);line-height:1.7;padding:4px 0}
 
 /* Separator */
 .section-sep{text-align:center;padding:28px 0;opacity:0.3}
-.section-sep span{display:inline-block;width:40px;height:1px;background:var(--text-muted);margin:0 4px}
+.section-sep span{display:inline-block;width:40px;height:1px;background:var(--border);margin:0 4px}
 
 /* Footer */
-.footer{padding:40px 0;text-align:center;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
-.footer a{color:var(--cyan);text-decoration:none}
+.footer{padding:40px 0;text-align:center;border-top:1px solid var(--border-light);color:var(--text-3);font-size:11px}
+.footer a{color:var(--accent);text-decoration:none}
 
 /* ROI Fermi */
-.roi-fermi{background:linear-gradient(135deg,rgba(74,125,255,0.05),rgba(34,211,238,0.05));border-radius:12px;padding:24px;margin:20px 0;border:1px solid rgba(74,125,255,0.1)}
-.roi-fermi h4{color:var(--cyan);margin-bottom:16px;font-size:15px;font-weight:700}
+.roi-fermi{background:var(--bg-card);border-radius:12px;padding:24px;margin:20px 0;border:1px solid var(--border-light);box-shadow:var(--shadow-sm)}
+.roi-fermi h4{color:var(--accent);margin-bottom:16px;font-size:15px;font-weight:700}
 .roi-fermi table{width:100%;border-collapse:collapse}
-.roi-fermi thead tr{border-bottom:2px solid rgba(34,211,238,0.3)}
-.roi-fermi th{text-align:left;padding:10px 12px;color:var(--text);font-size:13px;font-weight:600}
-.roi-fermi td{padding:10px 12px;font-size:13px}
-.roi-fermi .scenario-realistic{background:rgba(34,211,238,0.06);border-radius:6px}
+.roi-fermi thead tr{border-bottom:2px solid var(--accent-border)}
+.roi-fermi th{text-align:left;padding:10px 12px;color:var(--text-1);font-size:13px;font-weight:600}
+.roi-fermi td{padding:10px 12px;font-size:13px;color:var(--text-2)}
+.roi-fermi .scenario-realistic{background:rgba(232,148,74,0.06);border-radius:6px}
 
 /* Antipattern */
 .ap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:24px 0}
-.ap-card{padding:16px;background:var(--bg-raised);border-radius:10px;border:1px solid rgba(239,68,68,0.12)}
+.ap-card{padding:16px;background:var(--bg-card);border-radius:10px;border:1px solid rgba(220,38,38,0.1);box-shadow:var(--shadow-sm)}
 .ap-card h5{font-size:13px;font-weight:600;color:var(--red);margin-bottom:6px}
-.ap-card p{font-size:12px;color:var(--text-dim)}
-.ap-card .counter{font-size:12px;color:var(--green);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.ap-card p{font-size:12px;color:var(--text-2)}
+.ap-card .counter{font-size:12px;color:var(--green);margin-top:8px;padding-top:8px;border-top:1px solid var(--border-light)}
 
 @media(max-width:768px){.card-grid,.hearing-grid,.risk-grid,.ap-grid{grid-template-columns:1fr}.roi-box{grid-template-columns:repeat(2,1fr)}.timeline{flex-direction:column}.journey-compare{grid-template-columns:1fr}.journey-arrow{display:none}}
 @media(max-width:600px){.roi-box{grid-template-columns:1fr}}
@@ -276,26 +281,26 @@ body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-bas
   </div>
 
   <!-- Risk Score Summary -->
-  <div style="background:var(--bg-raised);border-radius:12px;padding:22px;margin:24px 0;border:1px solid rgba(239,68,68,0.15)">
+  <div style="background:var(--bg-card);border-radius:12px;padding:22px;margin:24px 0;border:1px solid rgba(220,38,38,0.12);box-shadow:var(--shadow-sm)">
     <h4 style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:16px">定着リスクスコア: HIGH（27/27）</h4>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-      <div style="text-align:center;padding:12px;background:var(--bg-surface);border-radius:8px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red)">3/3</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">行動変容の大きさ</div>
-        <div style="font-size:10px;color:var(--text-muted)">FAX/紙 &rarr; デジタル</div>
+      <div style="text-align:center;padding:12px;background:var(--bg-warm-2);border-radius:8px">
+        <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--red)">3/3</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">行動変容の大きさ</div>
+        <div style="font-size:10px;color:var(--text-3)">FAX/紙 &rarr; デジタル</div>
       </div>
-      <div style="text-align:center;padding:12px;background:var(--bg-surface);border-radius:8px">
+      <div style="text-align:center;padding:12px;background:var(--bg-warm-2);border-radius:8px">
         <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red)">3/3</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">関係者の多さ</div>
-        <div style="font-size:10px;color:var(--text-muted)">37営業所 + 1,500社</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">関係者の多さ</div>
+        <div style="font-size:10px;color:var(--text-3)">37営業所 + 1,500社</div>
       </div>
-      <div style="text-align:center;padding:12px;background:var(--bg-surface);border-radius:8px">
+      <div style="text-align:center;padding:12px;background:var(--bg-warm-2);border-radius:8px">
         <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red)">3/3</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">既存プロセス置換</div>
-        <div style="font-size:10px;color:var(--text-muted)">月次紙帳票を完全廃止</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">既存プロセス置換</div>
+        <div style="font-size:10px;color:var(--text-3)">月次紙帳票を完全廃止</div>
       </div>
     </div>
-    <p style="font-size:12px;color:var(--text-dim);margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+    <p style="font-size:12px;color:var(--text-2);margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
       <strong style="color:var(--red)">建設業のデジタル化は8割がPoC止まり</strong>。段階設計と撤退基準の明確化が成否を分ける。
     </p>
   </div>
@@ -427,7 +432,7 @@ body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-bas
 <div class="section" id="adopt-journey">
   <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">業務フローの変化（Before &rarr; After）</h3>
 
-  <h4 style="margin-bottom:16px;font-size:14px;color:var(--text-dim)">&#9312; 営業所長の日常</h4>
+  <h4 style="margin-bottom:16px;font-size:14px;color:var(--text-2)">&#9312; 営業所長の日常</h4>
   <div class="journey-compare">
     <div class="journey-card before">
       <h4 style="color:var(--red)">&#10060; Before</h4>
@@ -450,7 +455,7 @@ body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-bas
     </div>
   </div>
 
-  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px;color:var(--text-dim)">&#9313; 協力会社の変化（ANDPAD連携後）</h4>
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px;color:var(--text-2)">&#9313; 協力会社の変化（ANDPAD連携後）</h4>
   <div class="journey-compare">
     <div class="journey-card before">
       <h4 style="color:var(--red)">&#10060; Before</h4>
@@ -546,8 +551,8 @@ body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-bas
 |  案件ID | 工事名 | 担当所 | 契約額 | 原価 | 粗利率 | 状態  |
 +-----------------------------------------------------------+</div>
 
-  <div style="background:var(--bg-raised);border-radius:12px;padding:18px;margin-top:16px;border:1px solid rgba(34,211,238,0.12)">
-    <p style="font-size:13px;color:var(--text-dim)"><strong style="color:var(--cyan)">&#128233; 月曜朝のプッシュ通知イメージ:</strong><br>
+  <div style="background:var(--bg-card);border-radius:12px;padding:18px;margin-top:16px;border:1px solid rgba(8,145,178,0.15);box-shadow:var(--shadow-sm)">
+    <p style="font-size:13px;color:var(--text-2)"><strong style="color:var(--cyan)">&#128233; 月曜朝のプッシュ通知イメージ:</strong><br>
     件名: 【原価アラート】今週の粗利ワースト3件<br>
     本文: &#x1f534; A案件（○○営業所）粗利率 5.2% / &#x1f534; B案件（△△営業所）粗利率 8.1% / &#x1f7e1; C案件（□□営業所）粗利率 13.5%<br>
     &rarr; <span style="color:var(--cyan)">ダッシュボードで詳細を確認</span></p>
@@ -624,22 +629,22 @@ body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-bas
     <div class="card">
       <h4 style="color:var(--amber)">F-1: 基幹CSVエクスポート</h4>
       <p>自社開発基幹の改修が可能か。週次自動エクスポートの工数を事前確認。</p>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: 手動CSVエクスポートを週次で実施（短期的）</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:8px">代替: 手動CSVエクスポートを週次で実施（短期的）</p>
     </div>
     <div class="card">
       <h4 style="color:var(--amber)">F-2: Google Workspace利用可否</h4>
       <p>社内セキュリティポリシーでGoogle Driveが制限されている場合は使用不可。</p>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: OneDrive + Power BI（Microsoft環境の場合）</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:8px">代替: OneDrive + Power BI（Microsoft環境の場合）</p>
     </div>
     <div class="card">
       <h4 style="color:var(--amber)">F-3: ANDPAD API連携</h4>
       <p>受発注モジュールのAPI仕様・コストを事前確認。有料プランでの提供。</p>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: CSV手動インポートでブリッジ運用</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:8px">代替: CSV手動インポートでブリッジ運用</p>
     </div>
     <div class="card">
       <h4 style="color:var(--amber)">F-4: IT事業部の人手と時間</h4>
       <p>GAS開発・Looker Studio設定・ANDPAD展開サポートを並行できる体制か。</p>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: QW-1のみ先行、ANDPAD連携は6ヶ月以上後</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:8px">代替: QW-1のみ先行、ANDPAD連携は6ヶ月以上後</p>
     </div>
   </div>
 </div>
@@ -732,24 +737,24 @@ body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-bas
 
   <div class="roi-fermi">
     <h4>&#128202; 3シナリオ試算（定着率を加味）</h4>
-    <p style="color:var(--text-dim);font-size:14px;margin-bottom:16px;line-height:1.8">
-      年間売上100億円規模 &times; 粗利率改善幅 &times; 定着率 = <strong style="color:var(--text);">年間粗利改善額</strong>
+    <p style="color:var(--text-2);font-size:14px;margin-bottom:16px;line-height:1.8">
+      年間売上100億円規模 &times; 粗利率改善幅 &times; 定着率 = <strong style="color:var(--text-1);">年間粗利改善額</strong>
     </p>
     <table>
       <thead>
         <tr>
-          <th style="text-align:left;padding:10px 12px;color:var(--text);font-size:13px">シナリオ</th>
-          <th style="text-align:right;padding:10px 12px;color:var(--text);font-size:13px">年間効果</th>
-          <th style="text-align:left;padding:10px 12px;color:var(--text);font-size:13px">前提</th>
+          <th style="text-align:left;padding:10px 12px;color:var(--text-1);font-size:13px">シナリオ</th>
+          <th style="text-align:right;padding:10px 12px;color:var(--text-1);font-size:13px">年間効果</th>
+          <th style="text-align:left;padding:10px 12px;color:var(--text-1);font-size:13px">前提</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td style="padding:10px 12px;color:var(--text-muted);font-size:13px">&#128315; 悲観</td><td style="text-align:right;padding:10px 12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:14px">年2,500万円</td><td style="padding:10px 12px;color:var(--text-muted);font-size:13px">粗利率+0.5pt、定着率30%（経営層の関与が薄い場合）</td></tr>
-        <tr class="scenario-realistic"><td style="padding:10px 12px;color:var(--cyan);font-weight:600;font-size:13px">&#11088; 現実</td><td style="text-align:right;padding:10px 12px;color:var(--cyan);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:16px">年7,500万円</td><td style="padding:10px 12px;color:var(--cyan);font-size:13px">粗利率+1.5pt、定着率60%（QW-1定着、ANDPAD一部未移行）</td></tr>
+        <tr><td style="padding:10px 12px;color:var(--text-3);font-size:13px">&#128315; 悲観</td><td style="text-align:right;padding:10px 12px;color:var(--text-3);font-family:'JetBrains Mono',monospace;font-size:14px">年2,500万円</td><td style="padding:10px 12px;color:var(--text-3);font-size:13px">粗利率+0.5pt、定着率30%（経営層の関与が薄い場合）</td></tr>
+        <tr class="scenario-realistic"><td style="padding:10px 12px;color:var(--accent);font-weight:600;font-size:13px">&#11088; 現実</td><td style="text-align:right;padding:10px 12px;color:var(--accent);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:16px">年7,500万円</td><td style="padding:10px 12px;color:var(--accent);font-size:13px">粗利率+1.5pt、定着率60%（QW-1定着、ANDPAD一部未移行）</td></tr>
         <tr><td style="padding:10px 12px;color:var(--green);font-size:13px">&#128314; 楽観</td><td style="text-align:right;padding:10px 12px;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:14px">年1.5億円</td><td style="padding:10px 12px;color:var(--green);font-size:13px">粗利率+3pt、定着率80%（全社展開+ANDPAD連携が順調）</td></tr>
       </tbody>
     </table>
-    <p style="color:var(--text-muted);font-size:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+    <p style="color:var(--text-3);font-size:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
       &#128176; QW-1投資額: <strong style="color:var(--green)">0円</strong>（Google Workspace既存ライセンス内） |
       ANDPAD連携: <strong style="color:var(--amber)">別途見積</strong>（受発注モジュール費用）
     </p>
@@ -759,10 +764,10 @@ body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-bas
     <table class="approach-tbl">
       <thead><tr><th>指標</th><th>楽観</th><th>現実（定着率込み）</th><th>悲観</th><th>根拠</th></tr></thead>
       <tbody>
-        <tr><td>粗利率改善</td><td style="color:var(--green)">+3pt</td><td style="color:var(--cyan)">+1.5pt</td><td style="color:var(--text-muted)">+0.5pt</td><td>ANDPAD公式「粗利率2%UP」、kintone事例</td></tr>
-        <tr><td>集計工数削減</td><td style="color:var(--green)">-70%</td><td style="color:var(--cyan)">-50%</td><td style="color:var(--text-muted)">-30%</td><td>BIツール導入事例「50〜70%削減」</td></tr>
-        <tr><td>赤字案件早期発見</td><td style="color:var(--green)">10件/月</td><td style="color:var(--cyan)">5件/月</td><td style="color:var(--text-muted)">2件/月</td><td>月2,500件施工 &times; 赤字率3% &times; 発見率</td></tr>
-        <tr><td>定着率</td><td style="color:var(--green)">80%</td><td style="color:var(--cyan)">60%</td><td style="color:var(--text-muted)">30%</td><td>建設業DX「8割PoC止まり」、ANDPAD「3ヶ月で全員」</td></tr>
+        <tr><td>粗利率改善</td><td style="color:var(--green)">+3pt</td><td style="color:var(--cyan)">+1.5pt</td><td style="color:var(--text-3)">+0.5pt</td><td>ANDPAD公式「粗利率2%UP」、kintone事例</td></tr>
+        <tr><td>集計工数削減</td><td style="color:var(--green)">-70%</td><td style="color:var(--cyan)">-50%</td><td style="color:var(--text-3)">-30%</td><td>BIツール導入事例「50〜70%削減」</td></tr>
+        <tr><td>赤字案件早期発見</td><td style="color:var(--green)">10件/月</td><td style="color:var(--cyan)">5件/月</td><td style="color:var(--text-3)">2件/月</td><td>月2,500件施工 &times; 赤字率3% &times; 発見率</td></tr>
+        <tr><td>定着率</td><td style="color:var(--green)">80%</td><td style="color:var(--cyan)">60%</td><td style="color:var(--text-3)">30%</td><td>建設業DX「8割PoC止まり」、ANDPAD「3ヶ月で全員」</td></tr>
       </tbody>
     </table>
   </div>
