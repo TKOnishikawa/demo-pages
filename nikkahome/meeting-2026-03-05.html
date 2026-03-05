@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ニッカホーム DX戦略ディスカッション — 2026.03.05 議事録</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --bg-hero: #0a0a14;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --blue: #2563eb;
+  --blue-light: #3b82f6;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-warm);
+  color: var(--text-1);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+section { padding: 56px 0; }
+section.alt { background: var(--bg-warm-2); }
+section.dark { background: var(--navy); color: #f0ece6; }
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.section-label::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--accent);
+}
+.section-title {
+  font-size: clamp(1.3rem, 3vw, 1.65rem);
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-2);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 56px; }
+
+/* Hero */
+.hero {
+  background: var(--bg-hero);
+  color: #f0ece6;
+  padding: 96px 0 72px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40%; right: -20%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(232,148,74,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232,148,74,0.15);
+  border: 1px solid rgba(232,148,74,0.25);
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-family: var(--font-en);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 900;
+  line-height: 1.35;
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--accent-light); }
+.hero-sub {
+  font-size: 0.92rem;
+  color: rgba(240,236,230,0.7);
+  max-width: 600px;
+  margin-bottom: 32px;
+}
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  max-width: 600px;
+}
+.hero-meta-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.hero-meta-label {
+  font-size: 0.65rem;
+  font-family: var(--font-en);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(240,236,230,0.4);
+  margin-bottom: 4px;
+}
+.hero-meta-value {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #f0ece6;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-title .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-en);
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Table */
+.tbl-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+th {
+  background: var(--bg-warm-2);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+.num-cell {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+/* Tags */
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.tag-new { background: #dbeafe; color: #1e40af; }
+.tag-confirm { background: #d1fae5; color: #065f46; }
+.tag-warn { background: #fef3c7; color: #92400e; }
+.tag-risk { background: #fee2e2; color: #991b1b; }
+.tag-accent { background: var(--accent-bg); color: var(--accent-dark); border: 1px solid var(--accent-border); }
+
+/* Quote */
+.quote-card {
+  background: var(--bg-card);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 12px 12px 0;
+  padding: 20px 24px;
+  margin: 16px 0;
+  box-shadow: var(--shadow-sm);
+}
+.quote-text {
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--text-1);
+  margin-bottom: 8px;
+}
+.quote-author {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+/* Decision / Action cards */
+.decision-list, .action-list {
+  list-style: none;
+}
+.decision-item, .action-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.decision-item:last-child, .action-item:last-child { border-bottom: none; }
+.decision-icon {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #d1fae5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  margin-top: 2px;
+}
+.action-icon {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+.action-detail {
+  flex: 1;
+}
+.action-title {
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 4px;
+}
+.action-meta {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  display: flex;
+  gap: 16px;
+}
+
+/* Insight Grid */
+.insight-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 640px) {
+  .insight-grid { grid-template-columns: 1fr; }
+}
+.insight-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.insight-card.full { grid-column: 1 / -1; }
+.insight-header {
+  font-family: var(--font-en);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent);
+}
+.insight-card ul {
+  list-style: none;
+  font-size: 0.84rem;
+}
+.insight-card li {
+  padding: 6px 0;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.6;
+}
+.insight-card li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 14px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Org Chart */
+.org-chart {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+.org-level {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
+  position: relative;
+}
+.org-level + .org-level::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 1px; height: 12px;
+  background: var(--border);
+}
+.org-person {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  text-align: center;
+  min-width: 140px;
+}
+.org-person .name { font-weight: 700; }
+.org-person .role { font-size: 0.72rem; color: var(--text-3); margin-top: 2px; }
+.org-person.key {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+.org-person.target {
+  border-color: var(--blue);
+  background: rgba(37,99,235,0.06);
+}
+.org-person.us {
+  border-color: var(--success);
+  background: rgba(52,211,153,0.06);
+}
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  line-height: 1.2;
+}
+.kpi-label {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+
+/* System Data */
+.sys-finding {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.sys-finding:last-child { border-bottom: none; }
+.sys-icon {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.sys-icon.green { background: #d1fae5; }
+.sys-icon.amber { background: #fef3c7; }
+.sys-icon.red { background: #fee2e2; }
+.sys-icon.blue { background: #dbeafe; }
+.sys-content { flex: 1; }
+.sys-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+.sys-desc { font-size: 0.82rem; color: var(--text-2); line-height: 1.6; }
+
+/* Footer */
+.footer {
+  background: var(--navy);
+  color: rgba(240,236,230,0.5);
+  padding: 40px 0;
+  text-align: center;
+  font-size: 0.75rem;
+}
+.footer a { color: var(--accent-light); text-decoration: none; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .hero { padding: 72px 0 48px; }
+  .hero h1 { font-size: 1.4rem; }
+  .hero-meta { grid-template-columns: 1fr; }
+  section { padding: 40px 0; }
+  .card { padding: 20px; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .org-level { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-badge">Meeting Minutes</div>
+    <h1>DX戦略ディスカッション<br><span>基幹システムデモ・CRM構想・契約方針</span></h1>
+    <p class="hero-sub">増田氏と対面MTG。基幹システムの実データを確認し、CRM構想の方向性に合意。月50〜60万円の伴走型コンサルティングを軸に、河合関東支社長向けの提案書作成へ。</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Date</div>
+        <div class="hero-meta-value">2026年3月5日</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Format</div>
+        <div class="hero-meta-value">対面MTG</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Duration</div>
+        <div class="hero-meta-value">約90分</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Status</div>
+        <div class="hero-meta-value">提案準備へ移行</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1: Decisions -->
+<section id="decisions">
+  <div class="container">
+    <div class="section-label">Decisions</div>
+    <h2 class="section-title">決定事項</h2>
+    <p class="section-subtitle">本MTGで合意・決定された5つの重要事項</p>
+
+    <div class="card">
+      <ul class="decision-list">
+        <li class="decision-item">
+          <div class="decision-icon">1</div>
+          <div>
+            <div class="action-title">河合関東支社長向けの提案書を作成する</div>
+            <div style="font-size:0.82rem;color:var(--text-2);margin-top:4px;">シンプルなドキュメント（1ページ程度）。温度感・入り方・1年間のゴール設定を記載。詳細はWebページ参照でOK。</div>
+          </div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-icon">2</div>
+          <div>
+            <div class="action-title">月50〜60万円の伴走型コンサルティングで提案</div>
+            <div style="font-size:0.82rem;color:var(--text-2);margin-top:4px;">コンサルティング＋エンジニアリング＋コーチングの三位一体。一発納品ではなくフィードバック型。</div>
+          </div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-icon">3</div>
+          <div>
+            <div class="action-title">関東支社の決裁ルートで進める</div>
+            <div style="font-size:0.82rem;color:var(--text-2);margin-top:4px;">会長・本社への上申は不要。河合関東支社長の決裁範囲内。</div>
+          </div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-icon">4</div>
+          <div>
+            <div class="action-title">NotebookLMナレッジ基盤はQuick Winとして実行可能</div>
+            <div style="font-size:0.82rem;color:var(--text-2);margin-top:4px;">双方合意。若手の立ち上がり加速＋ナレッジ流出防止として即効性あり。</div>
+          </div>
+        </li>
+        <li class="decision-item">
+          <div class="decision-icon">5</div>
+          <div>
+            <div class="action-title">基幹システムのキャプチャ・データを共有いただく</div>
+            <div style="font-size:0.82rem;color:var(--text-2);margin-top:4px;">増田氏から画面キャプチャと文字起こしデータを送付予定。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- S2: Next Actions -->
+<section class="alt" id="actions">
+  <div class="container">
+    <div class="section-label">Next Actions</div>
+    <h2 class="section-title">ネクストアクション</h2>
+    <p class="section-subtitle">提案フェーズに向けたタスク</p>
+
+    <div class="card">
+      <ul class="action-list">
+        <li class="action-item">
+          <div class="action-icon">1</div>
+          <div class="action-detail">
+            <div class="action-title">河合関東支社長向け提案書の作成</div>
+            <div class="action-meta">
+              <span>担当: 西川</span>
+              <span>期限: 3/12目安</span>
+              <span class="tag tag-accent">最優先</span>
+            </div>
+          </div>
+        </li>
+        <li class="action-item">
+          <div class="action-icon">2</div>
+          <div class="action-detail">
+            <div class="action-title">基幹システム画面キャプチャ＋文字起こし共有</div>
+            <div class="action-meta">
+              <span>担当: 増田氏</span>
+              <span>期限: 次回MTGまで</span>
+            </div>
+          </div>
+        </li>
+        <li class="action-item">
+          <div class="action-icon">3</div>
+          <div class="action-detail">
+            <div class="action-title">提案書のレビュー・フィードバック</div>
+            <div class="action-meta">
+              <span>担当: 増田氏</span>
+              <span>期限: 提案書受領後</span>
+            </div>
+          </div>
+        </li>
+        <li class="action-item">
+          <div class="action-icon">4</div>
+          <div class="action-detail">
+            <div class="action-title">河合関東支社長への提案セッティング</div>
+            <div class="action-meta">
+              <span>担当: 増田氏</span>
+              <span>期限: 提案書確定後</span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- S3: System Demo Findings -->
+<section id="system">
+  <div class="container">
+    <div class="section-label">System Demo</div>
+    <h2 class="section-title">基幹システムの実態</h2>
+    <p class="section-subtitle">増田氏が基幹システムの画面を共有。顧客データ・案件管理・保証追跡の実データを確認した。</p>
+
+    <div class="card">
+      <div class="sys-finding">
+        <div class="sys-icon green">&#x1F4CB;</div>
+        <div class="sys-content">
+          <div class="sys-title">顧客マスター（お客一覧） <span class="tag tag-confirm">確認済</span></div>
+          <div class="sys-desc">案件件数の累計表示あり、リピート顧客の識別が可能。基本情報＋警戒度（クレーマー気質等）を管理。顧客→案件の紐付けも機能している。</div>
+        </div>
+      </div>
+      <div class="sys-finding">
+        <div class="sys-icon green">&#x1F4C2;</div>
+        <div class="sys-content">
+          <div class="sys-title">案件データ <span class="tag tag-confirm">確認済</span></div>
+          <div class="sys-desc">顧客情報、受付内容、受付日、請負状況、請求情報、顧客アンケートが案件単位で蓄積。データは存在する。</div>
+        </div>
+      </div>
+      <div class="sys-finding">
+        <div class="sys-icon amber">&#x1F527;</div>
+        <div class="sys-content">
+          <div class="sys-title">工事対応履歴 <span class="tag tag-warn">精度課題</span></div>
+          <div class="sys-desc">内装・水回り等のカテゴリで分類、工事完了日が自動記録。ただし受付時の分類であり、実際の工事内容と乖離するケースあり。</div>
+        </div>
+      </div>
+      <div class="sys-finding">
+        <div class="sys-icon blue">&#x1F4DD;</div>
+        <div class="sys-content">
+          <div class="sys-title">興味あるリフォーム箇所 <span class="tag tag-new">新設</span></div>
+          <div class="sys-desc">工事完了後のアンケートで「次に興味があるリフォーム箇所」を収集開始。最近始めたばかりで、データ蓄積はこれから。CRM構築の重要なデータソースになる。</div>
+        </div>
+      </div>
+      <div class="sys-finding">
+        <div class="sys-icon green">&#x1F4DC;</div>
+        <div class="sys-content">
+          <div class="sys-title">保証書データ <span class="tag tag-confirm">確認済</span></div>
+          <div class="sys-desc">シロアリ・塗装工事・防水の保証期間（5〜10年）を管理。保証期限前の「そろそろどうですか」DM送付に活用可能。ただし現状はCSV出力→手作業。</div>
+        </div>
+      </div>
+      <div class="sys-finding">
+        <div class="sys-icon red">&#x26A0;</div>
+        <div class="sys-content">
+          <div class="sys-title">自動化なし <span class="tag tag-risk">ギャップ</span></div>
+          <div class="sys-desc">CSV出力は可能だが、自動提案リスト生成・自動通知などの機能はなし。できる営業・店長は独自にリストを作成しているが、会社としての仕組み化はゼロ。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--accent); background: var(--accent-bg);">
+      <div class="card-title" style="color:var(--accent-dark);">So What?</div>
+      <p style="font-size:0.88rem;line-height:1.7;">CRM構築はゼロからではない。顧客マスター・案件紐付け・保証期限のデータは基幹に存在する。「興味あるリフォーム箇所」の収集も開始されている。課題は「データがあるのに活用する仕組みがない」こと。CSV出力→CRM基盤への取り込み→自動提案リスト生成の流れを構築すれば、既存データだけでも「そろそろ提案」の仕組みは実現できる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- S4: Organization -->
+<section class="alt" id="org">
+  <div class="container">
+    <div class="section-label">Organization</div>
+    <h2 class="section-title">組織構造と意思決定</h2>
+    <p class="section-subtitle">今回のMTGで判明した組織体制と決裁ルート</p>
+
+    <div class="org-chart">
+      <div style="text-align:center;font-size:0.72rem;color:var(--text-3);margin-bottom:20px;">ニッカホーム 関東支社関連の組織構造</div>
+      <div class="org-level">
+        <div class="org-person">
+          <div class="name">会長（創業者）</div>
+          <div class="role">70代・DXに理解なし</div>
+        </div>
+      </div>
+      <div class="org-level">
+        <div class="org-person">
+          <div class="name">西田社長</div>
+          <div class="role">代表取締役・50代</div>
+        </div>
+      </div>
+      <div class="org-level">
+        <div class="org-person target">
+          <div class="name">河合 関東支社長</div>
+          <div class="role">取締役 / 決裁者</div>
+        </div>
+        <div class="org-person">
+          <div class="name">高橋副社長</div>
+          <div class="role">不動産事業担当</div>
+        </div>
+      </div>
+      <div class="org-level">
+        <div class="org-person key">
+          <div class="name">増田</div>
+          <div class="role">営業部長/執行役員</div>
+        </div>
+        <div class="org-person">
+          <div class="name">マーケ部</div>
+          <div class="role">本社所属・新設</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+        <div style="font-size:0.7rem;display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:3px;border:2px solid var(--blue);"></div> 決裁者</div>
+        <div style="font-size:0.7rem;display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:3px;border:2px solid var(--accent);background:var(--accent-bg);"></div> カウンターパート</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-title">意思決定のポイント</div>
+      <ul style="list-style:none;font-size:0.84rem;">
+        <li style="padding:8px 0;border-bottom:1px solid var(--border-light);">
+          <strong>河合関東支社長</strong>がDXに理解あり、増田氏の取り組みを承認する立場。月50-60万円は関東支社決裁で通せる
+        </li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--border-light);">
+          <strong>関東支社が中部を売上で抜いた</strong> → 全社的な影響力が拡大中。関東での成功事例は横展開の説得材料になる
+        </li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--border-light);">
+          <strong>会長（70代）はDXに関心なし</strong>。「楽に稼ぐな」的価値観。ただしリフォーム事業は実質ノータッチで、河合支社長に任せている
+        </li>
+        <li style="padding:8px 0;">
+          <strong>マーケ部が新設</strong>（本社所属）。折込チラシ分析・集客効率化がメイン。CRM/LTVは手付かず → 我々の領域
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- S5: Business Numbers -->
+<section id="numbers">
+  <div class="container">
+    <div class="section-label">Business Metrics</div>
+    <h2 class="section-title">事業数値</h2>
+    <p class="section-subtitle">今回確認できた主要KPIと集客実態</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value">~700億</div>
+        <div class="kpi-label">全社売上</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">130億</div>
+        <div class="kpi-label">関東支社（リフォーム）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">37店舗</div>
+        <div class="kpi-label">関東現在 → 70店舗計画</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">45%+</div>
+        <div class="kpi-label">成約率目標</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">80万+</div>
+        <div class="kpi-label">成約単価目標</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">35%+</div>
+        <div class="kpi-label">粗利目標</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-title">成約率の比較</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>チャネル</th><th>成約率</th><th>備考</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>チラシ・来店</td><td class="num-cell">~50%</td><td>黄色チラシの反響率が高い。店舗立地も集客に寄与</td></tr>
+            <tr><td>Web（リスティング等）</td><td class="num-cell">20-30%</td><td>気軽さゆえに成約率は低め。改善余地大</td></tr>
+            <tr><td>自然流入（SEO）</td><td class="num-cell">—</td><td>新規の20-30%が認知・自然流入経由</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">クロスセルのゴールデンパターン</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;font-size:0.88rem;">
+        <span style="background:#dbeafe;padding:8px 16px;border-radius:8px;font-weight:600;">水回り</span>
+        <span style="color:var(--accent);font-weight:700;">→</span>
+        <span style="background:#e0e7ff;padding:8px 16px;border-radius:8px;font-weight:600;">リビング・内装</span>
+        <span style="color:var(--accent);font-weight:700;">→</span>
+        <span style="background:#fef3c7;padding:8px 16px;border-radius:8px;font-weight:600;">大型リフォーム</span>
+      </div>
+      <p style="font-size:0.82rem;color:var(--text-2);margin-top:8px;">水回りはニッカホームの強み（自社職人「棚こって」、価格メリット）。ここから信頼関係を構築し、段階的にクロスセルへ展開するのが勝ちパターン。</p>
+    </div>
+  </div>
+</section>
+
+<!-- S6: Key Insights -->
+<section class="alt" id="insights">
+  <div class="container">
+    <div class="section-label">Key Insights</div>
+    <h2 class="section-title">キーインサイト</h2>
+    <p class="section-subtitle">提案準備に向けた重要な示唆</p>
+
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="insight-header" style="color:var(--accent);">Sales / Consulting</div>
+        <ul>
+          <li>増田氏の温度感は非常に高い。「めちゃくちゃやりたい」と複数回発言</li>
+          <li>河合関東支社長は数字で判断する人。シンプルで具体的な提案が刺さる</li>
+          <li>伴走型が必須。フィードバックしながら一緒に作るプロジェクト特性</li>
+          <li>関東で成功事例を作り、数字で証明してから全社横展開が現実的</li>
+        </ul>
+      </div>
+      <div class="insight-card">
+        <div class="insight-header" style="color:var(--blue);">Engineering</div>
+        <ul>
+          <li>基幹にCRM的データが部分的に存在（ゼロからではない）</li>
+          <li>CSV出力は可能 → バッチ処理での取り込みは実現できる</li>
+          <li>基幹のスパゲッティ化が深刻。開発依頼→3ヶ月待ち</li>
+          <li>kintone導入実績あり → 外部ツール完全拒否ではない</li>
+        </ul>
+      </div>
+      <div class="insight-card full">
+        <div class="insight-header" style="color:#059669;">Proposal Material</div>
+        <ul>
+          <li><strong>課題候補:</strong> 基幹のスパゲッティ化・CRM不在・教育OJT依存・集客判断の属人化</li>
+          <li><strong>転換点候補:</strong> 関東が中部を抜いた今がDX投資の好機。マーケ部新設で受け皿もできつつある。店舗倍増計画に耐えうる仕組みが必要</li>
+          <li><strong>費用対効果:</strong> 月50-60万 vs コンサルファーム月1,000万。成約率1%改善で年間数億のインパクト</li>
+          <li><strong>ANDPAD受発注:</strong> 未契約。チャットで代用中。基幹の見積機能に発注書作成あるが利用率低い</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S7: Key Quotes -->
+<section id="quotes">
+  <div class="container">
+    <div class="section-label">Verbatim</div>
+    <h2 class="section-title">発言録</h2>
+    <p class="section-subtitle">先方の温度感・意思決定の手がかりとなる重要発言</p>
+
+    <div class="quote-card">
+      <div class="quote-text">「あんなレポート初めて見たんで」</div>
+      <div class="quote-author">増田氏 — ブループリントへの反応</div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">「そろそろ何々さんフォローアップ何をしてくださいとかみたいなのがもうちゃんと仕組み化されてて — いやめっちゃいいですよ」</div>
+      <div class="quote-author">増田氏 — CRM構想（自動提案リスト）への反応</div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">「やっぱ全然そうアナログですよ」</div>
+      <div class="quote-author">増田氏 — 顧客管理の現状について</div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">「結局要は上層部があんまりその外部のとこに…アレルギーがあるんですよね」</div>
+      <div class="quote-author">増田氏 — 外部システムへのデータ移管について</div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">「河合っていう人はすごく理解してくれる人なんで」</div>
+      <div class="quote-author">増田氏 — 関東支社長について</div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">「月5、600ぐらいとかだったら結構リソースバッとかけてコミットは売ってきそう」</div>
+      <div class="quote-author">増田氏 — 予算感について</div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">「1回だから僕もその決裁行くにあたって資料みたいなのがあると話ができる」</div>
+      <div class="quote-author">増田氏 — 提案書の必要性</div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">「関東支社が去年ぐらいに中部の売り上げを抜いたんです」</div>
+      <div class="quote-author">増田氏 — 関東支社の全社影響力</div>
+    </div>
+  </div>
+</section>
+
+<!-- S8: Discussion Topics -->
+<section class="alt" id="topics">
+  <div class="container">
+    <div class="section-label">Discussion</div>
+    <h2 class="section-title">主要議題の詳細</h2>
+    <p class="section-subtitle">MTGで議論された9つのテーマの詳細記録</p>
+
+    <div class="card">
+      <div class="card-title"><span class="num">1</span> CRM基盤の方向性</div>
+      <ul style="font-size:0.84rem;list-style:none;padding:0;">
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> データ統合（基幹＋ANDPAD）→ インテリジェンスエンジン → 自動提案リスト → 可視化ダッシュボードの4層構成に合意</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 営業向けは「次何すればいいかがパッとわかる」シンプルさが重要</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 勝ちパターン（クロスセルのゴールデンルート）を言語化し、トリガーデータを特定して顧客管理に組み込む</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 基幹は「守り」、CRMは「攻め」の基盤として分離する方針</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">2</span> 上層部の外部システムへのアレルギー</div>
+      <ul style="font-size:0.84rem;list-style:none;padding:0;">
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 外部サービスにデータを蓄積することへの抵抗感は強い</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> ただし、kintoneは人事系で既に導入済み → 完全拒否ではない</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 基幹を継ぎ足す方向への固執はあるが、現場レベルでは限界を感じている</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> → 経営側のアレルギーに配慮しつつ、セキュリティ担保の説明で突破可能</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">3</span> 集客の現状</div>
+      <ul style="font-size:0.84rem;list-style:none;padding:0;">
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 黄色チラシの反響率が高く、新規出店でも集客には困らない（強み）</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 折込チラシの出稿判断は店長の裁量・肌感覚に依存 → マーケ部で一部データ化開始</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> Web（リスティング）はまだ改善余地大。チラシ→Webへの段階的シフトが方針</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 地域密着LP大量生成（AI活用）でSEO強化の提案余地あり</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">4</span> 教育・人材育成</div>
+      <ul style="font-size:0.84rem;list-style:none;padding:0;">
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> これまで完全OJT依存 → ここ2年で動画研修・マネジメント研修を導入開始</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 店舗倍増に伴い、2〜3年目社員が教える側に回る課題</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> トップ営業は自分の高い基準で教えてしまい、部下が辞めるケース</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 社会人マナー・モラリティの課題: 挨拶なし・感謝なし → 60代顧客とのギャップ → クレーム → 退職の悪循環</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">5</span> ANDPAD受発注の実態確認</div>
+      <ul style="font-size:0.84rem;list-style:none;padding:0;">
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 受発注モジュールは<strong>未契約</strong>。チャット機能（LINE的な使い方）で代用</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 基幹の見積システムには発注書作成機能があり、一部の営業は活用</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 金額の手入力が必要、全員が使っているわけではない（属人化）</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 完工報告→事務員→請求書発行の流れはある程度機能している</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">6</span> 契約形態の議論</div>
+      <ul style="font-size:0.84rem;list-style:none;padding:0;">
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 月50-60万円であれば実装＋コンサル＋コーチングにしっかりコミット可能</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 月30万円の壁打ちだけでは効果が出づらい（実装まで踏み込む必要）</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> アクセンチュア基準（月35万/人）と比較し、2〜3倍のパフォーマンスを出せる自信</li>
+        <li style="padding:6px 0;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">-</span> 1年スパンの伴走型が最適。Quick Win＋中長期戦略の両軸</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="container">
+    <p style="margin-bottom:8px;">ニッカホーム DX戦略ディスカッション 議事録 — 2026.03.05</p>
+    <p>
+      <a href="https://tkonishikawa.github.io/demo-pages/nikkahome/crm-ltv-blueprint.html">CRM/LTVブループリント</a>
+    </p>
+    <p style="margin-top:12px;font-size:0.65rem;">Confidential — omoshiku / mizukara corp.</p>
+  </div>
+</div>
+
+</body>
+</html>
