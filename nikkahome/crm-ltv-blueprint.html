@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ニッカホーム 顧客資産 最大化ブループリント</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --navy-light: #2a2a44;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --bg-hero: #0a0a14;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --blue: #2563eb;
+  --blue-light: #3b82f6;
+  --warning-bg: #faf5ef;
+  --warning-border: #e8ddd0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-warm);
+  color: var(--text-1);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+section { padding: 72px 0; }
+section.alt { background: var(--bg-warm-2); }
+section.dark { background: var(--navy); color: #f0ece6; }
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.section-label::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--accent);
+}
+.section-title {
+  font-size: clamp(1.3rem, 3vw, 1.65rem);
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-2);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 56px; }
+
+/* Global Nav */
+.gnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,10,20,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transform: translateY(-100%);
+  transition: transform 0.35s ease, background 0.3s;
+}
+.gnav.visible { transform: translateY(0); }
+.gnav.scrolled {
+  background: rgba(246,243,238,0.92);
+  border-bottom: 1px solid var(--border);
+}
+.gnav-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  gap: 4px;
+  overflow-x: auto;
+}
+.gnav-logo {
+  font-family: var(--font-en);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(240,236,230,0.7);
+  letter-spacing: 0.05em;
+  margin-right: auto;
+  white-space: nowrap;
+}
+.gnav.scrolled .gnav-logo { color: var(--text-1); }
+.gnav-link {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(240,236,230,0.5);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.gnav-link:hover {
+  color: #f0ece6;
+  background: rgba(255,255,255,0.08);
+}
+.gnav.scrolled .gnav-link { color: var(--text-2); }
+.gnav.scrolled .gnav-link:hover {
+  color: var(--text-1);
+  background: rgba(0,0,0,0.04);
+}
+.gnav-link.active { color: var(--accent-light); }
+.gnav.scrolled .gnav-link.active { color: var(--accent); }
+@media (max-width: 700px) {
+  .gnav-link { font-size: 0.6rem; padding: 6px 6px; }
+  .gnav-logo { font-size: 0.6rem; }
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  min-height: 65vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a14;
+  overflow: hidden;
+  text-align: center;
+  padding: 80px 28px 64px;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,148,74,0.2), transparent);
+}
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg::before {
+  content: ''; position: absolute; top: -40%; right: -20%;
+  width: 900px; height: 900px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,148,74,0.12) 0%, transparent 65%);
+  animation: float-orb 14s ease-in-out infinite;
+}
+.hero-bg::after {
+  content: ''; position: absolute; bottom: -25%; left: -15%;
+  width: 750px; height: 750px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,64,64,0.08) 0%, transparent 65%);
+  animation: float-orb 18s ease-in-out infinite reverse;
+}
+.hero-mesh {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.04;
+  background-image:
+    linear-gradient(30deg, transparent 48%, rgba(232,148,74,0.3) 49%, rgba(232,148,74,0.3) 51%, transparent 52%),
+    linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 52%);
+  background-size: 80px 80px;
+  animation: mesh-drift 30s linear infinite;
+}
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 680px; margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 18px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; color: var(--accent-light);
+  border: 1px solid rgba(232,148,74,0.2); border-radius: 20px;
+  margin-bottom: 28px;
+  opacity: 0; animation: hero-fade-in 1s 0.3s forwards;
+}
+.hero h1 {
+  font-family: var(--font-jp);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800; color: #f0ece6; line-height: 1.5;
+  margin-bottom: 20px; letter-spacing: 0.02em;
+  opacity: 0; animation: hero-fade-in 1s 0.5s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .lead {
+  font-size: 0.88rem; color: rgba(240,236,230,0.5);
+  font-weight: 300; line-height: 1.9;
+  max-width: 560px; margin: 0 auto;
+  opacity: 0; animation: hero-fade-in 1s 0.7s forwards;
+}
+.hero-footer {
+  margin-top: 36px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  opacity: 0; animation: hero-fade-in 1s 0.9s forwards;
+}
+.hero-footer .meta { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); }
+.hero-footer .meta strong { color: rgba(240,236,230,0.5); font-weight: 500; }
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+@media (max-width: 700px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+}
+.kpi-number {
+  font-family: var(--font-mono);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.kpi-unit {
+  font-size: 0.82rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--text-2);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  margin-bottom: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.card-accent {
+  border-left: 4px solid var(--accent);
+  border-radius: 0 12px 12px 0;
+}
+.card-blue {
+  border-left: 4px solid var(--blue);
+  border-radius: 0 12px 12px 0;
+}
+.card-success {
+  border-left: 4px solid var(--success);
+  border-radius: 0 12px 12px 0;
+}
+.card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+.card p, .card li {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  line-height: 1.8;
+}
+.card ul { list-style: none; padding: 0; }
+.card li { padding-left: 20px; position: relative; }
+.card li::before {
+  content: ''; position: absolute; left: 0; top: 11px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Card Grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 700px) {
+  .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Eyebrow */
+.eyebrow {
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.eyebrow-accent { color: var(--accent); }
+.eyebrow-blue { color: var(--blue); }
+.eyebrow-success { color: var(--success); }
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto;
+  margin: 24px 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+th {
+  background: var(--bg-warm-2);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  color: var(--text-1);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-2);
+  line-height: 1.6;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(232,148,74,0.03); }
+td:first-child { font-weight: 500; color: var(--text-1); }
+
+/* Callout */
+.callout {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin: 24px 0;
+  font-size: 0.85rem;
+  color: var(--text-1);
+  line-height: 1.8;
+}
+.callout strong { color: var(--accent-dark); }
+
+/* System Diagram */
+.sys-diagram {
+  background: var(--navy);
+  border-radius: 16px;
+  padding: 36px 28px;
+  margin: 32px 0;
+  overflow-x: auto;
+}
+.sys-diagram pre {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: rgba(240,236,230,0.7);
+  line-height: 1.8;
+  white-space: pre;
+  margin: 0;
+}
+.sys-diagram .highlight {
+  color: var(--accent-light);
+  font-weight: 700;
+}
+
+/* Layer Diagram */
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 32px 0;
+}
+.layer-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0;
+  align-items: stretch;
+  min-height: 72px;
+}
+.layer-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  border-radius: 8px 0 0 8px;
+  padding: 12px 8px;
+  text-align: center;
+  line-height: 1.3;
+}
+.layer-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+.layer-content strong { color: var(--text-1); }
+.layer-l4 { background: var(--accent); }
+.layer-l3 { background: var(--accent-dark); }
+.layer-l2 { background: #b0703a; }
+.layer-l1 { background: #8a5a2e; }
+@media (max-width: 600px) {
+  .layer-row { grid-template-columns: 1fr; }
+  .layer-label { border-radius: 8px 8px 0 0; padding: 10px 12px; }
+  .layer-content { border-left: 1px solid var(--border); border-radius: 0 0 8px 8px; }
+}
+
+/* Maturity Bar */
+.maturity-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 60px 60px;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.82rem;
+}
+.maturity-row:last-child { border-bottom: none; }
+.maturity-name { font-weight: 500; color: var(--text-1); }
+.maturity-bar {
+  height: 10px;
+  background: var(--border-light);
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+.maturity-fill-now {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: var(--accent);
+  border-radius: 5px;
+  transition: width 0.6s ease;
+}
+.maturity-fill-target {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: var(--accent-bg);
+  border: 1px dashed var(--accent-border);
+  border-radius: 5px;
+}
+.maturity-score {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.maturity-score.now { color: var(--accent); }
+.maturity-score.target { color: var(--success); }
+@media (max-width: 600px) {
+  .maturity-row { grid-template-columns: 1fr; gap: 4px; }
+  .maturity-bar { display: none; }
+}
+
+/* Timeline */
+.timeline { margin: 32px 0; position: relative; padding-left: 32px; }
+.timeline::before {
+  content: ''; position: absolute; left: 11px; top: 0; bottom: 0;
+  width: 2px; background: var(--border);
+}
+.timeline-item { position: relative; margin-bottom: 32px; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -32px; top: 6px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--bg-warm); border: 3px solid var(--accent);
+}
+.timeline-item.done::before { background: var(--accent); }
+.timeline-phase {
+  font-family: var(--font-en);
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 4px;
+}
+.timeline-title {
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--text-1); margin-bottom: 6px;
+}
+.timeline-desc {
+  font-size: 0.82rem; color: var(--text-2); line-height: 1.7;
+}
+.timeline-gate {
+  display: inline-block; margin-top: 8px;
+  padding: 3px 12px; font-size: 0.7rem; font-weight: 600;
+  color: var(--success); border: 1px solid rgba(52,211,153,0.3);
+  border-radius: 12px; background: rgba(52,211,153,0.06);
+}
+
+/* ROI Table */
+.roi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.roi-header {
+  background: var(--navy);
+  color: #f0ece6;
+  padding: 16px 24px;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.roi-body { padding: 20px 24px; }
+.roi-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.85rem;
+}
+.roi-row:last-child { border-bottom: none; }
+.roi-label { color: var(--text-2); }
+.roi-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-1);
+}
+.roi-value.accent { color: var(--accent); }
+.roi-value.success { color: var(--success); }
+
+/* Footer */
+.footer {
+  background: var(--navy);
+  color: rgba(240,236,230,0.5);
+  padding: 56px 0 40px;
+  text-align: center;
+}
+.footer .closing-msg {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f0ece6;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.footer p {
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
+
+/* Animations */
+@keyframes hero-fade-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 20px); }
+}
+@keyframes mesh-drift {
+  from { transform: translate(0, 0); }
+  to { transform: translate(80px, 80px); }
+}
+
+/* Dark section overrides */
+section.dark .section-title { color: #f0ece6; }
+section.dark .section-subtitle { color: rgba(240,236,230,0.5); }
+section.dark .card {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+}
+section.dark .card h3 { color: #f0ece6; }
+section.dark .card p, section.dark .card li { color: rgba(240,236,230,0.6); }
+section.dark .card li::before { background: var(--accent-light); }
+
+/* Utility */
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.text-center { text-align: center; }
+.text-sm { font-size: 0.82rem; color: var(--text-2); }
+.text-xs { font-size: 0.75rem; color: var(--text-3); }
+.accent { color: var(--accent); }
+.bold { font-weight: 700; }
+
+/* Cross-sell Matrix */
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 140px repeat(5, 1fr);
+  gap: 2px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 24px 0;
+  font-size: 0.75rem;
+}
+.matrix-cell {
+  background: var(--bg-card);
+  padding: 10px 8px;
+  text-align: center;
+  line-height: 1.4;
+}
+.matrix-header {
+  background: var(--bg-warm-2);
+  font-weight: 600;
+  color: var(--text-1);
+  padding: 10px 8px;
+}
+.matrix-high { background: rgba(232,148,74,0.15); font-weight: 600; color: var(--accent-dark); }
+.matrix-mid { background: rgba(232,148,74,0.06); }
+.matrix-low { background: var(--bg-card); color: var(--text-3); }
+.matrix-self { background: var(--navy); color: rgba(240,236,230,0.3); font-size: 0.7rem; }
+@media (max-width: 700px) {
+  .matrix-grid { font-size: 0.65rem; grid-template-columns: 100px repeat(5, 1fr); }
+  .matrix-cell, .matrix-header { padding: 6px 4px; }
+}
+
+/* Lifecycle Bar */
+.lifecycle-bars { margin: 24px 0; }
+.lifecycle-item {
+  display: grid;
+  grid-template-columns: 100px 1fr 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.82rem;
+}
+.lifecycle-name { font-weight: 500; color: var(--text-1); }
+.lifecycle-bar-bg {
+  height: 14px; background: var(--border-light); border-radius: 7px;
+  position: relative; overflow: hidden;
+}
+.lifecycle-bar-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 6px; font-size: 0.6rem; color: #fff; font-weight: 600;
+}
+.lifecycle-timing {
+  font-size: 0.75rem; color: var(--accent-dark); font-weight: 600; text-align: right;
+}
+</style>
+</head>
+<body>
+
+<!-- Global Nav -->
+<nav class="gnav" id="gnav">
+  <div class="gnav-inner">
+    <span class="gnav-logo">NIKKAHOME CRM BLUEPRINT</span>
+    <a href="#s0" class="gnav-link">概要</a>
+    <a href="#s1" class="gnav-link">現状</a>
+    <a href="#s2" class="gnav-link">業界</a>
+    <a href="#s3" class="gnav-link">異業種</a>
+    <a href="#s4" class="gnav-link">理想像</a>
+    <a href="#s5" class="gnav-link">道具</a>
+    <a href="#s6" class="gnav-link">生涯価値</a>
+    <a href="#s7" class="gnav-link">提案連鎖</a>
+    <a href="#s8" class="gnav-link">ギャップ</a>
+    <a href="#s9" class="gnav-link">計画</a>
+    <a href="#s10" class="gnav-link">投資</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">CUSTOMER ASSET STRATEGY</div>
+    <h1>117店舗×10年分の顧客という<br><em>眠れる資産</em>を起こす</h1>
+    <p class="lead">ニッカホームの最大の資産は、施工実績のある数万世帯のお客様です。<br>
+    顧客管理の仕組みさえあれば、1世帯から生涯800万円以上のご依頼をいただける可能性があります。</p>
+    <div class="hero-footer">
+      <div class="meta"><strong>Date</strong> 2026.03.05</div>
+      <div class="meta"><strong>Type</strong> CRM Blueprint</div>
+      <div class="meta"><strong>Prepared by</strong> omoshiku</div>
+    </div>
+  </div>
+</section>
+
+<!-- S0: Executive Summary -->
+<section id="s0">
+  <div class="container">
+    <div class="section-label">Section 00 — Executive Summary</div>
+    <h2 class="section-title">全体像：顧客資産の眠りを覚ます4つの数字</h2>
+    <p class="section-subtitle">
+      ニッカホームが持つ顧客データを「管理できる仕組み」に変えるだけで、年間数十億円規模のリピート売上が見えてきます。
+    </p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-number">10<span class="kpi-unit">万世帯+</span></div>
+        <div class="kpi-label">累計施工顧客数<br>（推定）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-number">800<span class="kpi-unit">万円+</span></div>
+        <div class="kpi-label">1世帯あたり<br>生涯受注額の可能性</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-number">50<span class="kpi-unit">億円/年</span></div>
+        <div class="kpi-label">リピート売上<br>上乗せ余地</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-number">12<span class="kpi-unit">ヶ月</span></div>
+        <div class="kpi-label">仕組みが動き始める<br>までの期間</div>
+      </div>
+    </div>
+
+    <div class="callout mt-32">
+      <strong>核心メッセージ：</strong>ニッカホームの711.6億円の売上を支えているのは、過去10年以上の施工実績です。
+      この実績を「次のご依頼」につなげる仕組みが今はありません。
+      6つのシステムに散らばった顧客情報を1つにまとめ、「そろそろ外壁の塗り替え時期ですよ」と声をかけられる状態をつくる。
+      それが本ブループリントの目的です。
+    </div>
+  </div>
+</section>
+
+<!-- S1: AS-IS -->
+<section id="s1" class="alt">
+  <div class="container">
+    <div class="section-label">Section 01 — Current State</div>
+    <h2 class="section-title">現状：6つのシステムに散らばる顧客情報</h2>
+    <p class="section-subtitle">
+      ニッカホームの顧客情報は、基幹・ANDPAD・見積・会計・Excel・リピート管理と6つ以上のシステムに分散しています。<br>
+      「この家は前回いつ、どんな工事をしたか」を横断的に見る手段がありません。
+    </p>
+
+    <div class="sys-diagram">
+<pre>
+┌────────────────────────────────────────────────────────────────────────────┐
+│                  ニッカホーム 顧客情報の現在地                              │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│  <span class="highlight">基幹システム</span>        <span class="highlight">ANDPAD</span>              <span class="highlight">自社見積システム</span>          │
+│  フルスクラッチ       チャットのみ契約     詳細不明                       │
+│  2015年〜 API不可     管理者4名/社内400名                                 │
+│  顧客・案件・原価     施工管理・連絡                                      │
+│       ↕ 手動CSV            ↕ なし              ↕ 不明                    │
+│  ╔════════════════════════════════════════════════════════════╗           │
+│  ║   顧客データを横断的に見る仕組み ＝ 存在しない            ║           │
+│  ╚════════════════════════════════════════════════════════════╝           │
+│       ↕ 手動CSV            ↕ なし              ↕ 不明                    │
+│  <span class="highlight">SMILE（会計）</span>       <span class="highlight">Excel（各店舗）</span>     <span class="highlight">リピート管理</span>               │
+│  大塚商会            予実・Aヨミ/Bヨミ   蓄積フェーズ                    │
+│                                           （システム不明）                 │
+│                                                                            │
+│  その他: Google Workspace / GBP（各支社管理）                              │
+└────────────────────────────────────────────────────────────────────────────┘
+</pre>
+    </div>
+
+    <div class="card-grid mt-24">
+      <div class="card card-accent">
+        <div class="eyebrow eyebrow-accent">課題 1</div>
+        <h3>「この家の工事履歴」が見えない</h3>
+        <p>基幹に案件データはあるが、「1世帯×全施工履歴」の形で取り出せない。営業が過去の施工内容を確認するには、基幹を個別に検索するか、記憶に頼るしかない状態です。</p>
+      </div>
+      <div class="card card-accent">
+        <div class="eyebrow eyebrow-accent">課題 2</div>
+        <h3>「そろそろ提案」ができない</h3>
+        <p>築年数と施工時期から「外壁の塗り替え時期」「給湯器の交換時期」を割り出す仕組みがない。お客様から連絡が来るまで待つしかない「受け身の営業」になっています。</p>
+      </div>
+      <div class="card card-accent">
+        <div class="eyebrow eyebrow-accent">課題 3</div>
+        <h3>営業が辞めると顧客情報も消える</h3>
+        <p>毎年60名入社・15-20名退社（離職率25-33%）。営業個人の記憶に依存した顧客管理では、担当者が変わるたびにお客様との関係がリセットされます。</p>
+      </div>
+      <div class="card card-accent">
+        <div class="eyebrow eyebrow-accent">課題 4</div>
+        <h3>店舗間で「やり方」がバラバラ</h3>
+        <p>117店舗それぞれが独自のExcelや管理方法を使用。成功している店舗の手法を他店に横展開する仕組みがありません。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S2: Industry Benchmark -->
+<section id="s2">
+  <div class="container">
+    <div class="section-label">Section 02 — Industry Benchmark</div>
+    <h2 class="section-title">先を行くリフォーム会社はここまでやっている</h2>
+    <p class="section-subtitle">
+      国内外のリフォーム業界で、顧客管理を仕組み化した企業の事例です。<br>
+      ニッカホームの規模があれば、これ以上の成果が出せる可能性があります。
+    </p>
+
+    <div class="card card-accent">
+      <div class="eyebrow eyebrow-accent">事例 1 — 国内中堅リフォーム会社</div>
+      <h3>kintoneで顧客管理を一元化 → リピート率が向上</h3>
+      <p>10店舗規模のリフォーム会社がkintone（月額1,500円/人）で顧客管理を構築。施工履歴・点検予定・お客様の家族構成まで記録し、「そろそろ提案リスト」を毎月自動生成。導入から1年でリピート受注が増加し、営業1人あたりの生産性が改善しました。</p>
+    </div>
+
+    <div class="card card-accent">
+      <div class="eyebrow eyebrow-accent">事例 2 — HomeServe（イギリス）</div>
+      <h3>月額制の「住まいの安心プラン」で460万世帯を囲い込み</h3>
+      <p>住宅メンテナンスの定額サービスを提供。月額数百円〜の会費で給排水・電気設備のトラブル対応を保証し、更新率95%を実現。定期点検を通じて追加リフォームの提案機会を創出しています。460万世帯の会員基盤が、安定した収益と「次の工事」の種になっています。</p>
+    </div>
+
+    <div class="card card-accent">
+      <div class="eyebrow eyebrow-accent">事例 3 — Power Home Remodeling（アメリカ）</div>
+      <h3>顧客満足度96%、売上の55%が紹介経由</h3>
+      <p>施工後のフォローアップを徹底し、顧客満足度96%を達成。その結果、新規受注の55%が既存顧客からの紹介に。紹介経由の受注は広告費がかからないため、集客コストを半分以下に抑えながら安定した成長を続けています。</p>
+    </div>
+
+    <div class="callout mt-24">
+      <strong>業界共通のポイント：</strong>先行企業に共通するのは3つ。
+      ①施工後の定期連絡（1週間・1ヶ月・6ヶ月・1年・3年の5回）、
+      ②お客様の家の部位ごとに「次の提案時期」を計算する仕組み、
+      ③紹介制度の仕組み化。
+      これらは特別な技術ではなく、「決めて、続ける」だけで実現できます。
+    </div>
+  </div>
+</section>
+
+<!-- S3: Cross-Industry Lessons -->
+<section id="s3" class="alt">
+  <div class="container">
+    <div class="section-label">Section 03 — Cross-Industry Insights</div>
+    <h2 class="section-title">異業種に学ぶ：車検、歯科検診、保険更新のヒント</h2>
+    <p class="section-subtitle">
+      「高単価×低頻度×長い付き合い」という点で、リフォーム業界に似た業界の成功パターンを整理しました。<br>
+      どれもニッカホームにそのまま応用できるものばかりです。
+    </p>
+
+    <div class="card-grid-3">
+      <div class="card card-blue">
+        <div class="eyebrow eyebrow-blue">自動車ディーラー</div>
+        <h3>車検・点検の「自動案内」</h3>
+        <ul>
+          <li>購入日から自動計算で6ヶ月・12ヶ月・車検の案内を送付</li>
+          <li>整備履歴をすべて蓄積し、「次に壊れそうな部品」を予測</li>
+          <li>これをリフォームに置き換えると「築年数×施工部位」で案内を自動送信</li>
+        </ul>
+      </div>
+      <div class="card card-blue">
+        <div class="eyebrow eyebrow-blue">歯科医院</div>
+        <h3>6ヶ月検診→治療発見</h3>
+        <ul>
+          <li>半年に1回の定期検診を案内（ハガキ＋メール）</li>
+          <li>検診時に新たな治療ニーズを発見する確率が高い</li>
+          <li>リフォームなら「3年点検→外壁のひび割れ発見→塗装提案」に応用可能</li>
+        </ul>
+      </div>
+      <div class="card card-blue">
+        <div class="eyebrow eyebrow-blue">保険業界</div>
+        <h3>更新タイミングの予測</h3>
+        <ul>
+          <li>契約更新の3ヶ月前から段階的に連絡</li>
+          <li>家族構成の変化（子どもの成長、退職）に合わせて商品を提案</li>
+          <li>リフォームなら「子どもの独立→夫婦2人向けのリフォーム」に応用可能</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card-grid mt-24">
+      <div class="card card-success">
+        <div class="eyebrow eyebrow-success">HVAC（空調設備業界）</div>
+        <h3>設備寿命からの先回り提案</h3>
+        <p>エアコン・給湯器の設置年月を記録し、耐用年数（10-15年）の2年前から交換の案内を開始。設備が壊れてからの「緊急対応」ではなく、壊れる前に提案することで、お客様の計画的な予算確保を促し、受注率を向上させています。</p>
+      </div>
+      <div class="card card-success">
+        <div class="eyebrow eyebrow-success">高級小売業</div>
+        <h3>生涯価値トラッキング</h3>
+        <p>お客様1人ひとりの「これまでの購入総額」と「次に買いそうなもの」を管理。購入頻度が落ちたお客様には特別な案内を送り、離反を防いでいます。リフォームでも「過去の施工総額×次の部位」の管理が同じ効果を生みます。</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>共通する成功パターン：</strong>
+      ①お客様の情報を「時系列」で蓄積する、②「次にいつ何が必要になるか」を計算する、③「お客様から連絡が来る前に、こちらから声をかける」。
+      この3つを仕組み化した企業は、業界を問わずリピート率を2倍以上に引き上げています。
+    </div>
+  </div>
+</section>
+
+<!-- S4: Ideal Architecture -->
+<section id="s4">
+  <div class="container">
+    <div class="section-label">Section 04 — Target Architecture</div>
+    <h2 class="section-title">目指す姿：顧客管理の「4つの階層」</h2>
+    <p class="section-subtitle">
+      ニッカホームに必要な顧客管理の仕組みを、4つの階層で整理しました。<br>
+      下から順に積み上げていくことで、段階的に効果が出る設計です。
+    </p>
+
+    <div class="layer-stack">
+      <div class="layer-row">
+        <div class="layer-label layer-l4">第4層<br>見える化</div>
+        <div class="layer-content">
+          <strong>店舗別・営業別のダッシュボード</strong> — リピート率、紹介率、顧客あたりの生涯受注額を店舗・営業ごとに一覧表示。エリアマネージャーが「どの店舗が顧客資産を活かせているか」を一目で確認できる状態。
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-label layer-l3">第3層<br>実行</div>
+        <div class="layer-content">
+          <strong>「そろそろ提案リスト」の自動生成</strong> — 毎月、各店舗に「この家は外壁の塗り替え時期」「この家は給湯器が10年超」といったリストを自動配信。施工後の定期点検スケジュールも自動で管理。
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-label layer-l2">第2層<br>分析</div>
+        <div class="layer-content">
+          <strong>「いつ・何を提案すべきか」の判定エンジン</strong> — 施工履歴×築年数×部位の耐用年数から「次の提案タイミング」を自動計算。お客様が離れそうな兆候（長期間連絡なし等）も検知。最初はシンプルなルール、慣れてきたら精度を上げていきます。
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-label layer-l1">第1層<br>データ基盤</div>
+        <div class="layer-content">
+          <strong>「顧客×物件×施工履歴」の統合データベース</strong> — 基幹システムの顧客データと施工履歴を、CSVで毎晩取り込み。1世帯ごとに「いつ・どんな工事をしたか」「家の築年数」「各部位の状態」を一覧できるマスターデータを構築。
+        </div>
+      </div>
+    </div>
+
+    <div class="sys-diagram">
+<pre>
+ ニッカホームの制約に合わせた設計（API不可・CSV中心・IT2名体制）
+
+ ┌─────────────┐  チャット   ┌──────────────────────────────────────────┐
+ │   ANDPAD     │ ──────────→│                                          │
+ │  施工管理    │             │         顧客管理ハブ（kintone等）        │
+ └─────────────┘             │                                          │
+                              │  ・顧客×物件×施工履歴の統合マスター    │
+ ┌─────────────┐  CSV夜間    │  ・「そろそろ提案リスト」自動生成        │
+ │ 基幹システム │ ──バッチ──→│  ・施工後フォローアップ管理              │
+ │ フルスクラッチ│             │  ・店舗別ダッシュボード                  │
+ └─────────────┘             │                                          │
+                              └──────────────┬───────────────────────────┘
+                                             │
+                              ┌──────────────┴───────────────────────────┐
+                              │     Looker Studio ダッシュボード          │
+                              │  ・店舗別リピート率・紹介率               │
+                              │  ・全社の顧客資産活用スコア              │
+                              └──────────────────────────────────────────┘
+</pre>
+    </div>
+
+    <div class="callout">
+      <strong>設計のポイント：</strong>
+      基幹システムのAPI対応は不要です。毎晩CSVファイルを出力し、顧客管理ハブに取り込む方式なら、基幹に手を加えることなく始められます。IT担当2名の体制でも十分に運用できる設計です。
+    </div>
+  </div>
+</section>
+
+<!-- S5: Technology Stack -->
+<section id="s5" class="alt">
+  <div class="container">
+    <div class="section-label">Section 05 — Technology Selection</div>
+    <h2 class="section-title">ニッカホームに合う「道具選び」</h2>
+    <p class="section-subtitle">
+      顧客管理の仕組みを実現するためのシステムを比較しました。<br>
+      ニッカホームの制約（基幹のAPI不可、IT2名体制、117店舗展開）を踏まえた推奨です。
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>システム</th>
+            <th>月額費用</th>
+            <th>良い点</th>
+            <th>気になる点</th>
+            <th>推奨度</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>kintone<br><span class="text-xs">サイボウズ</span></td>
+            <td>1,500円/人</td>
+            <td>日本語対応が万全。自社でカスタマイズ可能。建設業の導入事例が豊富。CSV取込が標準機能。</td>
+            <td>分析機能は別途必要（Looker Studio等と連携）</td>
+            <td><span class="accent bold">★★★</span></td>
+          </tr>
+          <tr>
+            <td>Salesforce</td>
+            <td>9,000〜36,000円/人</td>
+            <td>機能は最も豊富。大規模運用に強い。分析機能が内蔵。</td>
+            <td>費用が高い。設定に専門知識が必要。117店舗展開時のコストが膨大。</td>
+            <td>★★☆</td>
+          </tr>
+          <tr>
+            <td>HubSpot</td>
+            <td>無料〜</td>
+            <td>無料プランあり。メール配信・営業管理が一体。</td>
+            <td>建設・リフォーム特有の機能が弱い。日本語サポートが限定的。</td>
+            <td>★★☆</td>
+          </tr>
+          <tr>
+            <td>Zoho CRM</td>
+            <td>1,680円/人</td>
+            <td>コストパフォーマンスが良い。API対応が充実。</td>
+            <td>日本の建設業事例が少ない。カスタマイズに知識が必要。</td>
+            <td>★★☆</td>
+          </tr>
+          <tr>
+            <td>ANDPAD<br><span class="text-xs">引合粗利管理</span></td>
+            <td>要見積</td>
+            <td>既にANDPADを利用中。施工管理と一体。</td>
+            <td>顧客管理機能は限定的。「そろそろ提案」の仕組みは未対応。</td>
+            <td>★☆☆</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card card-success mt-24">
+      <div class="eyebrow eyebrow-success">推奨</div>
+      <h3>Phase 1はkintone、規模拡大後にSalesforceを再評価</h3>
+      <p>kintoneは月額1,500円/人で始められ、IT担当2名でもカスタマイズが可能です。建設・リフォーム業界の導入事例が豊富で、CSV取込が標準機能としてあるため、基幹システムからのデータ連携もスムーズに行えます。</p>
+      <p class="mt-24">まずパイロット3-5店舗でkintoneに顧客マスターを構築し、効果を検証。117店舗への全社展開の段階でSalesforceのコスト対効果を再評価するのが現実的です。</p>
+    </div>
+
+    <div class="card-grid mt-24">
+      <div class="card">
+        <div class="eyebrow eyebrow-accent">データ連携方式</div>
+        <h3>CSV夜間バッチ（推奨）</h3>
+        <p>基幹システムから毎晩CSVを出力→顧客管理ハブに自動取込。最もシンプルで、基幹に手を加える必要がありません。翌朝には最新データが反映されます。</p>
+      </div>
+      <div class="card">
+        <div class="eyebrow eyebrow-accent">将来の選択肢</div>
+        <h3>段階的な自動化</h3>
+        <p>Phase 1ではCSV手動→Phase 2でCSV自動出力（タスクスケジューラ）→Phase 3で基幹リプレイス時にAPI連携を検討。無理にすべてを自動化する必要はありません。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S6: LTV Model -->
+<section id="s6">
+  <div class="container">
+    <div class="section-label">Section 06 — Lifetime Value</div>
+    <h2 class="section-title">1世帯から生涯いくらいただけるか</h2>
+    <p class="section-subtitle">
+      リフォームは「一度きりの取引」ではありません。1つの家には、10年周期で複数の部位のリフォーム需要が発生します。<br>
+      1世帯の「生涯受注額」を計算すると、その金額の大きさに驚かれるはずです。
+    </p>
+
+    <div class="card">
+      <div class="eyebrow eyebrow-accent">計算式</div>
+      <h3>1世帯の生涯受注額 ＝ 各部位の平均受注額 × 施工回数 の合計</h3>
+      <div class="table-wrap mt-24">
+        <table>
+          <thead>
+            <tr>
+              <th>施工部位</th>
+              <th>平均受注額</th>
+              <th>周期</th>
+              <th>30年で何回</th>
+              <th>30年合計</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>水回り（トイレ・洗面）</td>
+              <td>50〜100万円</td>
+              <td>10〜15年</td>
+              <td>2〜3回</td>
+              <td>150〜300万円</td>
+            </tr>
+            <tr>
+              <td>外壁・塗装</td>
+              <td>80〜200万円</td>
+              <td>10〜15年</td>
+              <td>2回</td>
+              <td>160〜400万円</td>
+            </tr>
+            <tr>
+              <td>キッチン</td>
+              <td>100〜250万円</td>
+              <td>15〜20年</td>
+              <td>1〜2回</td>
+              <td>100〜500万円</td>
+            </tr>
+            <tr>
+              <td>浴室</td>
+              <td>80〜200万円</td>
+              <td>15〜20年</td>
+              <td>1〜2回</td>
+              <td>80〜400万円</td>
+            </tr>
+            <tr>
+              <td>給湯器</td>
+              <td>20〜50万円</td>
+              <td>8〜12年</td>
+              <td>2〜3回</td>
+              <td>40〜150万円</td>
+            </tr>
+            <tr style="background: var(--accent-bg);">
+              <td><strong>合計</strong></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td><strong style="color: var(--accent); font-family: var(--font-mono); font-size: 1rem;">530〜1,750万円</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout mt-24">
+      <strong>つまり：</strong>1世帯から30年で800万円以上のご依頼をいただける計算です（中央値で試算）。
+      ニッカホームの累計顧客が10万世帯とすると、顧客資産の総額は<strong>8,000億円規模</strong>。
+      このうち「次の工事でもニッカホームに頼む」割合を10%改善するだけで、年間数十億円のインパクトがあります。
+    </div>
+
+    <div class="card-grid mt-32">
+      <div class="card">
+        <div class="eyebrow eyebrow-accent">今すぐ使える指標</div>
+        <h3>かんたん版：過去の実績から計算</h3>
+        <p>1世帯あたりの累計受注額 ＝ その世帯の過去の全施工金額の合計。まずこれを全顧客分出すだけで「顧客資産の棚卸し」ができます。基幹システムからCSVで抽出すれば、追加投資なしで計算可能です。</p>
+      </div>
+      <div class="card">
+        <div class="eyebrow eyebrow-accent">将来の発展</div>
+        <h3>予測版：今後の受注額を見積もる</h3>
+        <p>「この家は築15年、外壁は5年前に施工済み、水回りは未施工」→「今後10年で水回り＋キッチンの需要あり、推定300万円」。施工履歴と築年数から将来の受注可能性を予測します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S7: Cross-Sell Matrix -->
+<section id="s7" class="alt">
+  <div class="container">
+    <div class="section-label">Section 07 — Cross-Sell Propensity</div>
+    <h2 class="section-title">「そろそろ提案」マトリクス：施工連鎖の設計</h2>
+    <p class="section-subtitle">
+      1つの工事は次の工事の「入り口」です。過去の施工部位から「次に何を提案すべきか」を予測するマトリクスが、<br>
+      営業の「勘」を「仕組み」に変えます。
+    </p>
+
+    <h3 class="mb-16" style="font-size: 0.95rem; font-weight: 700;">部位別の提案連鎖マトリクス</h3>
+    <p class="text-sm mb-24">過去の施工部位（行）→ 次に提案すべき部位（列）。数字は提案の優先度（業界傾向に基づく推定値）。</p>
+
+    <div class="matrix-grid">
+      <div class="matrix-header">過去の施工 ↓</div>
+      <div class="matrix-header">水回り</div>
+      <div class="matrix-header">外壁・塗装</div>
+      <div class="matrix-header">キッチン</div>
+      <div class="matrix-header">浴室</div>
+      <div class="matrix-header">内装</div>
+
+      <div class="matrix-header">水回り</div>
+      <div class="matrix-self">—</div>
+      <div class="matrix-high">◎ 40%</div>
+      <div class="matrix-mid">○ 25%</div>
+      <div class="matrix-mid">○ 20%</div>
+      <div class="matrix-low">△ 10%</div>
+
+      <div class="matrix-header">外壁・塗装</div>
+      <div class="matrix-mid">○ 25%</div>
+      <div class="matrix-self">—</div>
+      <div class="matrix-mid">○ 20%</div>
+      <div class="matrix-low">△ 15%</div>
+      <div class="matrix-high">◎ 35%</div>
+
+      <div class="matrix-header">キッチン</div>
+      <div class="matrix-mid">○ 20%</div>
+      <div class="matrix-mid">○ 20%</div>
+      <div class="matrix-self">—</div>
+      <div class="matrix-high">◎ 30%</div>
+      <div class="matrix-mid">○ 25%</div>
+
+      <div class="matrix-header">浴室</div>
+      <div class="matrix-mid">○ 25%</div>
+      <div class="matrix-low">△ 15%</div>
+      <div class="matrix-high">◎ 30%</div>
+      <div class="matrix-self">—</div>
+      <div class="matrix-mid">○ 20%</div>
+
+      <div class="matrix-header">内装</div>
+      <div class="matrix-high">◎ 30%</div>
+      <div class="matrix-mid">○ 20%</div>
+      <div class="matrix-low">△ 15%</div>
+      <div class="matrix-low">△ 15%</div>
+      <div class="matrix-self">—</div>
+    </div>
+
+    <h3 class="mt-32 mb-16" style="font-size: 0.95rem; font-weight: 700;">部位別の耐用年数と「そろそろ提案」タイミング</h3>
+
+    <div class="lifecycle-bars">
+      <div class="lifecycle-item">
+        <div class="lifecycle-name">給湯器</div>
+        <div class="lifecycle-bar-bg">
+          <div class="lifecycle-bar-fill" style="width: 33%; background: var(--accent);">8-12年</div>
+        </div>
+        <div class="lifecycle-timing">7年目〜</div>
+      </div>
+      <div class="lifecycle-item">
+        <div class="lifecycle-name">トイレ・洗面</div>
+        <div class="lifecycle-bar-bg">
+          <div class="lifecycle-bar-fill" style="width: 42%; background: var(--accent);">10-15年</div>
+        </div>
+        <div class="lifecycle-timing">8年目〜</div>
+      </div>
+      <div class="lifecycle-item">
+        <div class="lifecycle-name">外壁塗装</div>
+        <div class="lifecycle-bar-bg">
+          <div class="lifecycle-bar-fill" style="width: 42%; background: #c97a3a;">10-15年</div>
+        </div>
+        <div class="lifecycle-timing">8年目〜</div>
+      </div>
+      <div class="lifecycle-item">
+        <div class="lifecycle-name">キッチン</div>
+        <div class="lifecycle-bar-bg">
+          <div class="lifecycle-bar-fill" style="width: 58%; background: #b0703a;">15-20年</div>
+        </div>
+        <div class="lifecycle-timing">12年目〜</div>
+      </div>
+      <div class="lifecycle-item">
+        <div class="lifecycle-name">浴室</div>
+        <div class="lifecycle-bar-bg">
+          <div class="lifecycle-bar-fill" style="width: 58%; background: #b0703a;">15-20年</div>
+        </div>
+        <div class="lifecycle-timing">12年目〜</div>
+      </div>
+      <div class="lifecycle-item">
+        <div class="lifecycle-name">屋根</div>
+        <div class="lifecycle-bar-bg">
+          <div class="lifecycle-bar-fill" style="width: 75%; background: #8a5a2e;">15-30年</div>
+        </div>
+        <div class="lifecycle-timing">12年目〜</div>
+      </div>
+    </div>
+
+    <div class="card card-accent mt-32">
+      <div class="eyebrow eyebrow-accent">実装イメージ</div>
+      <h3>毎月の「そろそろ提案リスト」が店舗に届く</h3>
+      <p>例：「田中様（横浜南店担当）— 5年前に水回り施工。築18年で外壁未施工。→ 外壁塗装の提案を推奨」。
+      このようなリストを各店舗の営業担当に毎月配信します。最初は基幹のCSVデータ＋施工時期から計算するだけ。特別なシステムは要りません。</p>
+    </div>
+
+    <div class="callout mt-24">
+      <strong>国土交通省のガイドライン：</strong>
+      「長期修繕計画」の考え方によると、住宅の各部位には推奨される点検・修繕周期があります。
+      このガイドラインを「提案タイミング」の根拠にすることで、お客様に「国の基準でもそろそろ時期ですよ」と説明できます。
+    </div>
+  </div>
+</section>
+
+<!-- S8: Gap Analysis -->
+<section id="s8">
+  <div class="container">
+    <div class="section-label">Section 08 — Gap Analysis</div>
+    <h2 class="section-title">現状と理想のギャップ：8つの能力で採点</h2>
+    <p class="section-subtitle">
+      顧客管理に必要な8つの能力を5段階で評価しました。現状の平均は1.2点（5点満点）。<br>
+      12ヶ月後に2.8点まで引き上げることを目標にします。
+    </p>
+
+    <div class="card" style="padding: 32px 28px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+          <div class="eyebrow eyebrow-accent" style="margin-bottom: 4px;">成熟度スコア</div>
+          <div style="font-size: 0.82rem; color: var(--text-2);">1=未着手 2=部分的 3=仕組み化 4=データ活用 5=予測・自動化</div>
+        </div>
+        <div style="display: flex; gap: 16px; font-size: 0.75rem;">
+          <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--accent); border-radius: 3px; vertical-align: middle;"></span> 現状</span>
+          <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--success); border-radius: 3px; vertical-align: middle;"></span> 12ヶ月目標</span>
+        </div>
+      </div>
+
+      <div class="maturity-row" style="border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 8px; font-weight: 700;">
+        <div class="maturity-name">能力</div>
+        <div></div>
+        <div class="maturity-score" style="color: var(--accent);">現状</div>
+        <div class="maturity-score" style="color: var(--success);">目標</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">顧客情報管理</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 60%;"></div>
+          <div class="maturity-fill-now" style="width: 30%;"></div>
+        </div>
+        <div class="maturity-score now">1.5</div>
+        <div class="maturity-score target">3.0</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">施工履歴管理</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 60%;"></div>
+          <div class="maturity-fill-now" style="width: 20%;"></div>
+        </div>
+        <div class="maturity-score now">1.0</div>
+        <div class="maturity-score target">3.0</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">リピート管理</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 60%;"></div>
+          <div class="maturity-fill-now" style="width: 30%;"></div>
+        </div>
+        <div class="maturity-score now">1.5</div>
+        <div class="maturity-score target">3.0</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">部位別提案</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 50%;"></div>
+          <div class="maturity-fill-now" style="width: 20%;"></div>
+        </div>
+        <div class="maturity-score now">1.0</div>
+        <div class="maturity-score target">2.5</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">施工後フォロー</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 60%;"></div>
+          <div class="maturity-fill-now" style="width: 20%;"></div>
+        </div>
+        <div class="maturity-score now">1.0</div>
+        <div class="maturity-score target">3.0</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">紹介プログラム</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 40%;"></div>
+          <div class="maturity-fill-now" style="width: 20%;"></div>
+        </div>
+        <div class="maturity-score now">1.0</div>
+        <div class="maturity-score target">2.0</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">生涯受注額の把握</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 40%;"></div>
+          <div class="maturity-fill-now" style="width: 20%;"></div>
+        </div>
+        <div class="maturity-score now">1.0</div>
+        <div class="maturity-score target">2.0</div>
+      </div>
+
+      <div class="maturity-row">
+        <div class="maturity-name">店舗別管理</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 60%;"></div>
+          <div class="maturity-fill-now" style="width: 30%;"></div>
+        </div>
+        <div class="maturity-score now">1.5</div>
+        <div class="maturity-score target">3.0</div>
+      </div>
+
+      <div class="maturity-row" style="border-top: 2px solid var(--border); padding-top: 12px; margin-top: 8px;">
+        <div class="maturity-name" style="font-weight: 800;">平均</div>
+        <div class="maturity-bar">
+          <div class="maturity-fill-target" style="width: 53%;"></div>
+          <div class="maturity-fill-now" style="width: 24%;"></div>
+        </div>
+        <div class="maturity-score now" style="font-size: 1rem;">1.2</div>
+        <div class="maturity-score target" style="font-size: 1rem;">2.7</div>
+      </div>
+    </div>
+
+    <div class="card-grid mt-32">
+      <div class="card card-accent">
+        <h3>最も伸びしろが大きい領域</h3>
+        <ul>
+          <li><strong>施工履歴管理（+2.0）</strong>：基幹のCSVを整理するだけで1.0→3.0に跳ね上がる</li>
+          <li><strong>施工後フォロー（+2.0）</strong>：「施工後1ヶ月/6ヶ月/1年」の連絡ルールを決めるだけ</li>
+          <li><strong>リピート管理（+1.5）</strong>：蓄積中のデータを「提案リスト」に変換</li>
+        </ul>
+      </div>
+      <div class="card card-accent">
+        <h3>12ヶ月では達成しないもの</h3>
+        <ul>
+          <li><strong>紹介プログラム</strong>：制度設計→試験運用→全社展開に18ヶ月以上</li>
+          <li><strong>生涯受注額の予測</strong>：まず「過去実績」の把握から。予測は24ヶ月目標</li>
+          <li><strong>部位別提案の自動化</strong>：まずは手動リスト→自動化は段階的に</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Roadmap -->
+<section id="s9" class="alt">
+  <div class="container">
+    <div class="section-label">Section 09 — Implementation Roadmap</div>
+    <h2 class="section-title">進め方のスケジュール：4つのフェーズ</h2>
+    <p class="section-subtitle">
+      一度にすべてを変えるのではなく、「小さく始めて、効果を確認しながら広げる」進め方です。<br>
+      各フェーズの終わりに「定着確認ゲート」を設け、次に進む判断をします。
+    </p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 0 — 月1〜2</div>
+        <div class="timeline-title">データ棚卸し＆システム選定</div>
+        <div class="timeline-desc">
+          基幹システムからCSVで出力できるデータを棚卸し。顧客データ・施工履歴の「量」と「質」を確認します。
+          同時に顧客管理システム（kintone等）の比較選定を実施。パイロット店舗3-5店を決定します。
+        </div>
+        <div class="timeline-gate">定着確認：CSVの項目・品質が確認でき、システムが選定されたら次へ</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 1 — 月3〜6</div>
+        <div class="timeline-title">顧客マスター構築＆パイロット運用</div>
+        <div class="timeline-desc">
+          パイロット店舗で「顧客×物件×施工履歴」の統合マスターを構築。CSVの夜間取込を設定し、
+          「この家は前回いつ何をしたか」が1画面で見える状態を作ります。
+          同時に「施工後フォローアップ」のルール（1ヶ月・6ヶ月・1年の連絡）を策定し、パイロット店舗で実行開始。
+        </div>
+        <div class="timeline-gate">定着確認：パイロット店舗の営業が週3回以上マスターを閲覧していたら次へ</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 2 — 月6〜12</div>
+        <div class="timeline-title">「そろそろ提案」稼働＆全社展開</div>
+        <div class="timeline-desc">
+          パイロット結果を踏まえ、全117店舗に展開。「そろそろ提案リスト」を毎月自動生成し、
+          各店舗に配信する仕組みを構築します。生涯受注額の算出を開始し、店舗別ダッシュボードを設置。
+          同時に顧客満足度の仕組み（施工後アンケート）を導入します。
+        </div>
+        <div class="timeline-gate">定着確認：「そろそろ提案」から実際に受注が生まれていたら次へ</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 3 — 月12〜18</div>
+        <div class="timeline-title">紹介プログラム＆予測精度の引き上げ</div>
+        <div class="timeline-desc">
+          紹介制度の設計＋試験運用を開始。「ご友人をご紹介いただくと〇〇」の仕組みを構築。
+          提案タイミングの予測精度を向上させ、「部位×築年数×地域」の組み合わせで最適な提案を自動判定。
+          生涯受注額の「予測版」（今後の受注見込み）を実装し、営業の優先順位付けに活用。
+        </div>
+        <div class="timeline-gate">定着確認：紹介経由の受注が月10件以上発生していたら成功</div>
+      </div>
+    </div>
+
+    <div class="callout mt-24">
+      <strong>50店舗の新規出店計画との連携：</strong>
+      ニッカホームは3年で50店舗の新規出店を計画しています。
+      Phase 1-2で確立した顧客管理の仕組みを「新店パッケージ」として標準化すれば、
+      新しい店舗は開業初日から顧客管理の仕組みを使える状態でスタートできます。
+      既存店で検証済みのフォローアップルール・提案マトリクスがそのまま適用できるため、
+      新店の顧客管理の立ち上がり期間を数ヶ月短縮できます。
+    </div>
+  </div>
+</section>
+
+<!-- S10: Investment & ROI -->
+<section id="s10">
+  <div class="container">
+    <div class="section-label">Section 10 — Investment & ROI</div>
+    <h2 class="section-title">投資と回収の試算</h2>
+    <p class="section-subtitle">
+      顧客管理の仕組みづくりに必要な投資額と、期待される効果を3つのシナリオで試算しました。
+    </p>
+
+    <div class="roi-card mb-24">
+      <div class="roi-header">Phase 1 投資概算（パイロット3-5店舗）</div>
+      <div class="roi-body">
+        <div class="roi-row">
+          <div class="roi-label">顧客管理システム（kintone）ライセンス</div>
+          <div class="roi-value">50〜80万円/年</div>
+        </div>
+        <div class="roi-row">
+          <div class="roi-label">初期構築（アプリ設計・CSV取込設定・研修）</div>
+          <div class="roi-value">200〜400万円</div>
+        </div>
+        <div class="roi-row">
+          <div class="roi-label">ダッシュボード構築（Looker Studio）</div>
+          <div class="roi-value">100〜200万円</div>
+        </div>
+        <div class="roi-row">
+          <div class="roi-label">コンサルティング（運用定着支援）</div>
+          <div class="roi-value">150〜300万円</div>
+        </div>
+        <div class="roi-row" style="border-top: 2px solid var(--border); padding-top: 14px; margin-top: 4px;">
+          <div class="roi-label"><strong>Phase 1 合計</strong></div>
+          <div class="roi-value accent" style="font-size: 1.1rem;">500〜980万円</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="roi-card mb-24">
+      <div class="roi-header">全社展開（Phase 2〜3）追加投資</div>
+      <div class="roi-body">
+        <div class="roi-row">
+          <div class="roi-label">全社ライセンス（117店舗×管理者・営業）</div>
+          <div class="roi-value">300〜600万円/年</div>
+        </div>
+        <div class="roi-row">
+          <div class="roi-label">展開・研修・カスタマイズ</div>
+          <div class="roi-value">300〜600万円</div>
+        </div>
+        <div class="roi-row" style="border-top: 2px solid var(--border); padding-top: 14px; margin-top: 4px;">
+          <div class="roi-label"><strong>Phase 2-3 追加合計</strong></div>
+          <div class="roi-value accent" style="font-size: 1.1rem;">600〜1,200万円</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="mt-32 mb-16" style="font-size: 0.95rem; font-weight: 700;">効果シナリオ（年間ベース）</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>効果項目</th>
+            <th>悲観シナリオ</th>
+            <th>現実シナリオ</th>
+            <th>楽観シナリオ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>リピート受注の増加</td>
+            <td>+15億円/年</td>
+            <td style="font-weight: 700; color: var(--accent);">+30〜50億円/年</td>
+            <td>+80億円/年</td>
+          </tr>
+          <tr>
+            <td>（根拠）</td>
+            <td class="text-xs">リピート率+2%<br>35,000件×2%×180万円</td>
+            <td class="text-xs">リピート率+5%<br>35,000件×5%×180万円</td>
+            <td class="text-xs">リピート率+10%+紹介<br>+クロスセル単価UP</td>
+          </tr>
+          <tr>
+            <td>営業工数の削減</td>
+            <td>年500時間</td>
+            <td style="font-weight: 700; color: var(--accent);">年2,000時間</td>
+            <td>年5,000時間</td>
+          </tr>
+          <tr>
+            <td>（根拠）</td>
+            <td class="text-xs">顧客情報の検索時間<br>短縮のみ</td>
+            <td class="text-xs">＋提案リスト自動化<br>＋フォロー自動化</td>
+            <td class="text-xs">＋全社ナレッジ共有<br>＋報告書の自動化</td>
+          </tr>
+          <tr>
+            <td>紹介経由の新規受注</td>
+            <td>+2億円/年</td>
+            <td style="font-weight: 700; color: var(--accent);">+5〜10億円/年</td>
+            <td>+20億円/年</td>
+          </tr>
+          <tr style="background: var(--accent-bg);">
+            <td><strong>年間効果合計</strong></td>
+            <td><strong>+17億円/年</strong></td>
+            <td><strong style="color: var(--accent); font-family: var(--font-mono); font-size: 1rem;">+35〜60億円/年</strong></td>
+            <td><strong>+100億円/年</strong></td>
+          </tr>
+          <tr style="background: rgba(52,211,153,0.06);">
+            <td><strong>投資回収期間</strong></td>
+            <td>6〜8ヶ月</td>
+            <td><strong style="color: var(--success); font-family: var(--font-mono);">2〜4ヶ月</strong></td>
+            <td>1ヶ月</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout mt-24">
+      <strong>重要な注意：</strong>
+      上記の「効果」は、仕組みが定着した場合の試算です。
+      仕組みを入れただけで効果は出ません。営業が実際に「そろそろ提案リスト」を使い、
+      施工後のフォローアップを続けて初めて数字が動きます。
+      だからこそ各フェーズに「定着確認ゲート」を設けています。
+    </div>
+
+    <div class="card card-success mt-32">
+      <div class="eyebrow eyebrow-success">IT導入補助金の活用</div>
+      <h3>最大450万円の補助が受けられる可能性</h3>
+      <p>中小企業庁のIT導入補助金（2026年度）を活用すれば、Phase 1の投資額の最大1/2（上限450万円）が補助される可能性があります。kintoneは対象ツールとして登録されており、リフォーム業の導入実績も豊富です。申請の準備もお手伝いいたします。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p class="closing-msg">顧客という眠れる資産を起こす仕組み、<br>あとは始めるだけです。</p>
+    <p>本資料は、リフォーム業界＋異業種6業界のベストプラクティス調査に基づいて作成しました。</p>
+    <p>ニッカホームの制約（基幹API不可・CSV中心・IT2名体制）を前提とした実現可能な設計です。</p>
+    <p style="margin-top: 20px; color: rgba(240,236,230,0.3); font-size: 0.7rem;">
+      2026.03.05 | omoshiku Inc. | Confidential
+    </p>
+  </div>
+</footer>
+
+<!-- JavaScript -->
+<script>
+// Global Nav: show/hide on scroll
+(function() {
+  const gnav = document.getElementById('gnav');
+  const hero = document.querySelector('.hero');
+  let lastScroll = 0;
+
+  function onScroll() {
+    const y = window.scrollY;
+    const heroBottom = hero.offsetTop + hero.offsetHeight;
+
+    if (y > heroBottom - 100) {
+      gnav.classList.add('visible');
+    } else {
+      gnav.classList.remove('visible');
+    }
+
+    if (y > heroBottom + 200) {
+      gnav.classList.add('scrolled');
+    } else {
+      gnav.classList.remove('scrolled');
+    }
+
+    lastScroll = y;
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Active link tracking
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.gnav-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const activeLink = document.querySelector(`.gnav-link[href="#${entry.target.id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>
