@@ -996,6 +996,7 @@ section[id] { scroll-margin-top: 56px; }
     <a href="#inaction" class="gnav-link">放置リスク</a>
     <a href="#direction" class="gnav-link">方向性</a>
     <a href="#quickwin" class="gnav-link">短期施策</a>
+    <a href="#roadmap" class="gnav-link">ロードマップ</a>
     <a href="#faq" class="gnav-link">論点</a>
     <a href="#nextstep" class="gnav-link">次の一手</a>
   </div>
@@ -1449,6 +1450,140 @@ section[id] { scroll-margin-top: 56px; }
     <div style="margin-top:24px; padding:16px 20px; background:var(--accent-bg); border-radius:10px; font-size:0.82rem; color:var(--text-2); line-height:1.7; text-align:center;">
       各施策の実装アプローチ・定着設計・ROI精緻化の詳細は別途まとめています。<br>
       <a href="../6c43094e/quickwin-detail.html" style="display:inline-block; margin-top:10px; padding:8px 24px; background:var(--accent); color:#fff; border-radius:6px; font-weight:600; text-decoration:none; font-size:0.85rem;">実装詳細ドキュメントを見る →</a>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap" class="dark">
+  <div class="container reveal">
+    <div class="section-label" style="color:var(--accent-light);">Beyond Quick Wins</div>
+    <h2 class="section-title" style="color:#f0ece6;">クイックウィンの先のロードマップ</h2>
+    <p class="section-subtitle" style="color:#aaa;">短期施策で「データで判断する文化」の芽が出たあと、どこに向かうか。<br>いきなり全部やるのではなく、<strong style="color:var(--accent-light);">各フェーズの成果が次の判断材料になる</strong>設計です。</p>
+
+    <div style="display:grid; gap:32px;">
+
+      <!-- Phase 1 (参照) -->
+      <div style="border-left:3px solid var(--accent); padding-left:20px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <span style="background:var(--accent); color:#fff; font-family:var(--font-en); font-size:0.65rem; font-weight:700; padding:3px 10px; border-radius:12px; letter-spacing:0.1em;">PHASE 1</span>
+          <span style="color:var(--accent-light); font-family:var(--font-en); font-size:0.72rem; font-weight:600;">1-3 months — 現在地</span>
+        </div>
+        <h3 style="color:#f0ece6; font-size:1.05rem; margin-bottom:8px;">Quick Win：追加投資ゼロで成功体験を積む</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div style="background:rgba(232,148,74,0.1); border:1px solid rgba(232,148,74,0.2); border-radius:8px; padding:10px 14px; font-size:0.8rem; color:#ccc;">
+            <strong style="color:var(--accent-light);">QW-1</strong> 月次報告自動化<br>
+            <strong style="color:var(--accent-light);">QW-2</strong> NotebookLMナレッジ集約
+          </div>
+          <div style="background:rgba(232,148,74,0.1); border:1px solid rgba(232,148,74,0.2); border-radius:8px; padding:10px 14px; font-size:0.8rem; color:#ccc;">
+            <strong style="color:var(--accent-light);">QW-3</strong> GBP信頼基盤の整備<br>
+            <strong style="color:var(--accent-light);">QW-4</strong> 業務フロー可視化
+          </div>
+        </div>
+        <div style="margin-top:10px; font-size:0.78rem; color:#888;">判断ゲート → 効果データをもとに Phase 2 の投資判断</div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div style="border-left:3px solid var(--blue-light); padding-left:20px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <span style="background:var(--blue-light); color:#fff; font-family:var(--font-en); font-size:0.65rem; font-weight:700; padding:3px 10px; border-radius:12px; letter-spacing:0.1em;">PHASE 2</span>
+          <span style="color:var(--blue-light); font-family:var(--font-en); font-size:0.72rem; font-weight:600;">3-12 months — 仕組みの構造改革</span>
+        </div>
+        <h3 style="color:#f0ece6; font-size:1.05rem; margin-bottom:12px;">業務基盤と集客基盤の両輪を整える</h3>
+
+        <div style="display:grid; gap:12px;">
+          <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:14px 16px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span style="color:var(--blue-light); font-weight:700; font-size:0.82rem;">受発注デジタル化</span>
+              <span style="font-size:0.68rem; color:#888; font-family:var(--font-en);">ANDPAD受発注モジュール</span>
+            </div>
+            <div style="font-size:0.8rem; color:#bbb; line-height:1.7;">
+              協力会社1,500社への段階展開。FAX/電話の受発注を電子化し、原価管理の「2ヶ月遅延」構造を解消。<br>
+              <span style="color:#888;">前提：QW-4の業務フロー可視化が完了していること</span>
+            </div>
+          </div>
+
+          <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:14px 16px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span style="color:var(--blue-light); font-weight:700; font-size:0.82rem;">集客チャネル戦略</span>
+              <span style="font-size:0.68rem; color:#888; font-family:var(--font-en);">GBP単体ではなく全体最適</span>
+            </div>
+            <div style="font-size:0.8rem; color:#bbb; line-height:1.7;">
+              問い合わせ最大化には、GBP（守り）だけでなく「攻め」のチャネル投資が必要：
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+              <div style="background:rgba(255,255,255,0.03); border-radius:6px; padding:8px 12px; font-size:0.78rem; color:#bbb;">
+                <strong style="color:var(--success);">紹介の仕組み化</strong><br>
+                <span style="color:#888;">OB顧客・協力会社1,500社のネットワーク活用。成約率最高・コストゼロ</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); border-radius:6px; padding:8px 12px; font-size:0.78rem; color:#bbb;">
+                <strong style="color:var(--success);">自社サイトSEO強化</strong><br>
+                <span style="color:#888;">施工事例8万件の既存資産を活用。長期的に最もCPLが低い</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); border-radius:6px; padding:8px 12px; font-size:0.78rem; color:#bbb;">
+                <strong style="color:var(--blue-light);">ポータルサイト戦略</strong><br>
+                <span style="color:#888;">ホームプロ・リショップナビ等。即効性あり、ただし手数料6-15%で利益圧迫に注意</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); border-radius:6px; padding:8px 12px; font-size:0.78rem; color:#bbb;">
+                <strong style="color:var(--blue-light);">リスティング広告</strong><br>
+                <span style="color:#888;">「地域名×リフォーム」の顕在層に即リーチ。月10万〜の予算管理が必要</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:14px 16px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span style="color:var(--blue-light); font-weight:700; font-size:0.82rem;">原価管理リアルタイム化</span>
+              <span style="font-size:0.68rem; color:#888; font-family:var(--font-en);">Looker Studio拡張</span>
+            </div>
+            <div style="font-size:0.8rem; color:#bbb; line-height:1.7;">
+              QW-1の月次速報を発展させ、案件単位の原価進捗をリアルタイムで把握。「2ヶ月後に気づく」から「今月中に対処する」への転換。
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; font-size:0.78rem; color:#888;">判断ゲート → ANDPAD導入効果・集客チャネル別CPLの実測データをもとに Phase 3 を判断</div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div style="border-left:3px solid var(--success); padding-left:20px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <span style="background:var(--success); color:#0b0b12; font-family:var(--font-en); font-size:0.65rem; font-weight:700; padding:3px 10px; border-radius:12px; letter-spacing:0.1em;">PHASE 3</span>
+          <span style="color:var(--success); font-family:var(--font-en); font-size:0.72rem; font-weight:600;">12-24 months — 全社データ統合</span>
+        </div>
+        <h3 style="color:#f0ece6; font-size:1.05rem; margin-bottom:12px;">167店舗展開を支えるスケーラブルな基盤</h3>
+
+        <div style="display:grid; gap:12px;">
+          <div style="background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.15); border-radius:8px; padding:14px 16px;">
+            <div style="color:var(--success); font-weight:700; font-size:0.82rem; margin-bottom:6px;">基幹システムの判断</div>
+            <div style="font-size:0.8rem; color:#bbb; line-height:1.7;">
+              2015年構築のフルスクラッチ基幹は、外部API連携口がない。Phase 2 で構築した周辺システム（ANDPAD・Looker Studio・ナレッジベース）のデータを統合するために、基幹の「刷新」か「API連携層の追加」かを判断。
+            </div>
+          </div>
+          <div style="background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.15); border-radius:8px; padding:14px 16px;">
+            <div style="color:var(--success); font-weight:700; font-size:0.82rem; margin-bottom:6px;">全社BI ダッシュボード</div>
+            <div style="font-size:0.8rem; color:#bbb; line-height:1.7;">
+              受注・原価・集客・ナレッジのデータを一元化し、「数字を見て判断する経営」への移行。営業所別のパフォーマンスを横断比較し、成功パターンの横展開を仕組み化。
+            </div>
+          </div>
+          <div style="background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.15); border-radius:8px; padding:14px 16px;">
+            <div style="color:var(--success); font-weight:700; font-size:0.82rem; margin-bottom:6px;">AI活用の土台づくり</div>
+            <div style="font-size:0.8rem; color:#bbb; line-height:1.7;">
+              統合されたデータ基盤の上に、需要予測・原価最適化・顧客LTV分析などのAI活用を検討。Phase 1-2 で蓄積したデータが学習データになる。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 全体の設計思想 -->
+    <div style="margin-top:36px; padding:20px 24px; background:rgba(232,148,74,0.06); border:1px solid rgba(232,148,74,0.15); border-radius:10px;">
+      <div style="font-size:0.85rem; font-weight:700; color:var(--accent-light); margin-bottom:8px;">設計思想：「判断ゲート」で進める</div>
+      <div style="font-size:0.82rem; color:#bbb; line-height:1.8;">
+        各フェーズの間に「判断ゲート」を設けています。<strong style="color:#f0ece6;">前のフェーズの成果データを見てから、次の投資を判断する</strong>仕組みです。<br>
+        Phase 1 は追加投資ゼロ。Phase 2 で初めて有償ツール（ANDPAD受発注 等）の判断。Phase 3 は Phase 1-2 の実績をもとにした中長期投資判断。<br>
+        いきなり大型投資を求めないため、<strong style="color:var(--accent-light);">リスクを最小化しながら段階的に拡大</strong>できます。
+      </div>
     </div>
   </div>
 </section>
