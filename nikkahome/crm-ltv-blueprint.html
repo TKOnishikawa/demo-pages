@@ -390,7 +390,7 @@ td:first-child { font-weight: 500; color: var(--text-1); }
 }
 .callout strong { color: var(--accent-dark); }
 
-/* System Diagram */
+/* System Diagram (legacy) */
 .sys-diagram {
   background: var(--navy);
   border-radius: 16px;
@@ -409,6 +409,256 @@ td:first-child { font-weight: 500; color: var(--text-1); }
 .sys-diagram .highlight {
   color: var(--accent-light);
   font-weight: 700;
+}
+
+/* ── sys-map: Card Tree Diagram ── */
+.sys-map {
+  background: var(--bg-warm-2);
+  border-radius: 16px;
+  padding: 40px 28px 32px;
+  margin: 32px 0;
+}
+.sys-map-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.sys-map-header .badge {
+  display: inline-block;
+  font-family: var(--font-en);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: 2px 14px;
+  margin-bottom: 10px;
+}
+.sys-map-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+.sys-map-header p {
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+
+/* Card row */
+.sys-map-level {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 600px) {
+  .sys-map-level { grid-template-columns: 1fr; }
+}
+
+/* Individual card */
+.sys-map-card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 16px 14px 14px;
+  border-top: 3px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.sys-map-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.sys-map-card[data-color="orange"] { border-top-color: var(--accent); }
+.sys-map-card[data-color="blue"]   { border-top-color: #3b82f6; }
+.sys-map-card[data-color="purple"] { border-top-color: #8b5cf6; }
+.sys-map-card[data-color="green"]  { border-top-color: var(--success); }
+.sys-map-card[data-color="amber"]  { border-top-color: #f59e0b; }
+.sys-map-card[data-color="teal"]   { border-top-color: #14b8a6; }
+.sys-map-card[data-color="navy"]   { border-top-color: var(--navy); }
+
+.sys-map-card-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+.sys-map-card-sub {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.sys-map-card-tags {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.tag-warn {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #dc2626;
+  background: rgba(220,38,38,0.08);
+  border: 1px solid rgba(220,38,38,0.2);
+  border-radius: 8px;
+  padding: 1px 8px;
+}
+.tag-ok {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--success);
+  background: rgba(52,211,153,0.08);
+  border: 1px solid rgba(52,211,153,0.2);
+  border-radius: 8px;
+  padding: 1px 8px;
+}
+.tag-info {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 8px;
+  padding: 1px 8px;
+}
+
+/* Connectors between levels */
+.sys-map-connectors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  padding: 0;
+}
+.sys-map-conn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0;
+}
+.sys-map-conn-line {
+  width: 2px;
+  height: 16px;
+  background: #c4b8a8;
+}
+.sys-map-conn-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-3);
+  padding: 2px 0;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .sys-map-connectors { grid-template-columns: 1fr; }
+  .sys-map-conn { flex-direction: row; gap: 8px; padding: 2px 0; }
+  .sys-map-conn-line { width: 24px; height: 2px; }
+}
+
+/* Gap callout */
+.sys-map-gap {
+  text-align: center;
+  padding: 14px 20px;
+  margin: 4px 0;
+  background: rgba(220,38,38,0.06);
+  border: 1.5px dashed rgba(220,38,38,0.25);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+/* Central hub (TO-BE) */
+.sys-map-hub {
+  background: var(--bg-card);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin: 4px 0;
+  box-shadow: 0 4px 20px rgba(232,148,74,0.12);
+}
+.sys-map-hub-title {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  margin-bottom: 10px;
+}
+.sys-map-hub-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 20px;
+  font-size: 0.78rem;
+  color: var(--text-2);
+  list-style: none;
+  padding: 0;
+}
+.sys-map-hub-list li {
+  padding-left: 16px;
+  position: relative;
+}
+.sys-map-hub-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Single connector (for TO-BE flow) */
+.sys-map-conn-single {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0;
+}
+.sys-map-conn-single .sys-map-conn-line {
+  height: 20px;
+}
+
+/* Source pair (TO-BE left sources) */
+.sys-map-sources {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Footer stats */
+.sys-map-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+.sys-map-stat {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 14px 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.sys-map-stat-num {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.sys-map-stat-label {
+  font-size: 0.68rem;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+@media (max-width: 600px) {
+  .sys-map-stats { grid-template-columns: 1fr; }
+  .sys-map-sources { grid-template-columns: 1fr; }
 }
 
 /* Layer Diagram */
@@ -767,28 +1017,113 @@ section.dark .card li::before { background: var(--accent-light); }
       「この家は前回いつ、どんな工事をしたか」を横断的に見る手段がありません。
     </p>
 
-    <div class="sys-diagram">
-<pre>
-┌────────────────────────────────────────────────────────────────────────────┐
-│                  ニッカホーム 顧客情報の現在地                              │
-├────────────────────────────────────────────────────────────────────────────┤
-│                                                                            │
-│  <span class="highlight">基幹システム</span>        <span class="highlight">ANDPAD</span>              <span class="highlight">自社見積システム</span>          │
-│  フルスクラッチ       チャットのみ契約     詳細不明                       │
-│  2015年〜 API不可     管理者4名/社内400名                                 │
-│  顧客・案件・原価     施工管理・連絡                                      │
-│       ↕ 手動CSV            ↕ なし              ↕ 不明                    │
-│  ╔════════════════════════════════════════════════════════════╗           │
-│  ║   顧客データを横断的に見る仕組み ＝ 存在しない            ║           │
-│  ╚════════════════════════════════════════════════════════════╝           │
-│       ↕ 手動CSV            ↕ なし              ↕ 不明                    │
-│  <span class="highlight">SMILE（会計）</span>       <span class="highlight">Excel（各店舗）</span>     <span class="highlight">リピート管理</span>               │
-│  大塚商会            予実・Aヨミ/Bヨミ   蓄積フェーズ                    │
-│                                           （システム不明）                 │
-│                                                                            │
-│  その他: Google Workspace / GBP（各支社管理）                              │
-└────────────────────────────────────────────────────────────────────────────┘
-</pre>
+    <div class="sys-map">
+      <div class="sys-map-header">
+        <div class="badge">AS-IS</div>
+        <h3>ニッカホーム 顧客情報の現在地</h3>
+        <p>6つのシステム × 横断ツール 0</p>
+      </div>
+
+      <!-- Top: 3 source systems -->
+      <div class="sys-map-level">
+        <div class="sys-map-card" data-color="orange">
+          <div class="sys-map-card-name">基幹システム</div>
+          <div class="sys-map-card-sub">フルスクラッチ / 2015年〜<br>顧客・案件・原価</div>
+          <div class="sys-map-card-tags">
+            <span class="tag-warn">API不可</span>
+          </div>
+        </div>
+        <div class="sys-map-card" data-color="blue">
+          <div class="sys-map-card-name">ANDPAD</div>
+          <div class="sys-map-card-sub">チャットのみ契約<br>施工管理・連絡</div>
+          <div class="sys-map-card-tags">
+            <span class="tag-ok">管理者4名</span>
+            <span class="tag-info">社内400名</span>
+          </div>
+        </div>
+        <div class="sys-map-card" data-color="purple">
+          <div class="sys-map-card-name">自社見積システム</div>
+          <div class="sys-map-card-sub">詳細不明</div>
+        </div>
+      </div>
+
+      <!-- Connectors top→gap -->
+      <div class="sys-map-connectors">
+        <div class="sys-map-conn">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">CSV手動</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+        <div class="sys-map-conn">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">連携なし</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+        <div class="sys-map-conn">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">不明</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+      </div>
+
+      <!-- Gap callout -->
+      <div class="sys-map-gap">
+        顧客データを横断的に見る仕組み ＝ 存在しない
+      </div>
+
+      <!-- Connectors gap→bottom -->
+      <div class="sys-map-connectors">
+        <div class="sys-map-conn">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">CSV手動</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+        <div class="sys-map-conn">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">連携なし</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+        <div class="sys-map-conn">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">不明</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+      </div>
+
+      <!-- Bottom: 3 dependent systems -->
+      <div class="sys-map-level">
+        <div class="sys-map-card" data-color="green">
+          <div class="sys-map-card-name">SMILE（会計）</div>
+          <div class="sys-map-card-sub">大塚商会</div>
+        </div>
+        <div class="sys-map-card" data-color="amber">
+          <div class="sys-map-card-name">Excel</div>
+          <div class="sys-map-card-sub">各店舗 / 予実・Aヨミ/Bヨミ</div>
+        </div>
+        <div class="sys-map-card" data-color="teal">
+          <div class="sys-map-card-name">リピート管理</div>
+          <div class="sys-map-card-sub">蓄積フェーズ（システム不明）</div>
+          <div class="sys-map-card-tags">
+            <span class="tag-ok">データあり</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="sys-map-stats">
+        <div class="sys-map-stat">
+          <div class="sys-map-stat-num">6+</div>
+          <div class="sys-map-stat-label">システムサイロ</div>
+        </div>
+        <div class="sys-map-stat">
+          <div class="sys-map-stat-num">0</div>
+          <div class="sys-map-stat-label">横断ツール</div>
+        </div>
+        <div class="sys-map-stat">
+          <div class="sys-map-stat-num">2名</div>
+          <div class="sys-map-stat-label">IT体制</div>
+        </div>
+      </div>
     </div>
 
     <div class="card-grid mt-24">
@@ -952,27 +1287,62 @@ section.dark .card li::before { background: var(--accent-light); }
       </div>
     </div>
 
-    <div class="sys-diagram">
-<pre>
- ニッカホームの制約に合わせた設計（API不可・CSV中心・IT2名体制）
+    <div class="sys-map">
+      <div class="sys-map-header">
+        <div class="badge">TO-BE</div>
+        <h3>制約に合わせた設計</h3>
+        <p>API不可・CSV中心・IT2名体制</p>
+      </div>
 
- ┌─────────────┐  チャット   ┌──────────────────────────────────────────┐
- │   ANDPAD     │ ──────────→│                                          │
- │  施工管理    │             │         顧客管理ハブ（kintone等）        │
- └─────────────┘             │                                          │
-                              │  ・顧客×物件×施工履歴の統合マスター    │
- ┌─────────────┐  CSV夜間    │  ・「そろそろ提案リスト」自動生成        │
- │ 基幹システム │ ──バッチ──→│  ・施工後フォローアップ管理              │
- │ フルスクラッチ│             │  ・店舗別ダッシュボード                  │
- └─────────────┘             │                                          │
-                              └──────────────┬───────────────────────────┘
-                                             │
-                              ┌──────────────┴───────────────────────────┐
-                              │     Looker Studio ダッシュボード          │
-                              │  ・店舗別リピート率・紹介率               │
-                              │  ・全社の顧客資産活用スコア              │
-                              └──────────────────────────────────────────┘
-</pre>
+      <!-- Sources: ANDPAD + 基幹 -->
+      <div class="sys-map-sources">
+        <div class="sys-map-card" data-color="blue">
+          <div class="sys-map-card-name">ANDPAD</div>
+          <div class="sys-map-card-sub">施工管理</div>
+        </div>
+        <div class="sys-map-card" data-color="orange">
+          <div class="sys-map-card-name">基幹システム</div>
+          <div class="sys-map-card-sub">フルスクラッチ</div>
+        </div>
+      </div>
+
+      <!-- Connectors: sources→hub -->
+      <div class="sys-map-sources" style="max-width: 480px; margin: 0 auto;">
+        <div class="sys-map-conn" style="display: flex; flex-direction: column; align-items: center; padding: 6px 0;">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">チャット連携</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+        <div class="sys-map-conn" style="display: flex; flex-direction: column; align-items: center; padding: 6px 0;">
+          <div class="sys-map-conn-line"></div>
+          <div class="sys-map-conn-label">CSV夜間バッチ</div>
+          <div class="sys-map-conn-line"></div>
+        </div>
+      </div>
+
+      <!-- Central hub -->
+      <div class="sys-map-hub">
+        <div class="sys-map-hub-title">顧客管理ハブ（kintone等）</div>
+        <ul class="sys-map-hub-list">
+          <li>顧客×物件×施工履歴の統合マスター</li>
+          <li>「そろそろ提案リスト」自動生成</li>
+          <li>施工後フォローアップ管理</li>
+          <li>店舗別ダッシュボード</li>
+        </ul>
+      </div>
+
+      <!-- Connector: hub→dashboard -->
+      <div class="sys-map-conn-single">
+        <div class="sys-map-conn-line"></div>
+        <div class="sys-map-conn-label">データ連携</div>
+        <div class="sys-map-conn-line"></div>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="sys-map-card" data-color="navy" style="max-width: 480px; margin: 0 auto;">
+        <div class="sys-map-card-name">Looker Studio ダッシュボード</div>
+        <div class="sys-map-card-sub">店舗別リピート率・紹介率<br>全社の顧客資産活用スコア</div>
+      </div>
     </div>
 
     <div class="callout">
