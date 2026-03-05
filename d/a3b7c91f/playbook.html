@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>原価管理リアルタイム化 実装プレイブック | NIKKAHOME</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base:#08080d;--bg-surface:#101018;--bg-raised:#181824;--bg-top:#222234;
+  --border:rgba(255,255,255,0.06);--border-focus:rgba(255,255,255,0.12);
+  --text:#eaeaf2;--text-dim:#9898ae;--text-muted:#58586e;
+  --blue:#4a7dff;--cyan:#22d3ee;--green:#34d399;--amber:#f59e0b;
+  --red:#ef4444;--purple:#a78bfa;--pink:#f472b6;
+  --grad-hero:linear-gradient(135deg,#4a7dff 0%,#22d3ee 100%);
+  --grad-success:linear-gradient(135deg,#34d399 0%,#22d3ee 100%);
+  --grad-warn:linear-gradient(135deg,#ef4444 0%,#f59e0b 100%);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.4);--shadow-md:0 4px 16px rgba(0,0,0,0.5);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg-base);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.container{max-width:1080px;margin:0 auto;padding:0 28px}
+.page-layout{display:flex;gap:32px;position:relative}
+.main-content{flex:1;min-width:0}
+
+/* TOC Sidebar */
+.toc-sidebar{width:230px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto;padding:16px 0;scrollbar-width:thin;scrollbar-color:var(--bg-top) transparent}
+.toc-sidebar::-webkit-scrollbar{width:4px}
+.toc-sidebar::-webkit-scrollbar-thumb{background:var(--bg-top);border-radius:2px}
+.toc-title{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;padding:0 12px}
+.toc-list{list-style:none}
+.toc-link{display:flex;align-items:flex-start;gap:8px;padding:6px 12px;margin-bottom:2px;font-size:11px;color:var(--text-muted);text-decoration:none;border-radius:6px;transition:all .15s;line-height:1.5;border-left:2px solid transparent}
+.toc-link:hover{color:var(--text-dim);background:var(--bg-surface)}
+.toc-link.active{color:var(--cyan);background:rgba(34,211,238,0.04);border-left-color:var(--cyan)}
+.toc-num{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--text-muted);min-width:20px;margin-top:1px}
+.toc-link.active .toc-num{color:var(--cyan)}
+.toc-sep{height:1px;background:var(--border);margin:8px 12px}
+.toc-toggle{display:none;position:fixed;top:16px;left:16px;z-index:1001;width:40px;height:40px;border-radius:10px;background:var(--bg-raised);border:1px solid var(--border-focus);align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:18px}
+.toc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999}
+@media(max-width:960px){
+  .page-layout{flex-direction:column}
+  .toc-sidebar{display:none;position:fixed;left:0;top:0;width:260px;height:100vh;background:var(--bg-surface);z-index:1000;padding:60px 0 24px;border-right:1px solid var(--border-focus)}
+  .toc-sidebar.open{display:block}
+  .toc-toggle{display:flex}
+  .toc-overlay.open{display:block}
+}
+
+/* Hero */
+.hero{padding:60px 0 48px;text-align:center;border-bottom:1px solid var(--border)}
+.hero-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(74,125,255,0.12);color:var(--blue);margin-bottom:16px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2rem);font-weight:900;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.3;margin-bottom:12px}
+.hero-sub{font-size:14px;color:var(--text-dim);max-width:680px;margin:0 auto;line-height:1.8}
+.hero-back{display:inline-flex;align-items:center;gap:6px;margin-top:20px;padding:8px 18px;border-radius:8px;font-size:12px;color:var(--cyan);background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);text-decoration:none;transition:all .2s}
+.hero-back:hover{background:rgba(34,211,238,0.12)}
+
+/* Section */
+.section{padding:56px 0;border-bottom:1px solid var(--border)}
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+.section-eyebrow.layer0{color:var(--red)}.section-eyebrow.layer1{color:var(--cyan)}
+.section-eyebrow.layer2{color:var(--blue)}.section-eyebrow.layer3{color:var(--amber)}
+.section-eyebrow.layer4{color:var(--purple)}
+.action-title{font-size:clamp(1.2rem,3vw,1.5rem);font-weight:700;line-height:1.35;margin-bottom:8px}
+.section-lead{font-size:14px;color:var(--text-dim);margin-bottom:32px;max-width:720px}
+
+/* Approach Comparison Table */
+.approach-tbl{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;margin:24px 0;font-size:13px}
+.approach-tbl thead th{background:var(--bg-top);padding:12px 16px;text-align:left;font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border-focus)}
+.approach-tbl tbody td{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-surface);vertical-align:top}
+.approach-tbl tbody tr:last-child td{border-bottom:none}
+.approach-tbl .recommend{background:rgba(74,125,255,0.06)}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;letter-spacing:.5px}
+.tag.best{background:rgba(74,125,255,0.15);color:var(--blue)}
+.tag.ok{background:rgba(52,211,153,0.12);color:var(--green)}
+.tag.ng{background:rgba(239,68,68,0.12);color:var(--red)}
+.tag.warn{background:rgba(245,158,11,0.12);color:var(--amber)}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:24px 0}
+.card{background:var(--bg-raised);border-radius:12px;padding:22px;border:1px solid var(--border);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.card h4{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card p,.card li{font-size:13px;color:var(--text-dim);line-height:1.7}
+.card ul{padding-left:16px;margin-top:6px}
+.card-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+
+/* Step Flow */
+.step-flow{display:flex;flex-direction:column;gap:12px;margin:24px 0}
+.step{display:flex;gap:16px;align-items:flex-start;padding:16px 20px;background:var(--bg-raised);border-radius:10px;border:1px solid var(--border)}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--blue);min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(74,125,255,0.1);border-radius:8px}
+.step-body h5{font-size:13px;font-weight:600;margin-bottom:4px}
+.step-body p{font-size:12px;color:var(--text-dim)}
+
+/* Hearing Items */
+.hearing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:24px 0}
+.hearing-item{padding:14px 18px;background:var(--bg-raised);border-radius:10px;border-left:3px solid var(--amber);font-size:13px}
+.hearing-item .q{font-weight:600;color:var(--amber);margin-bottom:4px}
+.hearing-item .why{font-size:11px;color:var(--text-muted)}
+
+/* Risk Matrix */
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:24px 0}
+.risk-card{padding:16px;background:var(--bg-raised);border-radius:10px;border:1px solid var(--border)}
+.risk-card.high{border-left:3px solid var(--red)}
+.risk-card.med{border-left:3px solid var(--amber)}
+.risk-card.low{border-left:3px solid var(--green)}
+.risk-card h5{font-size:13px;font-weight:600;margin-bottom:4px}
+.risk-card p{font-size:12px;color:var(--text-dim)}
+.risk-card .mitigation{font-size:12px;color:var(--cyan);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+
+/* Adoption Callout */
+.adopt-callout{background:rgba(34,211,238,0.04);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
+.adopt-callout .label{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
+.adopt-callout p{font-size:13px;line-height:1.8}
+
+/* Adopt Card */
+.adopt-card{background:var(--bg-raised);border-radius:12px;padding:22px;border:1px solid rgba(34,211,238,0.15);margin:24px 0}
+.adopt-card h4{font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.adopt-card .checklist{list-style:none;padding:0}
+.adopt-card .checklist li{padding:6px 0;font-size:13px;color:var(--text-dim);display:flex;gap:8px;align-items:flex-start}
+.adopt-card .checklist li::before{content:'';display:inline-block;width:16px;height:16px;min-width:16px;border-radius:4px;border:1.5px solid var(--cyan);margin-top:3px}
+
+/* Phase Timeline */
+.timeline{display:flex;gap:12px;margin:24px 0;overflow-x:auto;padding-bottom:8px}
+.tl-phase{flex:1;min-width:200px;background:var(--bg-raised);border-radius:12px;padding:18px;border:1px solid var(--border)}
+.tl-phase h5{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tl-phase .tl-period{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:8px}
+.tl-phase ul{list-style:none;padding:0}
+.tl-phase li{font-size:12px;color:var(--text-dim);padding:3px 0;padding-left:12px;position:relative}
+.tl-phase li::before{content:'';position:absolute;left:0;top:9px;width:4px;height:4px;border-radius:50%;background:var(--blue)}
+.tl-gate{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:10px 14px;margin-top:10px}
+.tl-gate p{font-size:11px;color:var(--red);font-weight:600}
+
+/* ROI Box */
+.roi-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:24px 0}
+.roi-card{background:var(--bg-raised);border-radius:10px;padding:18px;text-align:center;border:1px solid var(--border)}
+.roi-num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.roi-label{font-size:11px;color:var(--text-muted)}
+
+/* Mockup */
+.mockup{background:var(--bg-top);border-radius:12px;padding:20px;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;color:var(--text-dim);white-space:pre-wrap;overflow-x:auto;border:1px solid var(--border-focus)}
+
+/* So What */
+.sowhat{background:rgba(239,68,68,0.04);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:16px 20px;margin:28px 0}
+.sowhat-label{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+.sowhat p{font-size:13px;line-height:1.8}
+
+/* Org Change */
+.org-card{background:var(--bg-raised);border-radius:12px;padding:22px;border:1px solid rgba(167,139,250,0.15);margin:24px 0}
+.org-card h4{font-size:14px;font-weight:700;color:var(--purple);margin-bottom:12px}
+.org-card p,.org-card li{font-size:13px;color:var(--text-dim);line-height:1.7}
+
+/* Data Box */
+.data-box{background:var(--bg-raised);border-radius:12px;padding:22px;margin:24px 0;border:1px solid var(--border)}
+.data-box h4{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--amber)}
+.data-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.data-tbl th{text-align:left;padding:8px;border-bottom:1px solid var(--border-focus);color:var(--text-dim);font-size:11px;font-weight:600}
+.data-tbl td{padding:8px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+
+/* Journey Compare */
+.journey-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;margin:24px 0;align-items:start}
+.journey-card{border-radius:12px;padding:20px}
+.journey-card.before{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15)}
+.journey-card.after{background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15)}
+.journey-card h4{margin-bottom:14px;font-size:14px;font-weight:700}
+.journey-card ul{list-style:none;padding:0}
+.journey-card li{padding:6px 0;font-size:13px;color:var(--text-dim);display:flex;gap:8px;align-items:flex-start}
+.journey-arrow{display:flex;align-items:center;font-size:32px;color:var(--cyan);padding-top:60px}
+
+/* Kill Criteria Box */
+.kill-box{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:20px;margin:24px 0}
+.kill-box h4{color:var(--red);font-size:14px;font-weight:700;margin-bottom:12px}
+.kill-box li{font-size:13px;color:var(--text-dim);line-height:1.7;padding:4px 0}
+
+/* Separator */
+.section-sep{text-align:center;padding:28px 0;opacity:0.3}
+.section-sep span{display:inline-block;width:40px;height:1px;background:var(--text-muted);margin:0 4px}
+
+/* Footer */
+.footer{padding:40px 0;text-align:center;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
+.footer a{color:var(--cyan);text-decoration:none}
+
+/* ROI Fermi */
+.roi-fermi{background:linear-gradient(135deg,rgba(74,125,255,0.05),rgba(34,211,238,0.05));border-radius:12px;padding:24px;margin:20px 0;border:1px solid rgba(74,125,255,0.1)}
+.roi-fermi h4{color:var(--cyan);margin-bottom:16px;font-size:15px;font-weight:700}
+.roi-fermi table{width:100%;border-collapse:collapse}
+.roi-fermi thead tr{border-bottom:2px solid rgba(34,211,238,0.3)}
+.roi-fermi th{text-align:left;padding:10px 12px;color:var(--text);font-size:13px;font-weight:600}
+.roi-fermi td{padding:10px 12px;font-size:13px}
+.roi-fermi .scenario-realistic{background:rgba(34,211,238,0.06);border-radius:6px}
+
+/* Antipattern */
+.ap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:24px 0}
+.ap-card{padding:16px;background:var(--bg-raised);border-radius:10px;border:1px solid rgba(239,68,68,0.12)}
+.ap-card h5{font-size:13px;font-weight:600;color:var(--red);margin-bottom:6px}
+.ap-card p{font-size:12px;color:var(--text-dim)}
+.ap-card .counter{font-size:12px;color:var(--green);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+
+@media(max-width:768px){.card-grid,.hearing-grid,.risk-grid,.ap-grid{grid-template-columns:1fr}.roi-box{grid-template-columns:repeat(2,1fr)}.timeline{flex-direction:column}.journey-compare{grid-template-columns:1fr}.journey-arrow{display:none}}
+@media(max-width:600px){.roi-box{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="page-layout">
+
+<!-- TOC Toggle (Mobile) -->
+<button class="toc-toggle" onclick="document.querySelector('.toc-sidebar').classList.toggle('open');document.querySelector('.toc-overlay').classList.toggle('open')">&#9776;</button>
+<div class="toc-overlay" onclick="document.querySelector('.toc-sidebar').classList.remove('open');this.classList.remove('open')"></div>
+
+<!-- TOC Sidebar -->
+<nav class="toc-sidebar">
+  <div class="toc-title">Implementation Playbook</div>
+  <ul class="toc-list">
+    <li><a class="toc-link" href="#overview"><span class="toc-num">00</span>概要</a></li>
+    <div class="toc-sep"></div>
+    <li><a class="toc-link" href="#gate"><span class="toc-num">L0</span>定着ゲート</a></li>
+    <li><a class="toc-link" href="#gate-kill"><span class="toc-num">&bull;</span>撤退基準</a></li>
+    <div class="toc-sep"></div>
+    <li><a class="toc-link" href="#adopt"><span class="toc-num">L1</span>定着設計</a></li>
+    <li><a class="toc-link" href="#adopt-journey"><span class="toc-num">&bull;</span>業務フロー変化</a></li>
+    <li><a class="toc-link" href="#adopt-fb"><span class="toc-num">&bull;</span>FBループ</a></li>
+    <li><a class="toc-link" href="#adopt-mockup"><span class="toc-num">&bull;</span>画面イメージ</a></li>
+    <div class="toc-sep"></div>
+    <li><a class="toc-link" href="#tech"><span class="toc-num">L2</span>技術設計</a></li>
+    <li><a class="toc-link" href="#tech-approach"><span class="toc-num">&bull;</span>アプローチ比較</a></li>
+    <li><a class="toc-link" href="#tech-steps"><span class="toc-num">&bull;</span>実装ステップ</a></li>
+    <li><a class="toc-link" href="#tech-data"><span class="toc-num">&bull;</span>データ要件</a></li>
+    <div class="toc-sep"></div>
+    <li><a class="toc-link" href="#decision"><span class="toc-num">L3</span>意思決定支援</a></li>
+    <li><a class="toc-link" href="#decision-hearing"><span class="toc-num">&bull;</span>確認事項</a></li>
+    <li><a class="toc-link" href="#decision-risk"><span class="toc-num">&bull;</span>リスク分析</a></li>
+    <li><a class="toc-link" href="#decision-roi"><span class="toc-num">&bull;</span>ROI試算</a></li>
+    <li><a class="toc-link" href="#decision-rollout"><span class="toc-num">&bull;</span>段階展開プラン</a></li>
+    <div class="toc-sep"></div>
+    <li><a class="toc-link" href="#org"><span class="toc-num">L4</span>組織変革</a></li>
+  </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+
+<!-- HERO -->
+<div class="hero" id="overview">
+  <div class="hero-badge">Adoption-First Implementation Playbook</div>
+  <h1>原価管理リアルタイム化<br>Looker Studio &times; ANDPAD連携</h1>
+  <p class="hero-sub">
+    原価確定まで2ヶ月かかっている現状を、<strong>まず元請け側の「見る習慣」を作り</strong>、
+    その後に協力会社のデジタル化を段階的に進める。<br>
+    「技術的にできる」と「現場で使われる」は別の問題。定着設計から逆算した実装プレイブック。
+  </p>
+  <a class="hero-back" href="https://tkonishikawa.github.io/demo-pages/d/5daf4f7f/dx-report.html">&larr; DX診断書に戻る</a>
+</div>
+
+<!-- Overview -->
+<div class="section">
+  <div class="section-eyebrow layer2">FRAMEWORK</div>
+  <div class="action-title">Adoption-First 4レイヤーで設計</div>
+  <p class="section-lead">技術が完璧でも使われなければ意味がない。「定着」を最上位に置き、そこから技術・意思決定・組織変革を逆算設計する。</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--red)">
+      <h4><span style="color:var(--red)">L0</span> 定着ゲート</h4>
+      <p>この施策を始める前に確認すべき前提条件。「やめる基準」も含めて定義する。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4><span style="color:var(--cyan)">L1</span> 定着設計</h4>
+      <p>現場の業務フローがどう変わるか。「使わない人」への対処も含めた行動設計。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <h4><span style="color:var(--blue)">L2</span> 技術設計</h4>
+      <p>3つのアプローチを比較し、定着しやすさを第一基準に推奨案を選定。</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--amber)">
+      <h4><span style="color:var(--amber)">L3</span> 意思決定支援</h4>
+      <p>確認事項・リスク・3シナリオのROI・段階展開プランをまとめ、経営判断をサポート。</p>
+    </div>
+  </div>
+
+  <!-- Risk Score Summary -->
+  <div style="background:var(--bg-raised);border-radius:12px;padding:22px;margin:24px 0;border:1px solid rgba(239,68,68,0.15)">
+    <h4 style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:16px">定着リスクスコア: HIGH（27/27）</h4>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="text-align:center;padding:12px;background:var(--bg-surface);border-radius:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red)">3/3</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">行動変容の大きさ</div>
+        <div style="font-size:10px;color:var(--text-muted)">FAX/紙 &rarr; デジタル</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--bg-surface);border-radius:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red)">3/3</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">関係者の多さ</div>
+        <div style="font-size:10px;color:var(--text-muted)">37営業所 + 1,500社</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--bg-surface);border-radius:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red)">3/3</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">既存プロセス置換</div>
+        <div style="font-size:10px;color:var(--text-muted)">月次紙帳票を完全廃止</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+      <strong style="color:var(--red)">建設業のデジタル化は8割がPoC止まり</strong>。段階設計と撤退基準の明確化が成否を分ける。
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Layer 0: Adoption Gate
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="gate">
+  <div class="section-eyebrow layer0">LAYER 0: ADOPTION GATE</div>
+  <div class="action-title">定着ゲート &mdash; 始める前に確認すべきこと</div>
+  <p class="section-lead">この施策が「作ったけど使われない」に陥らないための入口判定。Job定義・利用者プロファイル・撤退基準を事前に明確化する。</p>
+
+  <div class="adopt-callout">
+    <div class="label">CORE PRINCIPLE</div>
+    <p><strong>まず営業所長が毎週5分でダッシュボードを見る習慣を作り、そこから協力会社の入力行動を逆算設計する。</strong>一足飛びに1,500社のデジタル化を目指さない。</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>解決すべき業務課題</h4>
+      <p>原価が確定するまでに<strong>2ヶ月のタイムラグ</strong>があり、赤字案件を止められない。37営業所の粗利率を横断比較する手段がなく、低粗利の営業所への早期介入ができていない。</p>
+    </div>
+    <div class="card">
+      <h4>利用者プロファイル</h4>
+      <ul>
+        <li><strong>読む人:</strong> 営業所長37名（ITリテラシー中程度）</li>
+        <li><strong>書く人:</strong> 協力会社1,500社（ITリテラシー低〜中）</li>
+        <li><strong>管理する人:</strong> 本社IT事業部</li>
+      </ul>
+      <p style="margin-top:8px;font-size:12px;color:var(--amber)">&#9888; 「利用者（協力会社）&ne; 意思決定者（本社）」の構造に注意</p>
+    </div>
+    <div class="card">
+      <h4>行動変容の大きさ: 大</h4>
+      <ul>
+        <li>協力会社: FAX/紙請求書 &rarr; デジタル入力</li>
+        <li>営業所長: 月次の紙帳票確認 &rarr; 週次ダッシュボード参照</li>
+        <li>本社: 2ヶ月遅れの数字で判断 &rarr; リアルタイム把握</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Anti-patterns -->
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">&#9888; 該当する定着アンチパターン</h4>
+  <div class="ap-grid">
+    <div class="ap-card">
+      <h5>AP-1: ダッシュボード疲れ</h5>
+      <p>作ったダッシュボードを誰も見に行かない。情報過多で何を見ればいいかわからない。</p>
+      <div class="counter">&#10003; 対策: プッシュ型通知（月曜朝に粗利ワースト3件を自動メール）</div>
+    </div>
+    <div class="ap-card">
+      <h5>AP-2: 入力負荷の過小評価</h5>
+      <p>協力会社側のデジタル入力負荷が最大の障壁。「簡単です」では動かない。</p>
+      <div class="counter">&#10003; 対策: ゼロ追加作業原則（QW-1では協力会社に変化を求めない）</div>
+    </div>
+    <div class="ap-card">
+      <h5>AP-4: 経営層不在</h5>
+      <p>経営会議でダッシュボードが議題にならず、形骸化する。</p>
+      <div class="counter">&#10003; 対策: 月次経営会議の報告フォーマットにダッシュボード画面を組込み</div>
+    </div>
+  </div>
+</div>
+
+<!-- Kill Criteria -->
+<div class="section" id="gate-kill">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;color:var(--red)">撤退基準（Kill Criteria）</h3>
+
+  <div class="kill-box">
+    <h4>&#9632; QW-1フェーズ（4週後に判定）</h4>
+    <ul style="list-style:none;padding:0">
+      <li>&#9679; 営業所長の週次ダッシュボード参照率が<strong>50%未満</strong></li>
+      <li>&#9679; 原価集計の手作業時間が導入前比<strong>30%以上削減できていない</strong></li>
+      <li style="color:var(--red);margin-top:12px">&#9888; 上記いずれかを満たさない場合、ANDPAD連携フェーズには進まず、画面設計・通知設計を抜本見直し</li>
+    </ul>
+  </div>
+
+  <div class="kill-box">
+    <h4>&#9632; ANDPAD連携フェーズ（展開4週後に判定）</h4>
+    <ul style="list-style:none;padding:0">
+      <li>&#9679; 上位30社の電子発注率が<strong>30%未満</strong></li>
+      <li>&#9679; 協力会社から「FAXに戻したい」という声が<strong>過半数</strong></li>
+      <li style="color:var(--red);margin-top:12px">&#9888; 数値基準で判断する。「もう少し頑張ろう」という感情的判断は避ける</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Layer 1: 定着設計
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="adopt">
+  <div class="section-eyebrow layer1">LAYER 1: ADOPTION DESIGN</div>
+  <div class="action-title">定着設計 &mdash; 「使われるダッシュボード」のために</div>
+  <p class="section-lead">ダッシュボードの成否は「技術的完成度」ではなく「現場の意思決定が変わったか」で決まる。</p>
+
+  <div class="adopt-callout">
+    <div class="label">CORE PRINCIPLE</div>
+    <p>営業所長が毎週5分で自分の数字を確認し、赤字案件に即座に手を打てるようになること。<strong>「見に行かせる」のではなく「届ける」設計にする。</strong></p>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">定着の目標数字</h4>
+  <div class="adopt-card">
+    <h4>&#128202; 定着KPI（業務KPIとは独立して設定）</h4>
+    <ul class="checklist">
+      <li>週次ダッシュボード参照率（37名の営業所長）: 月4回以上参照 &mdash; Looker Studioのページビューで測定</li>
+      <li>原価入力完了率: 当月施工分の原価データ入力率 70%以上</li>
+      <li>原価アラート対応率: アラートが出た案件への担当者アクション率</li>
+      <li>協力会社デジタル提出率（ANDPAD連携後）: 60%以上</li>
+    </ul>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">成功判断の具体的指標</h4>
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <h4>QW-1完了基準</h4>
+      <p>パイロット3営業所で「<strong>手作業集計ゼロ</strong>・ダッシュボード参照が<strong>定例会議の議題になった</strong>」状態</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--green)">
+      <h4>ANDPAD連携完了基準</h4>
+      <p>取引金額上位30社の協力会社から<strong>デジタル発注書が届く</strong>状態</p>
+    </div>
+  </div>
+</div>
+
+<!-- Journey -->
+<div class="section" id="adopt-journey">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">業務フローの変化（Before &rarr; After）</h3>
+
+  <h4 style="margin-bottom:16px;font-size:14px;color:var(--text-dim)">&#9312; 営業所長の日常</h4>
+  <div class="journey-compare">
+    <div class="journey-card before">
+      <h4 style="color:var(--red)">&#10060; Before</h4>
+      <ul>
+        <li><span style="color:var(--red)">&#9679;</span> 月末に担当者から紙帳票を受け取る</li>
+        <li><span style="color:var(--red)">&#9679;</span> 原価は2ヶ月後にようやく確定</li>
+        <li><span style="color:var(--red)">&#9679;</span> 赤字案件は完了後に「事後報告」</li>
+        <li><span style="color:var(--red)">&#9679;</span> 他営業所との比較データがない</li>
+      </ul>
+    </div>
+    <div class="journey-arrow">&rarr;</div>
+    <div class="journey-card after">
+      <h4 style="color:var(--cyan)">&#9989; After</h4>
+      <ul>
+        <li><span style="color:var(--cyan)">&#9679;</span> 月曜朝、メールで粗利ワースト3件が届く</li>
+        <li><span style="color:var(--cyan)">&#9679;</span> 5分でダッシュボードを確認</li>
+        <li><span style="color:var(--cyan)">&#9679;</span> 赤字の兆候を施工中にキャッチ</li>
+        <li><span style="color:var(--cyan)">&#9679;</span> 全営業所のランキングで自分の位置を把握</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px;color:var(--text-dim)">&#9313; 協力会社の変化（ANDPAD連携後）</h4>
+  <div class="journey-compare">
+    <div class="journey-card before">
+      <h4 style="color:var(--red)">&#10060; Before</h4>
+      <ul>
+        <li><span style="color:var(--red)">&#9679;</span> FAXで発注書を受け取る</li>
+        <li><span style="color:var(--red)">&#9679;</span> 施工完了後に紙請求書を郵送</li>
+        <li><span style="color:var(--red)">&#9679;</span> 支払いまで30日待ち</li>
+        <li><span style="color:var(--red)">&#9679;</span> 発注内容の確認に電話が必要</li>
+      </ul>
+    </div>
+    <div class="journey-arrow">&rarr;</div>
+    <div class="journey-card after">
+      <h4 style="color:var(--cyan)">&#9989; After</h4>
+      <ul>
+        <li><span style="color:var(--cyan)">&#9679;</span> ANDPADアプリで発注書を受領</li>
+        <li><span style="color:var(--cyan)">&#9679;</span> アプリ上で出来高を報告</li>
+        <li><span style="color:var(--cyan)">&#9679;</span> デジタル提出で支払い15日に短縮</li>
+        <li><span style="color:var(--cyan)">&#9679;</span> チャット機能で確認がスムーズ</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">移行のハードルと解消策</h4>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="color:var(--amber)">&#9888; ハードル1: 協力会社がデジタルツールを使えない</h4>
+      <p>1,500社の職人・中小企業主。スマホは持っていても業務利用の経験が乏しい。</p>
+      <p style="color:var(--green);margin-top:8px"><strong>&#10003; 解消策:</strong> 「ANDPAD経由で請求すれば支払いサイトを30日&rarr;15日に短縮」という金銭的メリットを先行提示。初期3ヶ月はIT事業部が個別サポート。</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">&#9888; ハードル2: 営業所長がダッシュボードを見ない</h4>
+      <p>忙しくて「見に行く」動機がない。ブックマークしたが開かない。</p>
+      <p style="color:var(--green);margin-top:8px"><strong>&#10003; 解消策:</strong> 見に行かせるのではなく<strong>届ける</strong>。月曜朝8時に「粗利ワースト3案件」を自動メール送信。</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">&#9888; ハードル3: CSV入力の追加作業</h4>
+      <p>QW-1フェーズで担当者にCSV貼付の手間が増える。</p>
+      <p style="color:var(--green);margin-top:8px"><strong>&#10003; 解消策:</strong> IT事業部がGoogle Apps Scriptで自動化し、担当者の追加作業を<strong>ゼロ</strong>にする。</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">&#9888; ハードル4: 「数字が信用できない」</h4>
+      <p>入力データの正確性への不信感。「Excelの方が正しいのでは」と言われる。</p>
+      <p style="color:var(--green);margin-top:8px"><strong>&#10003; 解消策:</strong> パイロット3ヶ月は旧帳票と並行運用。数値一致率95%以上を確認してから旧帳票を廃止。</p>
+    </div>
+  </div>
+</div>
+
+<!-- FB Loop -->
+<div class="section" id="adopt-fb">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;color:var(--cyan)">フィードバックループ設計</h3>
+
+  <div class="adopt-card">
+    <h4>&#128260; 2週間サイクルで改善</h4>
+    <ul class="checklist">
+      <li><strong>定量:</strong> Looker Studioのページビュー数・レポート共有数を週次で確認</li>
+      <li><strong>定性:</strong> パイロット3営業所の所長に2週間ごと5分のSlackアンケート（「今週見ましたか？見にくい点は？」）</li>
+      <li><strong>改善サイクル:</strong> FB受信（月曜）&rarr; IT事業部で分類（金曜）&rarr; 軽微修正は翌週反映</li>
+      <li><strong>安定判定:</strong> 4サイクル（2ヶ月）でFBが収束したら安定と判断</li>
+    </ul>
+  </div>
+
+  <h4 style="margin-top:24px;margin-bottom:16px;font-size:14px">「使わない人」への対処フロー</h4>
+  <div class="step-flow">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h5>週次で「未参照の所長」を特定</h5><p>Looker Studioのアクセスログから、1週間参照ゼロの所長をリストアップ。</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h5>IT事業部が1on1で障壁を聞く</h5><p>「何が障壁ですか？」のヒアリング。原因は3パターンに分類できる。</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h5>パターン別対処</h5><p>
+      <strong>A. 開き方がわからない</strong> &rarr; 操作動画を再送 + 5分の操作説明<br>
+      <strong>B. 数字が信用できない</strong> &rarr; 旧帳票との突合結果を直接提示<br>
+      <strong>C. 忙しくて見る暇がない</strong> &rarr; プッシュ通知の要約をさらに圧縮（3行以内）
+    </p></div></div>
+  </div>
+</div>
+
+<!-- Mockup -->
+<div class="section" id="adopt-mockup">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">成果物イメージ: 原価管理ダッシュボード</h3>
+  <div class="mockup">+-----------------------------------------------------------+
+|  ニッカホーム 原価管理ダッシュボード   2026-03 現在         |
+|  [全社] [関東] [関西] [東北] &larr; 営業所グループフィルター |
++----------------------------+------------------------------+
+|  粗利アラート（今月）       |  全社粗利率トレンド           |
+|  &#x1f534; 赤字案件: 7件          |  ████████████  23.4%         |
+|  &#x1f7e1; 要注意(&lt;15%): 12件   |  先月比 -0.8pt               |
+|                            |  [折れ線グラフ 12ヶ月]        |
++----------------------------+------------------------------+
+|  営業所別 粗利率ランキング  |  原価入力完了率              |
+|  1位 ○○営業所  28.2%      |  今月施工案件 142件           |
+|  2位 △△営業所  26.1%      |  入力済み 98件（69%）         |
+|  ...                       |  未入力 44件 &larr;クリックで詳細 |
+|  37位 □□営業所  11.3% &#9888;   |                              |
++----------------------------+------------------------------+
+|  案件ドリルダウン（クリックで展開）                         |
+|  案件ID | 工事名 | 担当所 | 契約額 | 原価 | 粗利率 | 状態  |
++-----------------------------------------------------------+</div>
+
+  <div style="background:var(--bg-raised);border-radius:12px;padding:18px;margin-top:16px;border:1px solid rgba(34,211,238,0.12)">
+    <p style="font-size:13px;color:var(--text-dim)"><strong style="color:var(--cyan)">&#128233; 月曜朝のプッシュ通知イメージ:</strong><br>
+    件名: 【原価アラート】今週の粗利ワースト3件<br>
+    本文: &#x1f534; A案件（○○営業所）粗利率 5.2% / &#x1f534; B案件（△△営業所）粗利率 8.1% / &#x1f7e1; C案件（□□営業所）粗利率 13.5%<br>
+    &rarr; <span style="color:var(--cyan)">ダッシュボードで詳細を確認</span></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Layer 2: 技術設計
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="tech">
+  <div class="section-eyebrow layer2">LAYER 2: TECHNICAL DESIGN</div>
+  <div class="action-title">技術設計 &mdash; 定着しやすさ最優先で選ぶ</div>
+  <p class="section-lead">3つのアプローチを比較。第一評価軸は「定着しやすさ」。技術的完成度よりも、現場で実際に使われるかを優先する。</p>
+</div>
+
+<div class="section" id="tech-approach">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">アプローチ比較</h3>
+  <table class="approach-tbl">
+    <thead><tr><th>評価軸</th><th>A: CSV &rarr; Sheets &rarr; Looker Studio</th><th>B: ANDPAD原価管理のみ</th><th>C: kintone + BIツール</th></tr></thead>
+    <tbody>
+      <tr class="recommend"><td><strong>定着しやすさ</strong></td><td><span class="tag best">高</span> 既存Sheetsを拡張。所長はURL参照のみ</td><td><span class="tag ok">中</span> ANDPADは使われているが原価UIは未成熟</td><td><span class="tag ng">低</span> kintone学習コスト大、専任管理者必要</td></tr>
+      <tr class="recommend"><td>コスト</td><td><span class="tag best">0円</span> Google Workspace既存契約内</td><td><span class="tag warn">有償</span> 受発注モジュール別途見積</td><td><span class="tag ng">高額</span> 月1,500円/ユーザー + BI費用</td></tr>
+      <tr class="recommend"><td>導入難易度</td><td><span class="tag best">低</span> IT事業部で2-4週間</td><td><span class="tag ng">高</span> 1,500社展開に6-12ヶ月</td><td><span class="tag ng">高</span> 1年以上の展開が一般的</td></tr>
+      <tr><td>拡張性</td><td><span class="tag ok">中</span> Sheets上限あり &rarr; BigQuery連携で解決可能</td><td><span class="tag best">高</span> 施工〜原価〜会計を一気通貫</td><td><span class="tag ok">高</span> 柔軟だが高コスト</td></tr>
+      <tr><td>協力会社の変化</td><td><span class="tag best">不要</span> QW-1では協力会社に変化を求めない</td><td><span class="tag ng">必須</span> スマホアプリ使用が前提</td><td><span class="tag ng">必須</span> 別ツール提供が必要</td></tr>
+      <tr><td><strong>総合</strong></td><td><strong style="color:var(--blue)">推奨（QW-1）</strong></td><td>QW-2以降の発展形</td><td>見送り</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sowhat">
+    <div class="sowhat-label">推奨</div>
+    <p><strong>A案でスタートし、定着を確認してからB案（ANDPAD連携）に発展させる段階設計</strong>が最適。協力会社1,500社の行動変容をQW-1では求めず、まず元請け側37営業所の「見る習慣」を定着させてから次へ進む。C案（kintone）はコスト・学習コストが過大で見送り。</p>
+  </div>
+</div>
+
+<!-- Implementation Steps -->
+<div class="section" id="tech-steps">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">推奨アプローチの実装ステップ</h3>
+
+  <div class="step-flow">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h5>基幹CSVエクスポート確認</h5><p>自社開発基幹から案件・原価データのCSV出力を実施。カラム構成（案件ID、契約額、原価累計、営業所コード等）を確認。</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h5>Sheets + GAS自動連携構築</h5><p>CSV取込シート + 集計シートをテンプレート化。GASで自動取込・バリデーション・アラート通知を実装。担当者の追加作業ゼロを実現。</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h5>Looker Studioダッシュボード構築</h5><p>3ページ構成: エグゼクティブサマリー（全営業所一覧）+ 営業所詳細 + トレンド分析。粗利アラート閾値を設定。</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h5>パイロット検証（3営業所・8週間）</h5><p>IT意識が高い所長がいる3営業所を選定。2週間FBループを開始。月曜朝プッシュ通知を設定。</p></div></div>
+    <div class="step" style="border-left:3px solid var(--red)"><div class="step-num" style="background:rgba(239,68,68,0.15);color:var(--red)">G</div><div class="step-body"><h5 style="color:var(--red)">定着確認ゲート（4週目）</h5><p style="color:var(--red)">参照率50%以上 + 手作業削減30%以上の両条件を確認。未達ならUIを見直す。</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h5>全37営業所展開（6週間）</h5><p>パイロット所長を「チャンピオン」として活用。オンライン動画（5分以内）+ Slack質問チャンネルで展開。</p></div></div>
+    <div class="step" style="border-left:3px solid var(--red)"><div class="step-num" style="background:rgba(239,68,68,0.15);color:var(--red)">G</div><div class="step-body"><h5 style="color:var(--red)">定着確認ゲート（展開6週後）</h5><p style="color:var(--red)">全37所の参照率60%以上 + 月次経営会議で正式アジェンダ化を確認。</p></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><h5>ANDPAD受発注フェーズ移行判断</h5><p>37所で定着を確認した上で、ANDPAD受発注モジュール導入の意思決定。取引金額上位30社からスモールスタート。</p></div></div>
+  </div>
+</div>
+
+<!-- Data Requirements -->
+<div class="section" id="tech-data">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">データ要件</h3>
+  <div class="data-box">
+    <h4>&#128196; 必要なCSVカラム設計</h4>
+    <table class="data-tbl">
+      <tr><th>カラム</th><th>型</th><th>必須</th><th>用途</th><th>更新者・頻度</th></tr>
+      <tr><td>案件ID</td><td>TEXT</td><td>必須</td><td>粒度キー（案件単位管理）</td><td>基幹システム / 週次CSV</td></tr>
+      <tr><td>案件名・工事種別</td><td>TEXT</td><td>必須</td><td>ドリルダウン表示</td><td>基幹システム / 週次</td></tr>
+      <tr><td>担当営業所コード</td><td>TEXT</td><td>必須</td><td>営業所別集計フィルター</td><td>基幹システム / 週次</td></tr>
+      <tr><td>契約額（税抜）</td><td>NUMBER</td><td>必須</td><td>粗利率の分母</td><td>基幹システム / 受注時</td></tr>
+      <tr><td>原価実績（累計）</td><td>NUMBER</td><td>必須</td><td>粗利率の分子</td><td style="color:var(--cyan)">QW-1: CSV手入力 &rarr; QW-2: ANDPAD自動連携</td></tr>
+      <tr><td>原価予算（実行予算）</td><td>NUMBER</td><td>推奨</td><td>予実差異分析</td><td>工務担当者 / 案件開始時</td></tr>
+      <tr><td>施工完了予定日</td><td>DATE</td><td>推奨</td><td>「今月施工中」フィルター</td><td>基幹システム / 週次</td></tr>
+      <tr><td>原価入力ステータス</td><td>BOOL</td><td>推奨</td><td>「未入力案件」アラート</td><td>自動判定</td></tr>
+    </table>
+  </div>
+
+  <h4 style="margin-top:24px;margin-bottom:16px;font-size:14px">技術フィジビリティ確認項目</h4>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="color:var(--amber)">F-1: 基幹CSVエクスポート</h4>
+      <p>自社開発基幹の改修が可能か。週次自動エクスポートの工数を事前確認。</p>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: 手動CSVエクスポートを週次で実施（短期的）</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">F-2: Google Workspace利用可否</h4>
+      <p>社内セキュリティポリシーでGoogle Driveが制限されている場合は使用不可。</p>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: OneDrive + Power BI（Microsoft環境の場合）</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">F-3: ANDPAD API連携</h4>
+      <p>受発注モジュールのAPI仕様・コストを事前確認。有料プランでの提供。</p>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: CSV手動インポートでブリッジ運用</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">F-4: IT事業部の人手と時間</h4>
+      <p>GAS開発・Looker Studio設定・ANDPAD展開サポートを並行できる体制か。</p>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:8px">代替: QW-1のみ先行、ANDPAD連携は6ヶ月以上後</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Layer 3: 意思決定支援
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="decision">
+  <div class="section-eyebrow layer3">LAYER 3: DECISION SUPPORT</div>
+  <div class="action-title">意思決定支援 &mdash; 経営判断に必要な情報</div>
+  <p class="section-lead">確認事項・リスク・ROI・展開プランを整理し、「やるかやらないか」「どの範囲でやるか」の判断をサポートする。</p>
+</div>
+
+<!-- Hearing -->
+<div class="section" id="decision-hearing">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">ヒアリングで確認すべき項目</h3>
+
+  <h4 style="margin-bottom:12px;font-size:13px;color:var(--cyan)">&#9632; 定着に関する質問（最優先）</h4>
+  <div class="hearing-grid">
+    <div class="hearing-item"><div class="q">H-1: 営業所長が原価データを見る定例の機会はありますか？</div><div class="why">既存の「見る習慣」があればそこにダッシュボードを差し込める。なければ新規に作る必要あり</div></div>
+    <div class="hearing-item"><div class="q">H-2: 協力会社のスマートフォン業務利用率は感覚的にどのくらい？</div><div class="why">ANDPAD展開の時間軸と対象選定の根拠。20%未満なら上位30社からの段階展開一択</div></div>
+    <div class="hearing-item"><div class="q">H-3: 過去にデジタルツールを導入して定着しなかった経験はありますか？</div><div class="why">失敗パターンを把握し、同じ轍を踏まない設計にする</div></div>
+    <div class="hearing-item"><div class="q">H-4: 「原価管理を改善したい」という声は現場から上がっていますか？</div><div class="why">ボトムアップの要求があるかで定着スピードが大きく変わる</div></div>
+  </div>
+
+  <h4 style="margin-top:24px;margin-bottom:12px;font-size:13px;color:var(--amber)">&#9632; 技術・運用に関する質問</h4>
+  <div class="hearing-grid">
+    <div class="hearing-item"><div class="q">H-5: 基幹システムからCSVエクスポートする機能は現在ありますか？</div><div class="why">QW-1の実装可能性を確認。不可なら手動転記 or ベンダー開発依頼が必要</div></div>
+    <div class="hearing-item"><div class="q">H-6: ANDPAD受発注モジュールの追加コスト承認は誰が持っていますか？</div><div class="why">意思決定プロセスの確認。ANDPADの技術営業に直接ヒアリングも必要</div></div>
+    <div class="hearing-item"><div class="q">H-7: 37営業所で原価の取り方は標準化されていますか？</div><div class="why">営業所ごとにルールが違うとSheets設計が分岐するリスクあり</div></div>
+    <div class="hearing-item"><div class="q">H-8: IT事業部は今このプロジェクトに何人・何時間を割けますか？</div><div class="why">展開スケジュールと難易度の設定根拠</div></div>
+  </div>
+</div>
+
+<!-- Risks -->
+<div class="section" id="decision-risk">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">リスク分析</h3>
+
+  <h4 style="margin-bottom:12px;font-size:13px;color:var(--cyan)">&#9632; 定着リスク（技術リスクと独立カテゴリ）</h4>
+  <div class="risk-grid">
+    <div class="risk-card high">
+      <h5>協力会社の大量離脱（ANDPAD展開時）</h5>
+      <p>1,500社のうち200〜300社がデジタル移行を拒否し、取引継続リスクになる可能性。</p>
+      <div class="mitigation">対策: 支払いサイト短縮（30日&rarr;15日）のインセンティブを導入前に確約。上位30社から始め、強制はしない。</div>
+    </div>
+    <div class="risk-card high">
+      <h5>ダッシュボードが見られないまま形骸化</h5>
+      <p>所長37名全員がアクセスしないと「作っただけ」になる。建設業DXの8割はここで止まる。</p>
+      <div class="mitigation">対策: プッシュ型通知 + 月次経営会議で報告フォーマットにダッシュボード画面を組込み。</div>
+    </div>
+    <div class="risk-card med">
+      <h5>入力データの精度不足</h5>
+      <p>急いで入力した原価が不正確で「信頼できない数字」になる。</p>
+      <div class="mitigation">対策: Sheetsに入力チェックルール（マイナス値・異常値を赤ハイライト）。初期3ヶ月は旧帳票と突合。</div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px;margin-bottom:12px;font-size:13px;color:var(--blue)">&#9632; 技術リスク</h4>
+  <div class="risk-grid">
+    <div class="risk-card high">
+      <h5>基幹システムとのデータ連携仕様が未確定</h5>
+      <p>自社開発基幹の改修工数が未見積もり。CSVエクスポート機能がない可能性。</p>
+      <div class="mitigation">対策: QW-1ではまず手動CSVで動作確認。効果実証後に自動化工数を見積もる。</div>
+    </div>
+    <div class="risk-card med">
+      <h5>Looker Studio無料枠の制約</h5>
+      <p>行数100万行・データソース数の上限。年間3万件 &times; 項目数増でいずれ上限に当たる。</p>
+      <div class="mitigation">対策: BigQuery連携に切替える設計を当初から視野に入れる（最初の1TB/月は無料）。</div>
+    </div>
+    <div class="risk-card low">
+      <h5>37営業所の業務フロー差異</h5>
+      <p>各所が独自にシートを改変し、集計が不能になるリスク。</p>
+      <div class="mitigation">対策: マスターSheetの編集権限はIT事業部のみ。各所は「入力専用シート」に制限。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROI -->
+<div class="section" id="decision-roi">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">ROI試算（定着率込み3シナリオ）</h3>
+
+  <div class="roi-box">
+    <div class="roi-card"><div class="roi-num">7,500万</div><div class="roi-label">現実シナリオ/年間</div></div>
+    <div class="roi-card"><div class="roi-num">+1.5pt</div><div class="roi-label">粗利率改善（現実）</div></div>
+    <div class="roi-card"><div class="roi-num">-50%</div><div class="roi-label">集計工数削減</div></div>
+    <div class="roi-card"><div class="roi-num">0円</div><div class="roi-label">QW-1追加投資</div></div>
+  </div>
+
+  <div class="roi-fermi">
+    <h4>&#128202; 3シナリオ試算（定着率を加味）</h4>
+    <p style="color:var(--text-dim);font-size:14px;margin-bottom:16px;line-height:1.8">
+      年間売上100億円規模 &times; 粗利率改善幅 &times; 定着率 = <strong style="color:var(--text);">年間粗利改善額</strong>
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left;padding:10px 12px;color:var(--text);font-size:13px">シナリオ</th>
+          <th style="text-align:right;padding:10px 12px;color:var(--text);font-size:13px">年間効果</th>
+          <th style="text-align:left;padding:10px 12px;color:var(--text);font-size:13px">前提</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:10px 12px;color:var(--text-muted);font-size:13px">&#128315; 悲観</td><td style="text-align:right;padding:10px 12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:14px">年2,500万円</td><td style="padding:10px 12px;color:var(--text-muted);font-size:13px">粗利率+0.5pt、定着率30%（経営層の関与が薄い場合）</td></tr>
+        <tr class="scenario-realistic"><td style="padding:10px 12px;color:var(--cyan);font-weight:600;font-size:13px">&#11088; 現実</td><td style="text-align:right;padding:10px 12px;color:var(--cyan);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:16px">年7,500万円</td><td style="padding:10px 12px;color:var(--cyan);font-size:13px">粗利率+1.5pt、定着率60%（QW-1定着、ANDPAD一部未移行）</td></tr>
+        <tr><td style="padding:10px 12px;color:var(--green);font-size:13px">&#128314; 楽観</td><td style="text-align:right;padding:10px 12px;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:14px">年1.5億円</td><td style="padding:10px 12px;color:var(--green);font-size:13px">粗利率+3pt、定着率80%（全社展開+ANDPAD連携が順調）</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-muted);font-size:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      &#128176; QW-1投資額: <strong style="color:var(--green)">0円</strong>（Google Workspace既存ライセンス内） |
+      ANDPAD連携: <strong style="color:var(--amber)">別途見積</strong>（受発注モジュール費用）
+    </p>
+  </div>
+
+  <div style="margin-top:20px">
+    <table class="approach-tbl">
+      <thead><tr><th>指標</th><th>楽観</th><th>現実（定着率込み）</th><th>悲観</th><th>根拠</th></tr></thead>
+      <tbody>
+        <tr><td>粗利率改善</td><td style="color:var(--green)">+3pt</td><td style="color:var(--cyan)">+1.5pt</td><td style="color:var(--text-muted)">+0.5pt</td><td>ANDPAD公式「粗利率2%UP」、kintone事例</td></tr>
+        <tr><td>集計工数削減</td><td style="color:var(--green)">-70%</td><td style="color:var(--cyan)">-50%</td><td style="color:var(--text-muted)">-30%</td><td>BIツール導入事例「50〜70%削減」</td></tr>
+        <tr><td>赤字案件早期発見</td><td style="color:var(--green)">10件/月</td><td style="color:var(--cyan)">5件/月</td><td style="color:var(--text-muted)">2件/月</td><td>月2,500件施工 &times; 赤字率3% &times; 発見率</td></tr>
+        <tr><td>定着率</td><td style="color:var(--green)">80%</td><td style="color:var(--cyan)">60%</td><td style="color:var(--text-muted)">30%</td><td>建設業DX「8割PoC止まり」、ANDPAD「3ヶ月で全員」</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Phased Rollout -->
+<div class="section" id="decision-rollout">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">段階展開プラン</h3>
+
+  <div class="timeline">
+    <div class="tl-phase" style="border-top:3px solid var(--blue)">
+      <h5><span style="color:var(--blue)">Phase 1</span></h5>
+      <div class="tl-period">QW-1 パイロット｜8週間</div>
+      <ul>
+        <li>IT意識が高い3営業所を選定</li>
+        <li>CSV &rarr; Sheets &rarr; Looker Studio構築</li>
+        <li>GAS自動化でゼロ負荷を実現</li>
+        <li>月曜プッシュ通知を設定</li>
+      </ul>
+      <div class="tl-gate"><p>&#9632; Gate: 4週後に参照率50%以上 + 手作業削減30%以上</p></div>
+    </div>
+    <div class="tl-phase" style="border-top:3px solid var(--cyan)">
+      <h5><span style="color:var(--cyan)">Phase 2</span></h5>
+      <div class="tl-period">全37営業所展開｜6週間</div>
+      <ul>
+        <li>パイロット所長を「チャンピオン」活用</li>
+        <li>オンライン動画（5分）+ Slack質問ch</li>
+        <li>経営会議アジェンダに組込み</li>
+      </ul>
+      <div class="tl-gate"><p>&#9632; Gate: 参照率60%以上 + 経営会議アジェンダ化</p></div>
+    </div>
+    <div class="tl-phase" style="border-top:3px solid var(--green)">
+      <h5><span style="color:var(--green)">Phase 3</span></h5>
+      <div class="tl-period">ANDPAD受発注パイロット｜3ヶ月</div>
+      <ul>
+        <li>取引金額上位30社を対象</li>
+        <li>支払いサイト短縮インセンティブ</li>
+        <li>IT事業部が個別サポート</li>
+      </ul>
+      <div class="tl-gate"><p>&#9632; Gate: 上位30社の電子発注率50%以上</p></div>
+    </div>
+    <div class="tl-phase" style="border-top:3px solid var(--amber)">
+      <h5><span style="color:var(--amber)">Phase 4</span></h5>
+      <div class="tl-period">協力会社段階展開｜6-12ヶ月</div>
+      <ul>
+        <li>上位30 &rarr; 100 &rarr; 500 &rarr; 全1,500社</li>
+        <li>各ステージで定着確認後に次へ</li>
+        <li>ITリテラシー低い会社には現地訪問</li>
+      </ul>
+      <div class="tl-gate"><p>&#9632; Gate: デジタル提出率60%以上 + FAX廃止</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Layer 4: 組織変革
+     ═══════════════════════════════════════════ -->
+<div class="section-sep"><span></span><span></span><span></span></div>
+
+<div class="section" id="org">
+  <div class="section-eyebrow layer4">LAYER 4: ORGANIZATIONAL CHANGE</div>
+  <div class="action-title">組織変革 &mdash; 誰が動き、誰が抵抗するか</div>
+  <p class="section-lead">技術は道具。使う人の行動が変わらなければ価値は生まれない。推進者・抵抗者・意思決定者を事前に特定し、対処を設計する。</p>
+
+  <div class="org-card">
+    <h4>&#128101; 推進体制（3層構造）</h4>
+    <div class="card-grid" style="margin-top:12px">
+      <div class="card" style="border-left:3px solid var(--purple)">
+        <h4 style="color:var(--purple)">経営スポンサー</h4>
+        <p>COO / 事業部長。月次経営会議でのダッシュボード活用を「義務化」する権限を持つ人物。<strong>このスポンサーなしには形骸化が確実に発生する。</strong></p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--blue)">
+        <h4 style="color:var(--blue)">技術推進者</h4>
+        <p>IT事業部。QW-1の構築・運用を担う主体。GAS開発・Looker Studio設定・ANDPAD展開サポートの工数確保が最重要。</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--green)">
+        <h4 style="color:var(--green)">現場チャンピオン</h4>
+        <p>パイロット3営業所の所長。「成功事例の証人」として他所長への展開説明を担う。実体験を語れるのが最大の説得力。</p>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">抵抗パターンと対処</h4>
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="color:var(--red)">&#9888; 協力会社「FAXで十分」</h4>
+      <p>最も根強い抵抗。30年FAXでやってきた会社に「アプリを使え」は通じない。</p>
+      <p style="color:var(--green);margin-top:8px"><strong>&#10003;</strong> 「自分の得」を先に提示。支払いサイト短縮（30日&rarr;15日）で資金繰り改善を訴求。</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">&#9888; 営業所長「数字が合わない」</h4>
+      <p>新しい数字への不信感。Excelの方が正しいという思い込み。</p>
+      <p style="color:var(--green);margin-top:8px"><strong>&#10003;</strong> 旧帳票と3ヶ月並行運用。数値一致率95%を「見える形」で提示してから切替え。</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">&#9888; 担当者「入力作業が増えた」</h4>
+      <p>日々の業務にCSV貼付が加わるストレス。「また仕事が増えた」感。</p>
+      <p style="color:var(--green);margin-top:8px"><strong>&#10003;</strong> GAS自動化で追加負荷をゼロにする。QW-1では手動CSVは一時的。</p>
+    </div>
+  </div>
+
+  <h4 style="margin-top:32px;margin-bottom:16px;font-size:14px">旧プロセス廃止のタイミング</h4>
+  <div class="adopt-card">
+    <h4>&#128197; 廃止は「現場の声」がトリガー</h4>
+    <ul class="checklist">
+      <li><strong>月次紙帳票:</strong> Phase 2完了（全37所の参照率60%以上）かつ数値一致率95%を確認してから廃止。並行運用は最低3ヶ月</li>
+      <li><strong>FAX発注:</strong> 協力会社のデジタル提出率80%を達成してから廃止。強制的な一斉廃止は厳禁</li>
+      <li><strong>判断基準:</strong> 現場から「もう紙はいらない」という声が出てから経営層が最終決定する。上からの一方的な廃止は定着を壊す</li>
+    </ul>
+  </div>
+
+  <div class="sowhat">
+    <div class="sowhat-label">まとめ</div>
+    <p>原価管理のリアルタイム化は、<strong>技術的には2〜4週間で構築できるが、定着には6〜12ヶ月かかる</strong>。成否を分けるのは「経営スポンサーの関与」「プッシュ型の設計」「協力会社への金銭的インセンティブ」の3点。まず元請け側の「見る習慣」を作り、そこから逆算して協力会社の行動を変える。一足飛びに全社展開しない。</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>原価管理リアルタイム化 実装プレイブック &mdash; Adoption-First Framework</p>
+  <p style="margin-top:8px">
+    <a href="https://tkonishikawa.github.io/demo-pages/d/5daf4f7f/dx-report.html">&larr; DX診断書に戻る</a>
+  </p>
+  <p style="margin-top:12px;font-size:10px">Generated: 2026-03-05 | Sources: ANDPAD公式・船井総研・建設業DX事例・Looker Studio公式 | &#169; omoshiku</p>
+</div>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+</div><!-- /.container -->
+
+<!-- TOC Intersection Observer -->
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const links=document.querySelectorAll('.toc-link');
+  const ids=[...links].map(l=>l.getAttribute('href').slice(1));
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const a=document.querySelector(`.toc-link[href="#${e.target.id}"]`);
+      if(a)a.classList.add('active');
+    }});
+  },{rootMargin:'-20% 0px -70% 0px'});
+  ids.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+});
+</script>
+</body>
+</html>
