@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注文書OCR自動化 キックオフMTG — 大和書房 × オモシク</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --navy-light: #2a2a44;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --success-bg: rgba(52,211,153,0.08);
+  --green: #27ae60;
+  --green-bg: rgba(39,174,96,0.08);
+  --red: #c04040;
+  --red-bg: rgba(192,64,64,0.08);
+  --blue: #3498db;
+  --blue-bg: rgba(52,152,219,0.08);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.08);
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6,182,212,0.08);
+  --amber: #d97706;
+  --amber-bg: rgba(217,119,6,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-warm);
+  color: var(--text-1);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative; min-height: 50vh;
+  display: flex; align-items: center; justify-content: center;
+  background: #0a0a14; overflow: hidden; text-align: center;
+  padding: 72px 28px 56px;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,148,74,0.3), transparent);
+}
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg::before {
+  content: ''; position: absolute; top: -40%; right: -20%;
+  width: 900px; height: 900px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,148,74,0.18) 0%, transparent 65%);
+  animation: float-orb 10s ease-in-out infinite;
+}
+.hero-bg::after {
+  content: ''; position: absolute; bottom: -25%; left: -15%;
+  width: 750px; height: 750px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,64,64,0.12) 0%, transparent 65%);
+  animation: float-orb 13s ease-in-out infinite reverse;
+}
+.hero-mesh {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.06;
+  background-image:
+    linear-gradient(30deg, transparent 48%, rgba(232,148,74,0.4) 49%, rgba(232,148,74,0.4) 51%, transparent 52%),
+    linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.15) 49%, rgba(255,255,255,0.15) 51%, transparent 52%);
+  background-size: 80px 80px; animation: mesh-drift 25s linear infinite;
+}
+.hero-particles { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.particle {
+  position: absolute; border-radius: 50%; opacity: 0;
+  animation: particle-drift 8s linear infinite;
+}
+.particle-amber { background: var(--accent-light); }
+.particle-white { background: rgba(255,255,255,0.5); }
+.hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 18px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; color: var(--accent-light);
+  border: 1px solid rgba(232,148,74,0.25); border-radius: 20px;
+  margin-bottom: 28px; opacity: 0; animation: hero-fade-in 1s 0.3s forwards;
+}
+.hero h1 {
+  font-family: var(--font-en), var(--font-jp);
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 800; color: #f0ece6; line-height: 1.5;
+  margin-bottom: 20px; letter-spacing: -0.01em;
+  opacity: 0; animation: hero-fade-in 1s 0.5s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero .lead {
+  font-size: 0.88rem; color: rgba(240,236,230,0.55);
+  font-weight: 300; line-height: 1.9; max-width: 580px; margin: 0 auto;
+  opacity: 0; animation: hero-fade-in 1s 0.7s forwards;
+}
+.hero-footer {
+  margin-top: 32px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  opacity: 0; animation: hero-fade-in 1s 0.9s forwards;
+}
+.hero-footer .meta { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); }
+.hero-footer .meta strong { color: rgba(240,236,230,0.5); font-weight: 500; }
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.08); }
+  66% { transform: translate(-30px, 30px) scale(0.94); }
+}
+@keyframes particle-drift {
+  0% { opacity: 0; transform: translateY(0) scale(1); }
+  10% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-100vh) scale(0.4); }
+}
+@keyframes mesh-drift { 0% { transform: translate(0,0); } 100% { transform: translate(80px,80px); } }
+@keyframes hero-fade-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Page Layout ─── */
+.page-layout {
+  display: flex; gap: 36px; align-items: flex-start;
+  max-width: 1120px; margin: 0 auto; padding: 40px 28px 80px;
+}
+.main-content { flex: 1; min-width: 0; }
+
+/* ─── TOC Sidebar ─── */
+.toc-sidebar {
+  position: sticky; top: 24px;
+  width: 220px; flex-shrink: 0;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 16px;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+.toc-sidebar::-webkit-scrollbar { width: 3px; }
+.toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+.toc-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.toc-title {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+.toc-link {
+  display: block; font-size: 0.75rem; color: var(--text-3);
+  text-decoration: none; padding: 5px 0 5px 10px;
+  border-left: 2px solid transparent;
+  line-height: 1.4; transition: all 0.15s;
+}
+.toc-link:hover { color: var(--text-1); }
+.toc-link.active { font-weight: 600; color: var(--accent-dark); border-left-color: var(--accent); }
+.toc-num {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--text-3); margin-right: 4px;
+}
+.toc-divider { height: 1px; background: var(--border-light); margin: 10px 0; }
+
+/* ─── Section ─── */
+.sec { padding: 40px 0 48px; border-bottom: 1px solid var(--border-light); }
+.sec:last-child { border-bottom: none; }
+.sec[id] { scroll-margin-top: 24px; }
+.section-label {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--font-en); font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 8px;
+}
+.section-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-label-cyan { color: var(--cyan); }
+.section-label-cyan::before { background: var(--cyan); }
+.section-label-green { color: var(--green); }
+.section-label-green::before { background: var(--green); }
+.section-label-blue { color: var(--blue); }
+.section-label-blue::before { background: var(--blue); }
+.section-label-purple { color: var(--purple); }
+.section-label-purple::before { background: var(--purple); }
+.section-title {
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem); font-weight: 800;
+  color: var(--text-1); margin-bottom: 8px; line-height: 1.4;
+}
+.section-subtitle {
+  font-size: 0.86rem; color: var(--text-2); margin-bottom: 32px; line-height: 1.8;
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-card); border-radius: 12px; padding: 24px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 16px;
+}
+.card-accent { border-left: 3px solid var(--accent); }
+.card-green { border-left: 3px solid var(--green); }
+.card-red { border-left: 3px solid var(--red); }
+.card-blue { border-left: 3px solid var(--blue); }
+.card-cyan { border-left: 3px solid var(--cyan); }
+.card-purple { border-left: 3px solid var(--purple); }
+.card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.card-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.card-icon-accent { background: var(--accent-bg); }
+.card-icon-green { background: var(--green-bg); }
+.card-icon-blue { background: var(--blue-bg); }
+.card-icon-cyan { background: var(--cyan-bg); }
+.card-icon-red { background: var(--red-bg); }
+.card h4 { font-size: 0.95rem; font-weight: 700; }
+.card p { font-size: 0.84rem; color: var(--text-2); margin-bottom: 6px; line-height: 1.7; }
+.card p:last-child { margin-bottom: 0; }
+
+/* ─── Goal Grid ─── */
+.goal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
+.goal-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+}
+.goal-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.goal-num {
+  font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700;
+  line-height: 1; margin-bottom: 12px;
+}
+.goal-card h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+.goal-card p { font-size: 0.82rem; color: var(--text-2); line-height: 1.7; }
+
+/* ─── Agenda ─── */
+.agenda-list { margin-bottom: 24px; }
+.agenda-item {
+  display: grid; grid-template-columns: 72px 1fr; gap: 16px;
+  padding: 16px 0; border-bottom: 1px solid var(--border-light);
+}
+.agenda-item:last-child { border-bottom: none; }
+.agenda-time {
+  font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600;
+  color: var(--accent); padding-top: 2px;
+}
+.agenda-body h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+.agenda-body p { font-size: 0.82rem; color: var(--text-2); line-height: 1.7; }
+.agenda-highlight {
+  background: var(--accent-bg); border-radius: 8px; padding: 16px;
+  margin: -8px -16px; border: 1px solid var(--accent-border);
+}
+.agenda-highlight .agenda-time { color: var(--red); }
+.agenda-highlight h4 { color: var(--accent-dark); }
+
+/* ─── Comparison Table ─── */
+.compare-box {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: var(--shadow-sm); margin: 16px 0;
+}
+.compare-box table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.compare-box thead th {
+  background: var(--accent-bg); padding: 10px 14px; text-align: left;
+  font-weight: 600; color: var(--accent-dark); border-bottom: 1px solid var(--accent-border); font-size: 0.75rem;
+}
+.compare-box tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); color: var(--text-2); }
+.compare-box tbody tr:last-child td { border-bottom: none; }
+.compare-box tbody td:first-child { font-weight: 600; color: var(--text-1); }
+.compare-box-green thead th { background: var(--green-bg); color: var(--green); border-bottom-color: rgba(39,174,96,0.2); }
+.compare-box-cyan thead th { background: var(--cyan-bg); color: var(--cyan); border-bottom-color: rgba(6,182,212,0.2); }
+
+/* ─── Progress Bars ─── */
+.progress-list { margin-bottom: 32px; }
+.progress-item { margin-bottom: 16px; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.progress-name { font-size: 0.82rem; color: var(--text-2); }
+.progress-pct { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-3); }
+.progress-bar { height: 8px; background: var(--bg-warm-2); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.fill-green { background: var(--green); }
+.fill-amber { background: var(--amber); }
+.fill-blue { background: var(--blue); }
+.fill-accent { background: var(--accent); }
+
+/* ─── Status Cards Grid ─── */
+.status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.status-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; box-shadow: var(--shadow-sm); transition: transform 0.2s;
+}
+.status-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.status-tag {
+  display: inline-block; padding: 2px 10px; border-radius: 10px;
+  font-size: 0.68rem; font-weight: 600; margin-bottom: 10px;
+}
+.tag-done { background: var(--green-bg); color: var(--green); }
+.tag-wip { background: var(--amber-bg); color: var(--amber); }
+.tag-todo { background: var(--bg-warm-2); color: var(--text-3); }
+.tag-blocked { background: var(--red-bg); color: var(--red); }
+.status-card h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; }
+.status-card p { font-size: 0.8rem; color: var(--text-2); line-height: 1.7; }
+
+/* ─── Timeline ─── */
+.timeline { position: relative; padding-left: 32px; margin-bottom: 24px; }
+.timeline::before {
+  content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px;
+  width: 2px; background: var(--border);
+}
+.tl-item { position: relative; padding-bottom: 28px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item::before {
+  content: ''; position: absolute; left: -26px; top: 6px;
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--accent); background: var(--bg-warm);
+}
+.tl-item.done::before { background: var(--green); border-color: var(--green); }
+.tl-item.active::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(232,148,74,0.4); }
+.tl-item .tl-date { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); margin-bottom: 4px; }
+.tl-item h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+.tl-item p { font-size: 0.82rem; color: var(--text-2); line-height: 1.7; }
+
+/* ─── Callout ─── */
+.callout {
+  background: var(--bg-card); border-left: 3px solid var(--accent);
+  border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.callout-red { border-left-color: var(--red); }
+.callout-green { border-left-color: var(--green); }
+.callout-blue { border-left-color: var(--blue); }
+.callout h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; }
+.callout p { font-size: 0.84rem; color: var(--text-2); line-height: 1.8; }
+.callout ul { padding-left: 18px; margin-top: 8px; }
+.callout li { font-size: 0.84rem; color: var(--text-2); line-height: 1.8; margin-bottom: 4px; }
+
+/* ─── Checklist ─── */
+.checklist { list-style: none; padding: 0; margin-bottom: 24px; }
+.checklist li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border-light);
+  font-size: 0.84rem; color: var(--text-2); line-height: 1.7;
+}
+.checklist li::before {
+  content: '☐'; font-size: 16px; color: var(--text-3); flex-shrink: 0; margin-top: 1px;
+}
+.checklist li.star::before { content: '★'; color: var(--accent); }
+
+/* ─── Flow Diagram ─── */
+.flow-diagram {
+  background: var(--navy); border-radius: 12px; padding: 28px 20px; margin: 24px 0;
+  color: #fff; text-align: center;
+}
+.flow-diagram h4 { font-size: 0.82rem; color: var(--accent-light); margin-bottom: 20px; letter-spacing: 0.05em; }
+.flow-step { display: flex; justify-content: center; align-items: center; margin-bottom: 4px; }
+.flow-arrow { text-align: center; color: var(--accent-light); font-size: 18px; margin: 6px 0; }
+.flow-box {
+  display: inline-block; padding: 10px 20px; border-radius: 8px;
+  font-size: 0.82rem; font-weight: 500; max-width: 420px;
+}
+.flow-input { background: rgba(52,152,219,0.2); border: 1px solid rgba(52,152,219,0.4); }
+.flow-process { background: rgba(232,148,74,0.2); border: 1px solid rgba(232,148,74,0.4); }
+.flow-output { background: rgba(39,174,96,0.2); border: 1px solid rgba(39,174,96,0.4); }
+.flow-fix { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.4); }
+
+/* ─── Impact Grid ─── */
+.impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.impact-item {
+  background: var(--bg-card); border-radius: 12px; padding: 20px; text-align: center;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+}
+.impact-number { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent); line-height: 1.2; }
+.impact-label { font-size: 0.72rem; color: var(--text-3); margin-top: 4px; }
+
+/* ─── Footer ─── */
+.doc-footer {
+  text-align: center; padding: 40px 28px;
+  font-size: 0.72rem; color: var(--text-3);
+  border-top: 1px solid var(--border-light);
+}
+
+/* ─── Mobile Nav ─── */
+.mobile-nav {
+  display: none; position: sticky; top: 0; z-index: 100;
+  background: var(--bg-card); border-bottom: 1px solid var(--border);
+  padding: 10px 16px; overflow-x: auto; white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+.mobile-nav a {
+  display: inline-block; font-size: 0.72rem; color: var(--text-3);
+  text-decoration: none; padding: 4px 12px; border-radius: 6px;
+  transition: all 0.15s;
+}
+.mobile-nav a:hover, .mobile-nav a.active { color: var(--accent); background: var(--accent-bg); }
+
+/* ─── Responsive ─── */
+@media (max-width: 960px) {
+  .toc-sidebar { display: none; }
+  .mobile-nav { display: block; }
+  .page-layout { padding: 24px 16px 60px; }
+  .goal-grid { grid-template-columns: 1fr; }
+  .agenda-item { grid-template-columns: 60px 1fr; }
+}
+@media (max-width: 640px) {
+  .status-grid { grid-template-columns: 1fr; }
+  .impact-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── Print ─── */
+@media print {
+  .toc-sidebar, .mobile-nav, .hero-bg, .hero-mesh, .hero-particles { display: none; }
+  .hero { min-height: auto; padding: 40px 20px; }
+  .page-layout { padding: 20px; }
+  body { font-size: 12px; }
+  .card, .status-card, .goal-card, .callout { box-shadow: none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── Hero ─── -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-particles">
+    <div class="particle particle-amber" style="width:3px;height:3px;left:15%;top:80%;animation-delay:0s"></div>
+    <div class="particle particle-white" style="width:2px;height:2px;left:35%;top:90%;animation-delay:1.5s"></div>
+    <div class="particle particle-amber" style="width:4px;height:4px;left:55%;top:85%;animation-delay:3s"></div>
+    <div class="particle particle-white" style="width:2px;height:2px;left:75%;top:95%;animation-delay:4.5s"></div>
+    <div class="particle particle-amber" style="width:3px;height:3px;left:90%;top:88%;animation-delay:6s"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-badge">Kickoff Meeting</div>
+    <h1>注文書OCR自動化<br><em>キックオフMTG</em></h1>
+    <p class="lead">
+      FAX注文書の手入力をAIが自動で読み取る仕組みを構築します。<br>
+      本日はプロジェクトの全体像を共有し、次のステップを一緒に確認します。
+    </p>
+    <div class="hero-footer">
+      <div class="meta">日時 <strong>2026年3月14日（土）</strong></div>
+      <div class="meta">形式 <strong>Zoom</strong></div>
+      <div class="meta">時間 <strong>60分</strong></div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── Mobile Nav ─── -->
+<nav class="mobile-nav">
+  <a href="#goals">ゴール</a>
+  <a href="#agenda">アジェンダ</a>
+  <a href="#overview">概要</a>
+  <a href="#progress">進捗</a>
+  <a href="#schedule">スケジュール</a>
+  <a href="#requests">ご依頼</a>
+</nav>
+
+<!-- ─── Page Layout ─── -->
+<div class="page-layout">
+
+<!-- TOC Sidebar -->
+<aside class="toc-sidebar">
+  <div class="toc-title">Contents</div>
+  <a href="#goals" class="toc-link"><span class="toc-num">01</span> ゴール</a>
+  <a href="#agenda" class="toc-link"><span class="toc-num">02</span> アジェンダ</a>
+  <div class="toc-divider"></div>
+  <a href="#overview" class="toc-link"><span class="toc-num">03</span> プロジェクト概要</a>
+  <a href="#progress" class="toc-link"><span class="toc-num">04</span> 現在の進捗</a>
+  <a href="#schedule" class="toc-link"><span class="toc-num">05</span> スケジュール</a>
+  <div class="toc-divider"></div>
+  <a href="#requests" class="toc-link"><span class="toc-num">06</span> ご確認・ご依頼</a>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+
+<!-- ===== Section 1: ゴール ===== -->
+<section class="sec" id="goals">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title">本日のゴール</h2>
+  <p class="section-subtitle">この打ち合わせで達成したい4つのこと</p>
+
+  <div class="goal-grid">
+    <div class="goal-card" style="border-top: 3px solid var(--accent);">
+      <div class="goal-num" style="color: var(--accent);">01</div>
+      <h4>プロジェクト全体像の共有</h4>
+      <p>注文書OCR自動化で何ができるようになるのか、どういう仕組みなのかをご説明します。</p>
+    </div>
+    <div class="goal-card" style="border-top: 3px solid var(--cyan);">
+      <div class="goal-num" style="color: var(--cyan);">02</div>
+      <h4>現在の業務フローの把握</h4>
+      <p>松本課長の今の作業の流れをお聞きし、どこに自動化を組み込めるか一緒に考えます。</p>
+    </div>
+    <div class="goal-card" style="border-top: 3px solid var(--green);">
+      <div class="goal-num" style="color: var(--green);">03</div>
+      <h4>テスト運用に向けた協力体制の合意</h4>
+      <p>実データでの検証に向けて、どのように進めるかの認識を合わせます。</p>
+    </div>
+    <div class="goal-card" style="border-top: 3px solid var(--blue);">
+      <div class="goal-num" style="color: var(--blue);">04</div>
+      <h4>次のアクションの確定</h4>
+      <p>データ共有の時期・往訪日程・次回打ち合わせの日程を具体的に決めます。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 2: アジェンダ ===== -->
+<section class="sec" id="agenda">
+  <div class="section-label section-label-cyan">Section 02</div>
+  <h2 class="section-title">アジェンダ（60分）</h2>
+  <p class="section-subtitle">本日の打ち合わせの流れ</p>
+
+  <div class="agenda-list">
+    <div class="agenda-item">
+      <div class="agenda-time">0–5分</div>
+      <div class="agenda-body">
+        <h4>ごあいさつ・自己紹介</h4>
+        <p>松本課長との初めてのお顔合わせ。簡単にご挨拶させてください。</p>
+      </div>
+    </div>
+
+    <div class="agenda-item">
+      <div class="agenda-time">5–15分</div>
+      <div class="agenda-body">
+        <h4>プロジェクト概要のご説明</h4>
+        <p>注文書OCR自動化の全体像と、これまでの経緯をお伝えします。「何が楽になるか」を中心にご説明します。</p>
+      </div>
+    </div>
+
+    <div class="agenda-item">
+      <div class="agenda-time">15–25分</div>
+      <div class="agenda-body">
+        <h4>デモンストレーション</h4>
+        <p>実際の注文書PDFをAIが読み取る様子をご覧いただきます。どのくらい正確に読めるかをご確認ください。</p>
+      </div>
+    </div>
+
+    <div class="agenda-item">
+      <div class="agenda-time">25–40分</div>
+      <div class="agenda-body">
+        <h4>現在の業務フローについてお聞かせください</h4>
+        <p>松本課長が普段どのようにFAX注文書を処理されているか、困っていることなどをお伺いします。</p>
+      </div>
+    </div>
+
+    <div class="agenda-item">
+      <div class="agenda-highlight">
+        <div class="agenda-time">40–45分</div>
+        <div class="agenda-body">
+          <h4>データ共有のお願い</h4>
+          <p>OCRの読み取り精度を検証するために、過去の注文書原本と入力データの共有をお願いしたいと考えています。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="agenda-item">
+      <div class="agenda-time">45–50分</div>
+      <div class="agenda-body">
+        <h4>今後のスケジュール・役割分担</h4>
+        <p>今後の進め方と、それぞれの役割を確認します。</p>
+      </div>
+    </div>
+
+    <div class="agenda-item">
+      <div class="agenda-time">50–55分</div>
+      <div class="agenda-body">
+        <h4>Amazon監視ツールの進捗共有</h4>
+        <p>せどり対策の自動監視・通知システムについて、現在の進捗をご報告します。</p>
+      </div>
+    </div>
+
+    <div class="agenda-item">
+      <div class="agenda-time">55–60分</div>
+      <div class="agenda-body">
+        <h4>確認事項・ネクストアクション</h4>
+        <p>本日の確認事項を整理し、次に必要なアクションを確定します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 3: プロジェクト概要 ===== -->
+<section class="sec" id="overview">
+  <div class="section-label section-label-green">Section 03</div>
+  <h2 class="section-title">プロジェクト概要</h2>
+  <p class="section-subtitle">注文書OCR自動化で何が変わるのか</p>
+
+  <div class="card card-accent" style="margin-bottom: 24px;">
+    <div class="card-header">
+      <div class="card-icon card-icon-accent">📋</div>
+      <h4>現在の課題</h4>
+    </div>
+    <p>書店からFAXで届く注文書を、手作業で基幹システムに入力している。フォーマットが書店ごとに異なり、入力には時間がかかる。</p>
+  </div>
+
+  <div class="card card-green" style="margin-bottom: 24px;">
+    <div class="card-header">
+      <div class="card-icon card-icon-green">🎯</div>
+      <h4>目指すゴール</h4>
+    </div>
+    <p>AIがFAX注文書を自動で読み取り、書名・ISBN・冊数などを正確にデータ化。手入力の手間を大幅に削減し、松本課長をはじめ担当者の方がより価値のある業務に時間を使えるようにする。</p>
+  </div>
+
+  <!-- 検証フロー図 -->
+  <div class="flow-diagram">
+    <h4>OCR検証の進め方</h4>
+    <div class="flow-step"><div class="flow-box flow-input">注文書原本（FAX / PDF）</div></div>
+    <div class="flow-arrow">↓ AIが自動で読み取り</div>
+    <div class="flow-step"><div class="flow-box flow-process">OCR読み取り結果</div></div>
+    <div class="flow-arrow">↓ 突き合わせ</div>
+    <div class="flow-step"><div class="flow-box flow-input">手入力データ（松本課長が入力したもの）</div></div>
+    <div class="flow-arrow">↓ 差分分析</div>
+    <div class="flow-step"><div class="flow-box flow-output">正解率レポート + 間違い原因リスト</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-box flow-fix">読み取りロジックの改修・精度向上</div></div>
+  </div>
+
+  <!-- ROI -->
+  <div class="impact-grid" style="margin-top: 32px;">
+    <div class="impact-item">
+      <div class="impact-number">¥40万</div>
+      <div class="impact-label">現在の月額コスト<br>（派遣スタッフ2名）</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number" style="color: var(--green);">¥5,600</div>
+      <div class="impact-label">自動化後の月額コスト<br>（AI利用料）</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number" style="color: var(--cyan);">約80倍</div>
+      <div class="impact-label">コスト削減効果</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number" style="color: var(--purple);">¥470万</div>
+      <div class="impact-label">年間削減額（見込み）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 4: 現在の進捗 ===== -->
+<section class="sec" id="progress">
+  <div class="section-label section-label-blue">Section 04</div>
+  <h2 class="section-title">現在の進捗状況</h2>
+  <p class="section-subtitle">プロジェクト全体の現在地</p>
+
+  <!-- Progress Bars -->
+  <div class="progress-list" style="max-width: 600px;">
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">プロジェクト承認</span><span class="progress-pct">100%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-green" style="width:100%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">kintone アカウント取得</span><span class="progress-pct">100%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-green" style="width:100%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">OCR実装仕様書</span><span class="progress-pct">100%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-green" style="width:100%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">Amazon監視ツール（Keepa API）</span><span class="progress-pct">70%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-amber" style="width:70%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">注文書OCR 読み取り検証</span><span class="progress-pct">50%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-accent" style="width:50%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">基幹システム外部アクセス</span><span class="progress-pct">50%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-accent" style="width:50%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">注文書自動作成アプリ</span><span class="progress-pct">20%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-blue" style="width:20%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">インテージPOS変換</span><span class="progress-pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-blue" style="width:0%"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">目視チェック・修正画面</span><span class="progress-pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-blue" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Status Cards -->
+  <div class="status-grid">
+    <div class="status-card">
+      <span class="status-tag tag-done">完了</span>
+      <h4>プロジェクト承認</h4>
+      <p>3/3の訪問時に社長から「やろう」のご承認をいただきました。</p>
+    </div>
+    <div class="status-card">
+      <span class="status-tag tag-wip">進行中</span>
+      <h4>注文書OCR 読み取り検証</h4>
+      <p>AI（Gemini Vision）による読み取りテスト済み。ISBN-13の読み取り精度100%を達成。実データでの本格検証がこれからです。</p>
+    </div>
+    <div class="status-card">
+      <span class="status-tag tag-wip">進行中</span>
+      <h4>Amazon監視ツール</h4>
+      <p>せどり出品者の価格・在庫を自動監視し、異常があれば通知する仕組み。現在70%完成。</p>
+    </div>
+    <div class="status-card">
+      <span class="status-tag tag-blocked">要対応</span>
+      <h4>基幹システム外部アクセス</h4>
+      <p>権限は許可済み。環境構築のため一度御社にお伺いし、社内ネットワーク上で作業が必要です。</p>
+    </div>
+    <div class="status-card">
+      <span class="status-tag tag-wip">進行中</span>
+      <h4>注文書自動作成アプリ</h4>
+      <p>ISBN検索・書籍情報入力・Word注文書生成の機能を構築中です。</p>
+    </div>
+    <div class="status-card">
+      <span class="status-tag tag-todo">これから</span>
+      <h4>目視チェック・修正画面</h4>
+      <p>AIの読み取り結果を画面上で確認し、間違いがあればその場で修正できる仕組みです。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 5: スケジュール ===== -->
+<section class="sec" id="schedule">
+  <div class="section-label section-label-purple">Section 05</div>
+  <h2 class="section-title">今後のスケジュール</h2>
+  <p class="section-subtitle">データ検証から本番運用までのロードマップ</p>
+
+  <div class="timeline">
+    <div class="tl-item active">
+      <div class="tl-date">3月中旬〜下旬</div>
+      <h4>データ共有・検証準備</h4>
+      <p>過去の注文書原本＋手入力データをいただき、AIで自動読み取り → 手入力データと突き合わせて正解率を検証します。</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">3月中（往訪日調整）</div>
+      <h4>基幹システム環境構築</h4>
+      <p>御社にお伺いし、社内ネットワーク上で外部アクセス環境を確立します。</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">3月中</div>
+      <h4>Amazon監視ツール完成</h4>
+      <p>せどり出品者の自動監視・通知の残り30%を完成させます。</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">3月末〜4月前半</div>
+      <h4>読み取りロジック改修</h4>
+      <p>検証で見つかった間違い箇所の原因を調べ、読み取りの精度を改善します。</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">4月前半</div>
+      <h4>テスト運用開始</h4>
+      <p>注文書アプリ＋OCR自動読み取りを統合。実際に使っていただきながらフィードバックをいただきます。</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">4月〜5月</div>
+      <h4>目視チェック・修正画面の実装</h4>
+      <p>読み取り結果を確認・修正できる画面を実装。運用ルールを確立し、本番運用に移行します。</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">6月〜</div>
+      <h4>注文書フォーマット改革</h4>
+      <p>QRコード付き新フォーマットの導入。読み取り精度のさらなる向上を目指します。</p>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <h4>進め方のポイント</h4>
+    <p>まず実データで「どこまで正確に読めるか」を数字で確認し、問題箇所を潰してからテスト運用に進めます。<br>
+    見切り発車はせず、品質を確かめながら段階的に進める方針です。</p>
+  </div>
+</section>
+
+<!-- ===== Section 6: ご確認・ご依頼 ===== -->
+<section class="sec" id="requests">
+  <div class="section-label" style="color: var(--red);">
+    <span style="display:inline-block;width:32px;height:1px;background:var(--red);margin-right:12px"></span>
+    Section 06
+  </div>
+  <h2 class="section-title">ご確認・ご依頼事項</h2>
+  <p class="section-subtitle">プロジェクトを前に進めるためにお願いしたいこと</p>
+
+  <!-- 最重要依頼 -->
+  <div class="callout callout-red" style="margin-bottom: 32px;">
+    <h4 style="color: var(--red);">最も重要なお願い</h4>
+    <p style="color: var(--text-1); font-weight: 500;">
+      <strong>過去2週間〜1ヶ月分の注文書（書店から届いた原本FAX/PDF）</strong>と、<br>
+      <strong>その注文書を手入力したデータ（Excel等）</strong>を共有いただきたいです。
+    </p>
+    <ul>
+      <li>この2つを突き合わせて、AI自動読み取りの正解率を検証します</li>
+      <li>間違い箇所の原因を調査し、読み取りロジックを改修します</li>
+      <li>実データでの検証が、品質保証の核心です</li>
+    </ul>
+  </div>
+
+  <!-- 松本課長への確認 -->
+  <div class="card card-cyan" style="margin-bottom: 20px;">
+    <div class="card-header">
+      <div class="card-icon card-icon-cyan">💬</div>
+      <h4>松本課長にお聞きしたいこと</h4>
+    </div>
+    <ul class="checklist" style="margin-bottom: 0;">
+      <li>現在のFAX注文書入力の具体的な作業フロー（1日何件くらい？1件あたり何分？）</li>
+      <li>入力に使っているツール（Excel？基幹システム直接入力？）</li>
+      <li>入力後のデータの流れ（誰に渡す？何に使われる？）</li>
+      <li>今のやり方で困っていること・改善したいこと</li>
+      <li>PC環境（Windows / Officeのバージョン）</li>
+    </ul>
+  </div>
+
+  <!-- 広瀬さんへの確認 -->
+  <div class="card card-accent" style="margin-bottom: 20px;">
+    <div class="card-header">
+      <div class="card-icon card-icon-accent">💬</div>
+      <h4>広瀬さんにご確認いただきたいこと</h4>
+    </div>
+    <ul class="checklist" style="margin-bottom: 0;">
+      <li>営業部として注文書自動化の優先順位の確認</li>
+      <li>検証に割いていただけるリソース（週あたりの時間の目安）</li>
+      <li>基幹システム環境構築のための往訪日程のご調整</li>
+    </ul>
+  </div>
+
+  <!-- 依頼まとめ -->
+  <h3 style="font-size: 0.92rem; font-weight: 700; margin: 32px 0 16px;">ご依頼事項まとめ</h3>
+  <div class="compare-box">
+    <table>
+      <thead>
+        <tr>
+          <th>ご依頼内容</th>
+          <th>目的</th>
+          <th>ご対応時期</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>★ 過去2週間〜1ヶ月分のFAX注文書原本</td>
+          <td>OCR読み取り精度の検証</td>
+          <td>3月中</td>
+        </tr>
+        <tr>
+          <td>★ 上記注文書の手入力済みデータ</td>
+          <td>正解率の突き合わせ検証</td>
+          <td>3月中</td>
+        </tr>
+        <tr>
+          <td>基幹システム環境構築のための往訪日</td>
+          <td>外部アクセス環境の確立</td>
+          <td>候補日を2〜3</td>
+        </tr>
+        <tr>
+          <td>松本課長のPC環境情報</td>
+          <td>ツール動作環境の確認</td>
+          <td>随時</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+</div><!-- /page-layout -->
+
+<!-- Footer -->
+<footer class="doc-footer">
+  <p>大和書房 × オモシク ── 注文書OCR自動化プロジェクト</p>
+  <p style="margin-top: 4px;">Confidential &mdash; 2026-03-14</p>
+</footer>
+
+<!-- TOC Active Link Script -->
+<script>
+const sections = document.querySelectorAll('.sec[id]');
+const tocLinks = document.querySelectorAll('.toc-link');
+const mobileLinks = document.querySelectorAll('.mobile-nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      tocLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      mobileLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
