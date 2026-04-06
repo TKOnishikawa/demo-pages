@@ -1,0 +1,506 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>キャリア戦略セッション #1 — りょーたさん</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#e8944a;--accent-light:#f4a96b;--accent-dark:#c97a3a;
+  --accent-bg:rgba(232,148,74,.08);--accent-border:rgba(232,148,74,.2);
+  --gradient-hero:linear-gradient(135deg,#e8944a 0%,#d4582f 50%,#c04040 100%);
+  --navy:#0b0b12;--navy-mid:#1a1a2e;--navy-light:#2a2a44;
+  --bg-warm:#f6f3ee;--bg-warm-2:#efe9e0;--bg-card:#ffffff;
+  --text-1:#1a1a2e;--text-2:#555566;--text-3:#8a8a9a;
+  --border:#e4ddd4;--border-light:#ede7df;
+  --success:#34d399;--success-bg:rgba(52,211,153,.08);
+  --green:#27ae60;--green-bg:rgba(39,174,96,.08);
+  --red:#c04040;--red-bg:rgba(192,64,64,.08);
+  --blue:#3498db;--blue-bg:rgba(52,152,219,.08);
+  --purple:#8b5cf6;--purple-bg:rgba(139,92,246,.08);
+  --cyan:#06b6d4;--cyan-bg:rgba(6,182,212,.08);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 16px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.08);
+  --font-jp:'Noto Sans JP',sans-serif;--font-en:'Sora',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-jp);background:var(--bg-warm);color:var(--text-1);line-height:1.8;font-size:15px}
+.wrap{max-width:860px;margin:0 auto;padding:0 28px}
+
+/* Hero */
+@keyframes float-orb{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(50px,-40px) scale(1.08)}66%{transform:translate(-30px,30px) scale(.94)}}
+@keyframes particle-drift{0%{opacity:0;transform:translateY(0) scale(1)}10%{opacity:.7}85%{opacity:.5}100%{opacity:0;transform:translateY(-100vh) scale(.4)}}
+@keyframes mesh-drift{0%{transform:translate(0,0)}100%{transform:translate(80px,80px)}}
+@keyframes hero-fade-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.hero{position:relative;min-height:50vh;display:flex;align-items:center;justify-content:center;background:#0a0a14;overflow:hidden;text-align:center;padding:80px 28px 64px}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,148,74,.3),transparent)}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg::before{content:'';position:absolute;top:-40%;right:-20%;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(232,148,74,.18) 0%,transparent 65%);animation:float-orb 10s ease-in-out infinite}
+.hero-bg::after{content:'';position:absolute;bottom:-25%;left:-15%;width:750px;height:750px;border-radius:50%;background:radial-gradient(circle,rgba(192,64,64,.12) 0%,transparent 65%);animation:float-orb 13s ease-in-out infinite reverse}
+.hero-bg-extra{position:absolute;top:30%;left:40%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(42,122,110,.1) 0%,transparent 60%);animation:float-orb 16s ease-in-out infinite 3s}
+.hero-mesh{position:absolute;inset:0;z-index:0;opacity:.06;background-image:linear-gradient(30deg,transparent 48%,rgba(232,148,74,.4) 49%,rgba(232,148,74,.4) 51%,transparent 52%),linear-gradient(150deg,transparent 48%,rgba(255,255,255,.15) 49%,rgba(255,255,255,.15) 51%,transparent 52%);background-size:80px 80px;animation:mesh-drift 25s linear infinite}
+.hero-scanlines{position:absolute;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.008) 2px,rgba(255,255,255,.008) 4px)}
+.hero-particles{position:absolute;inset:0;overflow:hidden;z-index:0}
+.particle{position:absolute;border-radius:50%;opacity:0;animation:particle-drift 8s linear infinite}
+.particle-amber{background:var(--accent-light)}.particle-white{background:rgba(255,255,255,.5)}
+.hero-inner{position:relative;z-index:1;max-width:700px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 18px;font-size:.72rem;font-weight:500;letter-spacing:.1em;color:var(--accent-light);border:1px solid rgba(232,148,74,.25);border-radius:20px;margin-bottom:28px;opacity:0;animation:hero-fade-in 1s .3s forwards}
+.hero h1{font-family:var(--font-en),var(--font-jp);font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:#f0ece6;line-height:1.5;margin-bottom:20px;letter-spacing:-.01em;opacity:0;animation:hero-fade-in 1s .5s forwards}
+.hero h1 em{font-style:normal;background:var(--gradient-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .lead{font-size:.88rem;color:rgba(240,236,230,.55);font-weight:300;line-height:1.9;max-width:580px;margin:0 auto;opacity:0;animation:hero-fade-in 1s .7s forwards}
+.hero-footer{margin-top:36px;padding-top:20px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:center;gap:28px;flex-wrap:wrap;opacity:0;animation:hero-fade-in 1s .9s forwards}
+.hero-footer .meta{font-size:.72rem;color:rgba(240,236,230,.3);font-family:var(--font-en)}.hero-footer .meta strong{color:rgba(240,236,230,.5);font-weight:500}
+
+/* Sections */
+.sec{padding:44px 0;border-bottom:1px solid var(--border-light)}.sec:last-child{border-bottom:none}
+.eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;font-family:var(--font-en)}
+.sec h2{font-family:var(--font-en),var(--font-jp);font-size:1.25rem;font-weight:700;margin-bottom:6px;color:var(--text-1)}
+.sec .lead{color:var(--text-2);font-size:.84rem;margin-bottom:24px}
+
+/* Cards */
+.card{background:var(--bg-card);border-radius:12px;padding:24px;box-shadow:var(--shadow-sm);margin-bottom:14px;border-left:3px solid var(--border);transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.card-accent{border-left-color:var(--accent)}.card-blue{border-left-color:var(--blue)}.card-green{border-left-color:var(--green)}.card-red{border-left-color:var(--red)}.card-purple{border-left-color:var(--purple)}.card-cyan{border-left-color:var(--cyan)}
+.card h3{font-size:.95rem;font-weight:700;margin-bottom:8px;color:var(--text-1)}.card p,.card li{font-size:.82rem;color:var(--text-2);line-height:1.7}
+.card ul{padding-left:20px}.card ul li{margin-bottom:4px}
+
+/* Question */
+.q-box{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-radius:12px;padding:20px 24px;margin:20px 0;border-left:4px solid var(--accent)}
+.q-box .q-label{font-size:.68rem;font-weight:700;color:var(--accent);letter-spacing:.08em;margin-bottom:6px;font-family:var(--font-en)}
+.q-box p{font-size:.9rem;font-weight:500;color:var(--text-1)}
+
+/* Insight / Warn */
+.insight{background:var(--green-bg);border-radius:12px;padding:20px 24px;margin:20px 0;border-left:4px solid var(--green)}
+.insight .i-label{font-size:.68rem;font-weight:700;color:var(--green);letter-spacing:.08em;margin-bottom:6px;font-family:var(--font-en)}
+.warn{background:var(--red-bg);border-radius:12px;padding:20px 24px;margin:20px 0;border-left:4px solid var(--red)}
+.warn .w-label{font-size:.68rem;font-weight:700;color:var(--red);letter-spacing:.08em;margin-bottom:6px;font-family:var(--font-en)}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.78rem;margin:16px 0}
+th{background:var(--navy-mid);color:#f0ece6;padding:10px 12px;text-align:left;font-size:.72rem;font-weight:600}
+td{padding:10px 12px;border-bottom:1px solid var(--border-light);vertical-align:top}
+tr:nth-child(even){background:var(--bg-warm-2)}
+.tag{display:inline-block;font-size:.68rem;font-weight:600;padding:2px 10px;border-radius:10px;margin:2px}
+.tag-green{background:#dcfce7;color:#166534}.tag-yellow{background:#fef9c3;color:#854d0e}.tag-red{background:#fee2e2;color:#991b1b}.tag-blue{background:#dbeafe;color:#1e40af}
+
+/* Flow */
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0;padding:16px 20px;background:var(--navy);border-radius:12px}
+.flow-node{background:var(--navy-light);color:#f0ece6;padding:8px 16px;border-radius:8px;font-size:.78rem;font-weight:500;text-align:center}
+.flow-arrow{color:var(--accent);font-weight:700;font-size:18px}
+.flow-node.active{background:var(--accent);color:#fff}
+
+/* Grid */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:700px){.grid-3,.grid-2{grid-template-columns:1fr}}
+
+/* Part divider */
+.part{padding:36px 0 16px;text-align:center}
+.part-badge{display:inline-block;border:1.5px solid var(--accent);color:var(--accent);font-size:.7rem;font-weight:600;padding:4px 18px;border-radius:20px;letter-spacing:.1em;font-family:var(--font-en)}
+.part-title{font-family:var(--font-en),var(--font-jp);font-size:1.1rem;font-weight:700;margin-top:8px;color:var(--text-1)}
+
+/* CTA */
+.cta{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:#f0ece6;border-radius:12px;padding:36px;text-align:center;margin:28px 0}
+.cta h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}.cta p{font-size:.82rem;color:rgba(240,236,230,.6)}
+
+/* Timeline */
+.tl{position:relative;padding-left:32px;margin:16px 0}
+.tl::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(var(--accent),var(--blue))}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item::before{content:'';position:absolute;left:-26px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--bg-warm)}
+.tl-item h4{font-size:.84rem;font-weight:700}.tl-item p{font-size:.78rem;color:var(--text-2)}
+
+/* Accordion */
+.acc{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:box-shadow .2s}
+.acc:hover{box-shadow:var(--shadow-sm)}
+.acc summary{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;font-size:.84rem;font-weight:600;color:var(--text-1);list-style:none;user-select:none;gap:12px}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:'+';font-family:var(--font-mono);font-size:1.1rem;font-weight:400;color:var(--accent);flex-shrink:0;transition:transform .2s}
+.acc[open]>summary::after{content:'\2212'}
+.acc-body{padding:0 18px 16px;font-size:.8rem;color:var(--text-2);line-height:1.8}
+.acc-body h4{font-size:.84rem;font-weight:700;color:var(--text-1);margin:16px 0 8px}.acc-body h4:first-child{margin-top:0}
+.acc-body p{margin-bottom:8px}.acc-body ul{padding-left:18px;margin-bottom:8px}.acc-body li{margin-bottom:3px;font-size:.78rem}
+.acc-body table{font-size:.72rem}
+
+/* Links */
+a{color:var(--accent);text-decoration:none;font-weight:500}a:hover{text-decoration:underline}
+.link-card{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:8px;font-size:.75rem;font-weight:600;color:var(--accent);transition:background .15s}
+.link-card:hover{background:rgba(232,148,74,.15);text-decoration:none}
+
+.footer{text-align:center;padding:40px 24px;font-size:.72rem;color:var(--text-3)}
+</style></head><body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"><div class="hero-bg-extra"></div></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">CAREER SESSION #1</div>
+    <h1>りょーたさんの<em>最高の一手</em>を見つける</h1>
+    <p class="lead">自己機能の分析 / 見えていなかった選択肢 / 戦略的な次の一歩</p>
+    <div class="hero-footer">
+      <div class="meta"><strong>Date</strong> 2026.04.06</div>
+      <div class="meta"><strong>Time</strong> 30 min</div>
+      <div class="meta"><strong>By</strong> Nishikawa</div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+<!-- OPENING -->
+<div class="sec">
+  <div class="eyebrow">OPENING</div>
+  <h2>今日の時間について</h2>
+  <div class="lead">答えを渡す場ではなく、一緒に「最高の一手」を見つける時間です。</div>
+  <div class="card card-accent">
+    <h3>今日のゴール</h3>
+    <ul>
+      <li>りょーたさんの<strong>自己機能（強みの核）</strong>を事実ベースで確認する</li>
+      <li>今まで見えていなかった<strong>選択肢</strong>を一緒に発見する</li>
+      <li>「<strong>今週からこれをやる</strong>」を決めて終わる</li>
+    </ul>
+  </div>
+  <div class="insight">
+    <div class="i-label">IMPORTANT</div>
+    <p>この資料は外部情報ベースの分析です。「合ってる」「ここは違う」を遠慮なく教えてください。一緒に磨いていきます。</p>
+  </div>
+</div>
+
+<!-- ========== PART 1 ========== -->
+<div class="part"><div class="part-badge">PART 1</div><div class="part-title">あなたが一番力を発揮する瞬間</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 01</div>
+  <h2>自己機能の確認</h2>
+  <div class="lead">キャリスピで整理された内容をベースに。</div>
+  <div class="card card-accent">
+    <h3>りょーたさんの自己機能</h3>
+    <p style="font-size:.95rem;font-weight:500;line-height:1.9">
+      相手の<strong>「なぜ」を知り</strong>、動作行動を<strong>観察</strong>した上で、<br>
+      <strong>最適解・最善策</strong>を考え、伝えることで<strong>選択肢を増やす</strong>人
+    </p>
+  </div>
+  <div class="grid-3">
+    <div class="card card-accent"><h3>顧客志向</h3><p>目の前の相手のベストを本気で考える誠実さ</p></div>
+    <div class="card card-green"><h3>本物志向</h3><p>リアル、本質、本音、美しいものへのこだわり</p></div>
+    <div class="card card-purple"><h3>観察力</h3><p>違和感・個性・良さを見極める目</p></div>
+  </div>
+  <details class="acc"><summary>自己欲求・自己能力・GOAL の詳細</summary><div class="acc-body">
+    <h4>自己欲求（最新版）</h4>
+    <table><tr><th>発動条件</th><td>理想やGOAL、目的があるとき</td></tr><tr><th>対象</th><td>現状と理想のGAPが不明確（モヤモヤしている）な人</td></tr><tr><th>手段</th><td>モヤモヤを解消 / 認識を揃える / 前提条件を揃える</td></tr></table>
+    <h4>自己能力</h4><ul><li>相手の状況を把握する</li><li>GAPを明確にする</li><li>ポイントを伝える</li></ul>
+    <h4>ブランドキャラクター</h4><ul><li><strong>顧客志向</strong> — 聞き上手 / 誠実さ / パートナー / チームで勝つ</li><li><strong>本物志向</strong> — リアル / 本質 / 本音 / おいしい / 美しい</li><li><strong>観察力</strong> — 着眼点 / 違和感 / 個性 / 良さを引き出す</li><li><strong>静かな情熱</strong> — 暗躍する / 出しゃばらない / 目立たないけどいないと回らない</li></ul>
+    <h4>欲の根源</h4><p><strong>知的好奇心</strong>・<strong>探究心</strong>・<strong>上達/卓越したい</strong></p>
+    <h4>GOAL設定</h4>
+    <table><tr><th>VISION</th><td>梅原真さんを超えるデザイナー</td></tr><tr><th>定性GOAL</th><td>地方自治体から依頼が来ているデザイナー</td></tr><tr><th>1年後</th><td>ディレクション担当。ブランディングの方向性をクライアントと直接会話</td></tr><tr><th>半年後</th><td>デザイン事務所で西日本の地方案件を担当</td></tr><tr><th>1ヶ月後</th><td>デザイン事務所の内定獲得</td></tr></table>
+    <h4>Will</h4><p>人生の目的は<strong>自由を手に入れて、選べる自分になること</strong>。最終的には独立して「目の前の人を勝たせ続けるデザイナー」として、日本の価値あるマイノリティをイキイキさせたい。</p>
+  </div></details>
+  <div class="q-box"><div class="q-label">QUESTION</div><p>この整理、今も合ってますか？最新のセッションで変わったところはある？</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 02</div>
+  <h2>ソーダでの経験を分解する</h2>
+  <div class="lead">3年9ヶ月の映像制作PM。赤文字（夢中）の業務を分析すると ——</div>
+  <div class="card card-accent">
+    <h3>赤文字 = 自己機能が発火していた業務</h3>
+    <table>
+      <tr><th>赤文字の業務</th><th>本質</th><th>自己機能との接続</th></tr>
+      <tr><td>取材対象者とのやりとり</td><td>相手の「伝えたいこと」を引き出す</td><td>「なぜを知る」「観察する」</td></tr>
+      <tr><td>監督とのやり取り、方向性の具現化</td><td>ビジョンを理解し、形にする橋渡し</td><td>「最適解を設計する」</td></tr>
+      <tr><td>編集作業時の橋渡し役・伝達</td><td>異なる専門家の間に立って翻訳</td><td>「伝えて選択肢を増やす」</td></tr>
+      <tr><td>カット表作成・修正</td><td>全体構造を整理して見える化</td><td>「GAPを明確にする」</td></tr>
+    </table>
+  </div>
+  <div class="insight"><div class="i-label">KEY FINDING</div>
+    <p>夢中になっていたのは<strong>「進行管理」ではなく「引き出す → 形にする → 橋渡しする」</strong>。<br>
+    「現場の進行」「実行予算」「作業の分担」は赤でも青でもない = <strong>やれるけどワクワクしない</strong>。</p>
+  </div>
+  <details class="acc"><summary>全業務の赤 / 無色 一覧</summary><div class="acc-body">
+    <h4>赤文字（夢中）</h4><ul><li>取材対象者とのやりとり</li><li>監督とのやり取り、そこから生まれる作業</li><li>カット表作成・修正</li><li>編集作業時の橋渡し役、伝達作業</li><li>精算作業</li></ul>
+    <h4>無色（やれるけど夢中でもない）</h4><ul><li>資料作成 / 資料探し / 買い出し / 打合せ準備・議事録 / 備品整理 / ロケハン / オーディション / 小道具作成 / 後輩指導 / 整理してまとめる / 現場の進行 / 実行予算の作成 / 作業の分担の依頼</li></ul>
+    <h4>青文字（苦痛）</h4><p>明確な青文字は確認できず。3年9ヶ月続けられた = 致命的な苦痛業務はなかったと推測。</p>
+  </div></details>
+  <div class="q-box"><div class="q-label">QUESTION</div><p>ソーダで一番「これだ！」と感じた瞬間、具体的にどんな場面？</p></div>
+</div>
+
+<!-- ========== PART 2 ========== -->
+<div class="part"><div class="part-badge">PART 2</div><div class="part-title">見えていなかった選択肢</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 03</div>
+  <h2>PM / プロデューサー / 営業 — 何が違うか</h2>
+  <div class="lead">職種のラベルではなく「どの動詞がメインか」で選ぶ。</div>
+  <div class="card card-accent">
+    <h3>3つの職種 × Why / What / How</h3>
+    <table>
+      <tr><th></th><th>PM（制作管理）</th><th>プロデューサー / 企画</th><th>提案営業</th></tr>
+      <tr><td><strong>Why</strong><br><span style="font-size:.68rem">なぜ作るか</span></td><td>与えられた要件を前提</td><td style="background:var(--green-bg)"><strong>課題を発見し「なぜやるべきか」を設計</strong></td><td style="background:var(--green-bg)"><strong>顧客の潜在ニーズを引き出す</strong></td></tr>
+      <tr><td><strong>What</strong><br><span style="font-size:.68rem">何を作るか</span></td><td>要件に沿って仕様整理</td><td style="background:var(--green-bg)"><strong>コンセプトを設計し「何を作るか」を決める</strong></td><td>顧客の要望を社内に翻訳</td></tr>
+      <tr><td><strong>How</strong><br><span style="font-size:.68rem">どう作るか</span></td><td style="background:rgba(254,249,195,.3)"><strong>スケジュール・予算・品質管理がメイン</strong></td><td>チーム編成、方向性提示</td><td>提案書作成、プレゼン</td></tr>
+    </table>
+  </div>
+  <div class="card card-green">
+    <h3>自己機能 × 職種のマッチング</h3>
+    <table>
+      <tr><th>自己機能の動詞</th><th>PM</th><th>プロデューサー</th><th>提案営業</th></tr>
+      <tr><td>「なぜ」を知りたい</td><td>△</td><td><span class="tag tag-green">◎</span></td><td><span class="tag tag-green">◎</span></td></tr>
+      <tr><td>観察して本質を掴む</td><td>△</td><td><span class="tag tag-green">◎</span></td><td><span class="tag tag-green">◎</span></td></tr>
+      <tr><td>最適解をマッチング</td><td>△</td><td><span class="tag tag-green">◎ 企画の核心</span></td><td><span class="tag tag-green">◎ 提案の核心</span></td></tr>
+      <tr><td>伝えて選択肢を増やす</td><td>△</td><td><span class="tag tag-green">◎</span></td><td><span class="tag tag-green">◎</span></td></tr>
+      <tr><td>進行管理・段取り</td><td><span class="tag tag-green">◎</span></td><td>○ 一部</td><td>△</td></tr>
+    </table>
+  </div>
+  <div class="insight"><div class="i-label">INSIGHT</div>
+    <p><strong>自己機能は、PMの「How管理」よりプロデューサー/営業の「Why・What」に圧倒的にフィット。</strong><br>ソーダの赤文字がそれを証明。「引き出す」「具現化する」「橋渡し」はWhy・Whatの仕事。</p>
+  </div>
+  <details class="acc"><summary>「Howが苦手」は本当か？ — ADHD特性の観点から</summary><div class="acc-body">
+    <p>ADHD特性的に「管理」は苦手な傾向。ただしりょーたさん個人で見ると：</p>
+    <ul><li>ソーダで<strong>3年9ヶ月</strong>PMを続けている（本当に苦手なら持たない）</li><li>「現場の進行」「実行予算」は青文字ではなく無色（やれる）</li><li>「カット表作成」は赤文字 = <strong>「管理」ではなく「構造化」として楽しんでいた</strong></li></ul>
+    <p><strong>正確な表現: 「Howもやれるけど、Why・Whatの方が圧倒的にワクワクする」。</strong><br>「Howしかない仕事」は避けるべきだが、「Why・Whatがメインで、Howも一部含む仕事」は問題ない。</p>
+  </div></details>
+  <div class="q-box"><div class="q-label">QUESTION</div><p>Why / What / How、一番ワクワクするのはどれ？逆に「しんどいな」はある？</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 04</div>
+  <h2>4年のカフェ経験 — 最大の突っ込みポイントをどう乗り越えるか</h2>
+  <div class="lead">正直に言えば、ここが選考で一番突っ込まれるところ。だからこそ「戦う場所」を選ぶ戦略が必要。</div>
+  <div class="card card-red"><h3>面接官の本音（事実として受け止める）</h3><p>「映像PMの後に4年もカフェとセラピスト。デザイン業界と接点がない。なぜ今さらこの業界に？」<br><strong>これは必ず聞かれる。しかも最も答えにくい質問。</strong>ここを正面突破するのではなく、<strong>「この経験が武器になる場所で戦う」のが戦略。</strong></p></div>
+  <div class="card card-green">
+    <h3>事実ベースで見直すと</h3>
+    <table>
+      <tr><th>経験</th><th>実は何を鍛えていたか</th><th>活きる場所</th></tr>
+      <tr><td>カフェファソン（スペシャルティ）</td><td>味覚・風味の観察力。好みを見抜いてマッチング</td><td>コーヒー業界なら<strong>即戦力</strong></td></tr>
+      <tr><td>CITAN / BPJ（ホテル内カフェ）</td><td>宿泊×コミュニティの体験設計</td><td>ホスピタリティ系で<strong>原体験</strong></td></tr>
+      <tr><td>Garden（オフィスカフェ）</td><td>法人への飲食サービス導入支援</td><td>法人向けサービスで<strong>実務経験</strong></td></tr>
+      <tr><td>エーワン（セラピスト）</td><td>身体の観察→最適アプローチの選択</td><td>ウェルネス系で<strong>専門知識</strong></td></tr>
+    </table>
+  </div>
+  <div class="insight"><div class="i-label">STRATEGY</div>
+    <p><strong>4年のカフェ経験を「弱み」のまま戦うのは愚策。</strong><br>
+    デザイン会社にPMで応募すると、この4年は「ブランク」でしかない。<br>
+    しかし<strong>カフェ・飲食・ホスピタリティ系の事業会社</strong>に応募すれば、同じ4年が「現場のリアルを知っている」という<strong>最大の武器</strong>に変わる。<br>
+    <strong>弱みをなくすのではなく、弱みが武器に変わる場所で戦う。これが戦略。</strong></p>
+  </div>
+  <details class="acc"><summary>4年ブランクの説明ストーリー — 3パターン</summary><div class="acc-body">
+    <h4>A: 正直路線</h4><p>「正直に言うと、定まっていませんでした。ただ、どの仕事でも一番力を発揮していたのは"相手を観察して最適なものを提案する瞬間"でした。この4年は遠回りでしたが、自分の核を見極められた期間です。」</p>
+    <h4>B: 未来志向＋行動証拠</h4><p>「迷走した期間は認めます。ただ今は方向性が明確です。御社の業界構造から業務プロセスまで徹底リサーチした上で来ています。」→ リサーチ資料を見せる</p>
+    <h4>C: カフェ経験を武器に（TYPICA・トランジット等向け）</h4><p>「スペシャルティコーヒーの世界に惹かれ、複数のカフェで働きました。この現場経験があるからこそ、御社のブランドを"中の人"の視点で理解し、企画に落とし込めます。」→ <strong>カフェ系企業向けではこれが最強</strong></p>
+  </div></details>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 05</div>
+  <h2>5つの動詞で仕事を選ぶ</h2>
+  <div class="lead">業界・職種のラベルではなく「動詞」で判断する。</div>
+  <div class="flow">
+    <div class="flow-node active">1. 観察する</div><div class="flow-arrow">→</div>
+    <div class="flow-node active">2. 引き出す</div><div class="flow-arrow">→</div>
+    <div class="flow-node active">3. 設計する</div><div class="flow-arrow">→</div>
+    <div class="flow-node active">4. 届ける</div><div class="flow-arrow">→</div>
+    <div class="flow-node active">5. イキイキさせる</div>
+  </div>
+  <div class="card card-accent">
+    <h3>5つの動詞 × ソーダの赤文字 × 120%状態</h3>
+    <table>
+      <tr><th>動詞</th><th>ソーダでの該当業務</th><th>120%状態のイメージ</th></tr>
+      <tr><td>1. 観察する</td><td>取材対象者との対話</td><td>地方の食・文化・職人の技を現場で見る</td></tr>
+      <tr><td>2. 引き出す</td><td>監督のビジョンの具現化</td><td>「当たり前」に埋もれた価値を言語化</td></tr>
+      <tr><td>3. 設計する</td><td>カット表作成（構造化）</td><td>ストーリー・パッケージ・体験として形に</td></tr>
+      <tr><td>4. 届ける</td><td>編集の橋渡し・伝達</td><td>「この人にはこれ」のマッチング</td></tr>
+      <tr><td>5. イキイキさせる</td><td>完成した映像で対象が喜ぶ</td><td>対象が輝き、持続的に成長する</td></tr>
+    </table>
+  </div>
+  <div class="q-box"><div class="q-label">QUESTION</div><p>5つの中で、一番「これだ！」と思うのはどれ？</p></div>
+</div>
+
+<!-- ========== PART 3 ========== -->
+<div class="part"><div class="part-badge">PART 3</div><div class="part-title">3つの方向性と具体的な候補</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 06</div>
+  <h2>方向性の選択肢</h2>
+  <div class="lead">「正解」ではなく、どれにワクワクするか。戦略的な勝ち筋も合わせて。</div>
+  <div class="grid-3">
+    <div class="card card-accent"><h3>方向A<br>地場産業プロデューサー</h3><p>職人の本質を引き出して、商品にして、届ける。</p>
+      <p style="margin-top:12px;font-size:.75rem"><strong>GOALへの距離:</strong> 最短<br><strong>カフェ経験:</strong> △ 転用がやや弱い<br><strong>年収:</strong> 350-500万<br><strong>戦略的優位:</strong> ソーダのPM経験を「制作進行」で語れる</p></div>
+    <div class="card card-green"><h3>方向B<br>カフェ × ブランド体験設計</h3><p>現場知見を武器に、ブランドを企画する側に回る。</p>
+      <p style="margin-top:12px;font-size:.75rem"><strong>GOALへの距離:</strong> ブリッジ必要<br><strong>カフェ経験:</strong> <span class="tag tag-green">最大の武器</span><br><strong>年収:</strong> 350-700万<br><strong>戦略的優位:</strong> 4年の経験が「弱み→強み」に反転</p></div>
+    <div class="card card-blue"><h3>方向C<br>ホスピタリティ × 体験設計</h3><p>宿泊・空間・コミュニティの体験を設計する。</p>
+      <p style="margin-top:12px;font-size:.75rem"><strong>GOALへの距離:</strong> ブリッジ必要<br><strong>カフェ経験:</strong> ◎（CITAN経験が直結）<br><strong>年収:</strong> 350-600万<br><strong>戦略的優位:</strong> CITAN経験を「宿泊×コミュニティ」で語れる</p></div>
+  </div>
+
+  <div class="card card-purple" style="margin-top:20px">
+    <h3>どの方向でも「デザイン」はやれる</h3>
+    <p>「デザイナーにならないとデザインに触れられない」は過去の話。<br>
+    プロデューサーでも企画でもPRでも、<strong>以下のデザイン業務は日常的にやれる（むしろ求められている）</strong>：</p>
+    <table>
+      <tr><th>デザイン業務</th><th>具体例</th><th>なぜプロデューサー/企画がやると強いか</th></tr>
+      <tr><td><strong>コンセプトの可視化</strong></td><td>ブランドのムードボード、世界観の叩きを作る</td><td>デザイナーに「言葉」で伝えるより「ビジュアル」で伝える方が精度が10倍上がる</td></tr>
+      <tr><td><strong>提案書のデザイン</strong></td><td>クライアント向け企画書、プレゼン資料</td><td>見た目が整った提案書は説得力が段違い。Canva+AIで十分作れる</td></tr>
+      <tr><td><strong>SNSコンテンツ制作</strong></td><td>投稿画像、ストーリーズ、サムネイル</td><td>企画者が自分で作れると、スピードが圧倒的に速い</td></tr>
+      <tr><td><strong>プロトタイプ/モック</strong></td><td>Webページの叩き、イベント空間のイメージ</td><td>「こんな感じ」を可視化してデザイナーに渡す → コミュニケーション効率が爆上がり</td></tr>
+      <tr><td><strong>プレスリリースのビジュアル</strong></td><td>ニュースリリースのサムネ、メディアキット</td><td>PR担当が自分で作れると、速報性×品質の両立ができる</td></tr>
+    </table>
+    <div class="insight" style="margin-top:16px"><div class="i-label">IMPORTANT</div>
+      <p><strong>生成AI（Midjourney、Canva AI等）の進化で、デザインの「叩き」は誰でも作れる時代。</strong><br>
+      専門学校に2年通うより、<strong>実務の中でAIを活用しながら、デザイナーと連携しながら、知見を貯めていく</strong>方が成長が速い。<br>
+      企画段階で「叩き」を自分で作れるプロデューサーは、<strong>デザイナーとの対話の質が全く違う。</strong><br>
+      これは「デザイナーを置き換える」のではなく、<strong>「デザイナーとのコミュニケーションを爆速化する」</strong>スキル。</p>
+    </div>
+  </div>
+
+  <details class="acc"><summary>最終GOALとのブリッジ — どの方向でもつながる理由</summary><div class="acc-body">
+    <h4>5つの動詞は、どの会社でも鍛えられる</h4>
+    <table>
+      <tr><th>動詞</th><th>A: 地場産業PD</th><th>B: カフェ×ブランド</th><th>C: ホスピタリティ</th></tr>
+      <tr><td>1. 観察する</td><td>町工場の技術を見抜く</td><td>コーヒー生産者の農園訪問</td><td>宿泊客のニーズを読む</td></tr>
+      <tr><td>2. 引き出す</td><td>職人の「当たり前」の市場価値</td><td>生産者の栽培の独自性</td><td>地域の「らしさ」</td></tr>
+      <tr><td>3. 設計する</td><td>商品コンセプト</td><td>ブランド体験×イベント</td><td>空間×アクティビティ</td></tr>
+      <tr><td>4. 届ける</td><td>展示会×小売×EC</td><td>コミュニティ×SNS</td><td>宿泊体験として</td></tr>
+      <tr><td>5. イキイキさせる</td><td>町工場が復活</td><td>生産者が持続可能に</td><td>地域が豊かになる</td></tr>
+    </table>
+    <h4>核心</h4>
+    <p><strong>先にWhy/What（引き出す力・設計する力）を鍛えてから、How（デザインスキル）を足す。</strong>梅原真自身も「デザインスキル」ではなく「一次産業の本質を理解している」という圧倒的なWhyがあった上でデザインを手段として使っている。実はこれが最強の順番。</p>
+  </div></details>
+  <div class="q-box"><div class="q-label">QUESTION</div><p>この3つ、直感でどれにワクワクしますか？（正解はありません）</p></div>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 07</div>
+  <h2>具体的な候補企業</h2>
+  <div class="lead">りょーたさんの経験が「武器」になる会社。求人リンク付き。</div>
+
+  <table>
+    <tr><th>優先度</th><th>会社</th><th>職種</th><th>フィットする理由</th><th>求人</th></tr>
+    <tr><td><span class="tag tag-green">最推奨</span></td><td><strong>トランジット</strong></td><td>本部PR</td><td>映像PMの「撮影対応」が直結。140店舗で飽きない。社内公募で領域拡張</td><td><a href="https://transit-web-job.net/jobfind-pc/job/All/35382" target="_blank" class="link-card">求人を見る →</a></td></tr>
+    <tr><td><span class="tag tag-green">最推奨</span></td><td><strong>SANU</strong></td><td>コミュニティMgr</td><td>CITAN経験がド直球。自然×宿泊×コミュニティ。英語不要</td><td><a href="https://sa-nu.com/job-description/community-manager" target="_blank" class="link-card">求人を見る →</a></td></tr>
+    <tr><td><span class="tag tag-blue">有力</span></td><td><strong>TYPICA</strong></td><td>コミュニティMgr</td><td>バリスタ経験が最大武器。コーヒー業界のインサイダー</td><td><a href="https://typica.coffee/ja/recruit/cm/" target="_blank" class="link-card">CM職</a> <a href="https://www.wantedly.com/projects/2004069" target="_blank" class="link-card">広報職</a></td></tr>
+    <tr><td><span class="tag tag-blue">有力</span></td><td><strong>中川政七商店</strong></td><td>商品企画/コンサル</td><td>「工芸を元気に」= GOALに直線的。残業12h/月</td><td><a href="https://recruit-nakagawa.jp/headoffice_staff/" target="_blank" class="link-card">求人を見る →</a></td></tr>
+    <tr><td><span class="tag tag-yellow">挑戦</span></td><td><strong>セメントPD</strong></td><td>営業ディレクター</td><td>自己機能フィット最高。残業111h/月は覚悟</td><td><a href="https://www.cementdesign.com/recruit/director/" target="_blank" class="link-card">求人を見る →</a></td></tr>
+    <tr><td><span class="tag tag-yellow">挑戦</span></td><td><strong>スマイルズ</strong></td><td>PM/ディレクター</td><td>「ゼロベース思考」を求める文化。非定型</td><td><a href="https://smiles.co.jp/recruit/" target="_blank" class="link-card">求人を見る →</a></td></tr>
+    <tr><td><span class="tag tag-yellow">挑戦</span></td><td><strong>ヘラルボニー</strong></td><td>ブランドPR</td><td>アート×ソーシャルインパクト。パリ進出中</td><td><a href="https://www.heralbony.jp/careers" target="_blank" class="link-card">求人を見る →</a></td></tr>
+  </table>
+
+  <details class="acc"><summary>トランジット — 詳細分析</summary><div class="acc-body">
+    <h4>会社概要</h4><ul><li>2001年カフェからスタート。現在全国約<strong>140店舗</strong></li><li>「ライフスタイル・オペレーション・プラットフォーマー」</li><li>飲食+ブランドプロデュース+ケータリング+キャンプ場+ヘッドスパまで</li></ul>
+    <h4>本部PRの業務</h4><ul><li>メディアリレーション、プレスリリース作成・配信</li><li>インフルエンサーアプローチ</li><li><strong>取材立会い・撮影対応</strong> ← ソーダの経験が直結</li><li>店舗プロモーション・PR企画立案・実行</li><li>SNS・PRイベントの企画・運営</li></ul>
+    <h4>条件</h4><p>月給282,600〜356,400円 / 恵比寿 / 年間休日111日 / 採用1名</p>
+    <h4>最大のポイント</h4><p>「<strong>完璧なスキルより、吸収しながら育っていける姿勢や好奇心を重視</strong>」と明記。<br><strong>TRANSIT NEXT CAREER</strong>（社内公募制度）でブランド間異動が可能。PR→店舗開発→新規ブランド立上げの越境パスがある。</p>
+  </div></details>
+
+  <details class="acc"><summary>SANU — 詳細分析</summary><div class="acc-body">
+    <h4>会社概要</h4><ul><li>会員制セカンドホーム「SANU 2nd Home」。自然の中の第二の家</li><li>35拠点 → <strong>2029年に100拠点へ拡大予定</strong></li></ul>
+    <h4>コミュニティマネージャーの業務</h4><ul><li><strong>会員向けイベントの企画・ディレクション</strong>（自然の中でのアクティビティ、ワークショップ）</li><li>会員リレーション構築（1対1の対話）</li><li>各拠点の地域特性を活かしたコミュニティ施策</li></ul>
+    <h4>なぜフィットするか</h4><p>CITANでの「宿泊×カフェ×コミュニティ」経験がド直球で転用。英語不要。業務の7割がフィールドワーク+イベント企画。</p>
+  </div></details>
+
+  <details class="acc"><summary>TYPICA — 詳細分析</summary><div class="acc-body">
+    <h4>会社概要</h4><ul><li>コーヒー生豆のダイレクトトレードプラットフォーム</li><li>世界84ヵ国の生産者・ロースターネットワーク</li><li>5拠点（日本・オランダ・韓国・台湾・アメリカ）</li><li>完全フレックス＆完全リモート</li></ul>
+    <h4>2つのポジション</h4>
+    <table><tr><th></th><th>コミュニティMgr</th><th>広報（PR）</th></tr>
+    <tr><td>業務</td><td>ロースター新規開拓・イベント企画</td><td>プレスリリース・メディア関係構築</td></tr>
+    <tr><td>バリスタ経験</td><td><span class="tag tag-green">◎ 最大の武器</span></td><td>△ 業界理解程度</td></tr>
+    <tr><td>応募ハードル</td><td>中（突破可能）</td><td>高（PR部門リード経験必須）</td></tr></table>
+    <h4>⚠️ 確認ポイント</h4><p><strong>英語力</strong>: 5カ国拠点で海外出張あり。実質ビジネスレベルが必要の可能性。面談で要確認。</p>
+  </div></details>
+
+  <details class="acc"><summary>セメントPD — 詳細分析</summary><div class="acc-body">
+    <h4>会社概要</h4><ul><li>「<strong>日本のすべての中小企業が愛されるブランドを持つ</strong>」がミッション</li><li>代表・金谷勉。カンブリア宮殿出演（2020年）。25-27名</li><li>「コト（分析）・モノ（開発）・ミチ（流通）」の一貫プロデュース</li></ul>
+    <h4>営業ディレクターの業務</h4><ul><li>全国の中小企業・町工場との商品開発・ブランディング</li><li>51項目のコンサルシートでヒアリング → コンセプト設計 → 販路設計</li><li>商品開発ゼミ「SESSION」の企画・運営</li></ul>
+    <h4>⚠️ 労働環境</h4><p>残業<strong>111.7h/月</strong>、有給消化率<strong>2.8%</strong>。自己機能フィットは最高だが体力的な覚悟が必要。</p>
+    <h4>ポジティブ材料</h4><p>金谷氏の発言: 「<strong>真水思想が強いと進化が鈍い。いい濁りやよどみが化学変化を引き起こす</strong>」→ 異業種からの転職を大歓迎。りょーたさんの多様な経歴は「いい濁り」として評価される可能性。</p>
+  </div></details>
+
+  <details class="acc"><summary>その他の候補企業一覧</summary><div class="acc-body">
+    <h4>方向A: 地場産業PD系</h4>
+    <ul><li><strong>EDING:POST</strong> — PM（経歴不問）。パッケージブランディング。<a href="https://ed-ing-post.com/about/" target="_blank">公式</a></li>
+    <li><strong>TRUNK DESIGN</strong>（神戸）— セメントPDに酷似。<a href="https://trunkdesign-web.com/recruit.php" target="_blank">採用</a></li>
+    <li><strong>ファクトリエ</strong> — 工場直結ファッション。<a href="https://factelier.com/recruit/" target="_blank">採用</a></li></ul>
+    <h4>方向B: カフェ×ブランド系</h4>
+    <ul><li><strong>PostCoffee</strong> — コーヒーサブスク。<a href="https://career.postcoffee.co/" target="_blank">採用</a></li>
+    <li><strong>DEAN & DELUCA</strong> — 食のセレクト。<a href="https://www.deandeluca.co.jp/recruit/" target="_blank">採用</a></li>
+    <li><strong>バルニバービ</strong> — 地方創生×飲食。<a href="https://recruit.balnibarbi.com/" target="_blank">採用</a></li>
+    <li><strong>煎茶堂東京</strong> — コーヒー→お茶。<a href="https://lucyalterdesign.com/" target="_blank">公式</a></li></ul>
+    <h4>方向C: ホスピタリティ×体験設計系</h4>
+    <ul><li><strong>Backpackers' Japan</strong>（古巣）— 本部企画。<a href="https://backpackersjapan.co.jp/recruiting/" target="_blank">採用</a></li>
+    <li><strong>星野リゾート</strong>（OMO/BEB）— マーケ。<a href="https://hoshinoresorts.com/jp/recruit/mid-career/" target="_blank">採用</a></li></ul>
+  </div></details>
+
+  <div class="warn"><div class="w-label">CONFIRM</div><p>TYPICAは英語力要確認。勤務地の希望（東京/大阪/地方OK？）も教えてください。</p></div>
+  <div class="q-box"><div class="q-label">QUESTION</div><p>この中で「気になる」「もっと知りたい」はどれ？逆に「これは違う」はある？</p></div>
+</div>
+
+<!-- ========== PART 4 ========== -->
+<div class="part"><div class="part-badge">PART 4</div><div class="part-title">今週の一手</div></div>
+
+<div class="sec">
+  <div class="eyebrow">SECTION 08</div>
+  <h2>戦略的に進める</h2>
+  <div class="lead">29歳。ポテンシャル採用のラスト。走りながら整える。</div>
+  <div class="card card-accent">
+    <h3>3つの必須ポイント</h3>
+    <table>
+      <tr><th>#</th><th>ポイント</th><th>なぜ大事か</th></tr>
+      <tr><td>1</td><td><strong>ソーダの3年9ヶ月を「武器」として語る</strong></td><td>赤文字の業務中心に。「進行管理者」ではなく「引き出す→形にする人」として</td></tr>
+      <tr><td>2</td><td><strong>4年間のストーリーを準備する</strong></td><td>応募先によって最強のストーリーが変わる。パターンを持っておく</td></tr>
+      <tr><td>3</td><td><strong>転職活動しながら実績を1つ作る</strong></td><td>知人のカフェに「ブランド診断」を持ちかけるだけでポートフォリオが1件できる</td></tr>
+    </table>
+  </div>
+
+  <div class="card card-green">
+    <h3>カジュアル面談 = 自分の仕事のデモンストレーション</h3>
+    <p>面談に<strong>仮説企画書</strong>を持っていく。「もし自分が御社で働くなら」を1枚にまとめる。</p>
+    <ul>
+      <li>ずれていてもいい。<strong>「この人は入社前からうちの課題を考えてる」</strong>という本気度の証明</li>
+      <li>これ自体が「観察 → 引き出す → 設計 → 届ける」のデモンストレーション</li>
+      <li>他の応募者は絶対やってない。圧倒的に差がつく</li>
+    </ul>
+  </div>
+
+  <details class="acc"><summary>仮説企画書の作り方</summary><div class="acc-body">
+    <h4>構成（1枚）</h4>
+    <ol><li>企業の現状理解（AIリサーチから）</li><li>自分が感じた「もったいない」ポイント</li><li>施策案（あくまで叩き）</li><li>質問（「この方向性って実態と合ってますか？」）</li></ol>
+    <h4>例: TYPICA向け</h4>
+    <p>「ロースターが豆を選ぶときの"体験"をもっとリッチにできるのでは。生産者のドキュメンタリー短編映像をプラットフォームに掲載する。ロースター同士のコーヒー交換会イベントを月1で開催する。」<br>→ 映像PM経験×バリスタ知識の両方が自然に入る</p>
+  </div></details>
+
+  <div class="tl">
+    <div class="tl-item"><h4>今週</h4><p>気になる会社にカジュアル面談を申込む。知人のカフェに「ブランド診断」声かけ</p></div>
+    <div class="tl-item"><h4>来週</h4><p>面談先の企業をAIリサーチ → 仮説企画書1枚。職務経歴書を赤文字中心に書き直す</p></div>
+    <div class="tl-item"><h4>2-3週後</h4><p>カジュアル面談実施。知人店舗のヒアリング → 提案書作成</p></div>
+    <div class="tl-item"><h4>1ヶ月後</h4><p>正式応募開始。ポートフォリオに提案書を組み込み</p></div>
+  </div>
+
+  <div class="q-box"><div class="q-label">QUESTION</div><p>今週、最初の一歩として何をやりますか？</p></div>
+</div>
+
+<div class="cta">
+  <h3>りょーたさんの自己機能は、すでに強い。</h3>
+  <p>足りないのは「スキル」じゃなくて「自分の強みが活きる場所」を知ること。<br>
+  今日、その場所の候補が見つかりました。あとは動くだけです。</p>
+</div>
+
+<div class="sec">
+  <div class="eyebrow">REFERENCE</div>
+  <h2>参考資料</h2>
+  <div class="grid-2">
+    <div class="card card-accent"><h3>GRAPH社 超解像度分析</h3><p>企業概要・業界分析・KPI・バリューチェーン・選考対策の7シート。</p><p style="margin-top:8px"><a href="https://docs.google.com/spreadsheets/d/1UVlvJ_LD7MR66Ezee-RcLsM2Aq0WLD1l8FtSDrJcSGs/edit" target="_blank" class="link-card">スプレッドシートを開く →</a></p></div>
+    <div class="card card-blue"><h3>この資料の使い方</h3><ul><li>各セクションの <strong>+</strong> をクリックで詳細が開きます</li><li>打ち合わせではカードだけ見て、詳細は後で読み返す形で</li><li>内容は一緒にアップデートしていきます</li></ul></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  Career Strategy Session #1 | Prepared by Nishikawa | 2026.04.06<br>
+  <span style="font-size:.68rem">この資料は外部情報ベースの分析です。りょーたさんの声を聞きながら一緒に磨いていきます。</span>
+</div>
+
+<script>
+// Particles
+const c=document.getElementById('particles');if(c){for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle '+(Math.random()>.5?'particle-amber':'particle-white');const s=Math.random()*3+1;p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100+100}%;animation-delay:${Math.random()*8}s;animation-duration:${6+Math.random()*6}s`;c.appendChild(p)}}
+</script>
+</body></html>
