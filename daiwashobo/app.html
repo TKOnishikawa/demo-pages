@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大和書房 注文書ジェネレーター</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/docx@9.5.0/build/index.umd.js"></script>
+<script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+:root {
+  --bg-1: #08080d; --bg-2: #101018; --bg-3: #181824; --bg-4: #222234;
+  --blue: #4a9eff; --blue-dim: #2a6ecc; --cyan: #22d3ee;
+  --green: #34d399; --amber: #fbbf24; --red: #f87171;
+  --text-1: #f1f5f9; --text-2: #94a3b8; --text-3: #64748b;
+  --border: #2a2a3e; --card-bg: rgba(24, 24, 36, 0.8);
+  --font-jp: 'Noto Sans JP', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-jp); background: var(--bg-1); color: var(--text-1); line-height: 1.7; }
+
+/* Header */
+.app-header {
+  background: linear-gradient(135deg, var(--bg-1) 0%, #0f1a2e 50%, var(--bg-2) 100%);
+  padding: 32px 40px; text-align: center; border-bottom: 1px solid var(--border);
+}
+.app-header h1 { font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--text-1), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.app-header .sub { font-size: 0.9rem; color: var(--text-2); margin-top: 4px; }
+
+/* Layout */
+.container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+.app-grid { display: grid; grid-template-columns: 420px 1fr; gap: 24px; align-items: start; }
+
+/* Form Panel */
+.form-panel {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; position: sticky; top: 12px; max-height: 95vh; overflow-y: auto;
+}
+.form-panel h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--blue); }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 0.78rem; color: var(--text-3); margin-bottom: 3px; font-weight: 500; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text-1); font-family: var(--font-jp); font-size: 0.9rem;
+}
+.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); }
+.form-group textarea { resize: vertical; min-height: 60px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ISBN lookup */
+.isbn-row { display: flex; gap: 8px; align-items: end; }
+.isbn-row input { flex: 1; }
+.btn-lookup {
+  padding: 8px 16px; background: var(--blue); color: white; border: none; border-radius: 6px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700; white-space: nowrap;
+}
+.btn-lookup:hover { background: var(--blue-dim); }
+.isbn-status { font-size: 0.75rem; margin-top: 2px; min-height: 1.2em; }
+.isbn-status.ok { color: var(--green); }
+.isbn-status.err { color: var(--red); }
+
+/* Sales table editor */
+.sales-editor { margin-top: 8px; }
+.sales-editor table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.sales-editor th { text-align: left; color: var(--text-3); font-weight: 500; padding: 4px 6px; font-size: 0.72rem; }
+.sales-editor td { padding: 3px 4px; }
+.sales-editor input { width: 100%; padding: 5px 8px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; color: var(--text-1); font-size: 0.82rem; }
+.sales-editor .btn-row { display: flex; gap: 6px; margin-top: 6px; }
+.btn-sm {
+  padding: 4px 10px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--bg-3); color: var(--text-2); cursor: pointer;
+}
+.btn-sm:hover { border-color: var(--blue); color: var(--blue); }
+.btn-del { color: var(--red); border-color: transparent; background: none; cursor: pointer; font-size: 0.9rem; padding: 0 4px; }
+
+/* Action buttons */
+.action-bar { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn-action {
+  flex: 1; padding: 10px 16px; border: none; border-radius: 8px; font-size: 0.9rem;
+  font-weight: 700; cursor: pointer; font-family: var(--font-jp); min-width: 120px;
+}
+.btn-word { background: #2563eb; color: white; }
+.btn-word:hover { background: #1d4ed8; }
+.btn-pdf { background: var(--bg-3); color: var(--text-1); border: 1px solid var(--border); }
+.btn-pdf:hover { border-color: var(--blue); }
+
+/* Preview */
+.preview-wrapper { position: relative; }
+.preview-panel {
+  background: white; border-radius: 4px; padding: 24px 28px; color: #333;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4); position: relative;
+  width: 680px; min-height: 960px; font-family: 'MS ゴシック', 'Noto Sans JP', sans-serif;
+}
+.preview-panel::before { content: 'PREVIEW'; position: absolute; top: -22px; right: 0; font-size: 0.7rem; color: #666; font-family: var(--font-mono); letter-spacing: 0.1em; }
+
+/* === Order Form Fixed Layout === */
+/* Banner */
+.of-banner {
+  background: #1B5E20; color: white; display: flex; align-items: center;
+  justify-content: center; padding: 10px 14px; font-size: 1.15rem; font-weight: 900;
+  height: 44px; margin-bottom: 6px; position: relative;
+}
+.of-banner .of-genre-tag {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  background: white; color: #1B5E20; font-size: 0.7rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 2px;
+}
+/* Catch copy */
+.of-catch-banner {
+  background: #FFFF00; color: #000; text-align: center; padding: 6px 12px;
+  font-size: 0.92rem; font-weight: 900; margin-bottom: 6px; white-space: pre-line;
+  min-height: 36px; display: flex; align-items: center; justify-content: center;
+  line-height: 1.5;
+}
+/* FAX row */
+.of-fax-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px; font-size: 0.72rem; color: #555; height: 28px;
+}
+.of-fax-row .left { font-weight: 700; font-size: 0.82rem; color: #333; }
+.of-fax-row .right { text-align: right; line-height: 1.3; }
+/* Title block */
+.of-title {
+  font-size: 1.5rem; font-weight: 900; color: #1a1a1a; margin-bottom: 1px;
+  border-bottom: 3px solid #333; padding-bottom: 2px; line-height: 1.3;
+}
+.of-subtitle { font-size: 0.78rem; color: #444; margin-bottom: 1px; line-height: 1.4; }
+.of-author-line {
+  font-size: 0.82rem; margin-bottom: 8px; display: flex; justify-content: space-between;
+  align-items: baseline; line-height: 1.3;
+}
+.of-author-line .name { font-weight: 700; font-size: 0.88rem; }
+.of-author-line .specs { font-size: 0.75rem; color: #555; }
+
+/* === Two Column Main Area === */
+.of-main-area {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 8px; min-height: 380px;
+}
+/* Left column */
+.of-col-left { display: flex; flex-direction: column; gap: 8px; }
+.of-pr-text {
+  font-size: 0.82rem; line-height: 1.7; white-space: pre-line;
+  min-height: 120px; padding: 4px 0;
+}
+.of-cover-container {
+  width: 140px; height: 200px; border: 1px dashed #ccc; background: #fafafa;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto;
+  overflow: hidden; flex-shrink: 0;
+}
+.of-cover-container img { width: 100%; height: 100%; object-fit: cover; }
+.of-cover-placeholder { color: #aaa; font-size: 0.75rem; text-align: center; }
+.of-materials-box {
+  font-size: 0.75rem; color: #444; margin-top: auto; padding: 6px 0;
+  border-top: 1px solid #ddd;
+}
+.of-materials-box .label { font-weight: 700; margin-bottom: 3px; font-size: 0.78rem; }
+
+/* Right column */
+.of-col-right { display: flex; flex-direction: column; gap: 6px; }
+.of-sales-highlight-box {
+  background: #FFF9C4; border: 1px solid #F0E68C; padding: 6px 10px;
+  font-size: 0.78rem; font-weight: 700; min-height: 40px; line-height: 1.6;
+}
+.of-sales-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+.of-sales-table th {
+  background: #E0E0E0; padding: 4px 6px; text-align: center;
+  border: 1px solid #bbb; font-weight: 700; font-size: 0.72rem;
+}
+.of-sales-table td { padding: 3px 6px; border: 1px solid #ccc; }
+.of-sales-table td:nth-child(2), .of-sales-table td:nth-child(3) { text-align: right; }
+.of-sales-table-wrap { min-height: 100px; flex-shrink: 0; }
+.of-display-container {
+  width: 180px; height: 140px; border: 1px dashed #ccc; background: #fafafa;
+  display: flex; align-items: center; justify-content: center; margin: 4px auto 0;
+  overflow: hidden; flex-shrink: 0;
+}
+.of-display-container img { width: 100%; height: 100%; object-fit: cover; }
+.of-display-placeholder { color: #aaa; font-size: 0.75rem; text-align: center; }
+
+/* === Bottom Section === */
+.of-order-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 6px; }
+.of-order-table th, .of-order-table td { padding: 5px 8px; border: 1px solid #999; text-align: center; }
+.of-order-table th { background: #f0f0f0; font-weight: 700; }
+.of-order-table td.stamp-cell { width: 80px; height: 50px; }
+.of-order-table td.qty-cell { width: 80px; height: 50px; }
+.of-reprint-date {
+  text-align: right; font-size: 1.05rem; font-weight: 900; color: #C41E3A;
+  margin: 4px 0; padding-right: 4px;
+}
+.of-footer-title { text-align: center; font-size: 1.2rem; font-weight: 900; margin: 6px 0 1px; }
+.of-footer-sub { text-align: center; font-size: 0.72rem; color: #555; line-height: 1.3; }
+.of-footer-isbn { text-align: center; font-size: 0.68rem; color: #888; margin-top: 2px; }
+.of-section-label { font-size: 0.78rem; font-weight: 700; color: #333; margin-bottom: 3px; }
+
+/* Print styles */
+@media print {
+  body { background: white !important; }
+  .app-header, .form-panel, .preview-panel::before { display: none !important; }
+  .app-grid { display: block !important; }
+  .preview-wrapper { margin: 0 !important; }
+  .preview-panel {
+    box-shadow: none !important; border-radius: 0 !important;
+    padding: 12px 16px !important; width: 100% !important; max-width: 210mm !important;
+  }
+  .container { padding: 0 !important; max-width: 100% !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>注文書ジェネレーター</h1>
+  <div class="sub">ISBN入力で書籍情報を自動補完 → リアルタイムプレビュー → Word/PDF出力</div>
+</div>
+
+<div class="container">
+  <div class="app-grid">
+    <!-- Form Panel -->
+    <div class="form-panel">
+      <h3>書籍情報</h3>
+
+      <div class="form-group">
+        <label>ISBN-13（入力で自動検索）</label>
+        <div class="isbn-row">
+          <input type="text" id="f-isbn" placeholder="978-4-479-..." oninput="onIsbnInput()">
+          <button class="btn-lookup" onclick="lookupIsbn()">検索</button>
+        </div>
+        <div class="isbn-status" id="isbn-status"></div>
+      </div>
+
+      <div class="form-group">
+        <label>書籍タイトル</label>
+        <input type="text" id="f-title" oninput="updatePreview()">
+      </div>
+      <div class="form-group">
+        <label>サブタイトル</label>
+        <input type="text" id="f-subtitle" placeholder="（任意）" oninput="updatePreview()">
+      </div>
+      <div class="form-group">
+        <label>著者名</label>
+        <input type="text" id="f-author" oninput="updatePreview()">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>本体価格</label>
+          <input type="number" id="f-price" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>判型</label>
+          <select id="f-size" onchange="updatePreview()">
+            <option value="">--</option>
+            <option value="四六判">四六判</option><option value="A5判">A5判</option>
+            <option value="B6判">B6判</option><option value="新書判">新書判</option>
+            <option value="文庫判">文庫判</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ページ数</label>
+          <input type="text" id="f-pages" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>発売日</label>
+          <input type="text" id="f-pubdate" placeholder="YYYY/MM/DD" oninput="updatePreview()">
+        </div>
+      </div>
+
+      <h3 style="margin-top:20px">注文書情報</h3>
+      <div class="form-group">
+        <label>案内種別</label>
+        <select id="f-doctype" onchange="updatePreview()">
+          <option value="重版案内">重版案内</option>
+          <option value="新刊案内">新刊案内</option>
+          <option value="フェア案内">フェア案内</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>刷数</label>
+          <input type="text" id="f-edition" placeholder="3刷" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>出来日</label>
+          <input type="text" id="f-available" placeholder="3月13日" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>キャッチコピー</label>
+        <textarea id="f-catch" rows="2" oninput="updatePreview()"></textarea>
+      </div>
+      <div class="form-group">
+        <label>PR文・推薦コメント</label>
+        <textarea id="f-pr" rows="3" oninput="updatePreview()"></textarea>
+      </div>
+
+      <h3 style="margin-top:20px">初速販売実績</h3>
+      <div class="sales-editor" id="sales-editor">
+        <table>
+          <thead><tr><th>書店名</th><th style="width:70px">入数</th><th style="width:70px">売数</th><th style="width:28px"></th></tr></thead>
+          <tbody id="sales-tbody"></tbody>
+        </table>
+        <div class="btn-row">
+          <button class="btn-sm" onclick="addSalesRow()">＋ 行追加</button>
+          <button class="btn-sm" onclick="clearSales()">クリア</button>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-action btn-word" onclick="generateWord()">Word DL</button>
+        <button class="btn-action btn-pdf" onclick="window.print()">PDF印刷</button>
+      </div>
+    </div>
+
+    <!-- Preview Panel -->
+    <div class="preview-wrapper">
+      <div class="preview-panel" id="order-preview"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// === Book Master ===
+let BOOK_MASTER = [];
+let isbnIndex = {};
+
+async function loadBookMaster() {
+  try {
+    const resp = await fetch('book_master.json');
+    BOOK_MASTER = await resp.json();
+    // ISBNインデックス構築
+    BOOK_MASTER.forEach(b => {
+      isbnIndex[b.isbn13] = b;
+      // ハイフン付きでもマッチできるように
+      const hyphenated = b.isbn13.replace(/(\d{3})(\d)(\d{3})(\d{5})(\d)/, '$1-$2-$3-$4-$5');
+      isbnIndex[hyphenated] = b;
+    });
+    console.log(`書籍マスタ読込完了: ${BOOK_MASTER.length}件`);
+  } catch (e) {
+    console.error('書籍マスタ読込失敗:', e);
+  }
+}
+
+function normalizeIsbn(s) {
+  return s.replace(/[^0-9Xx]/g, '');
+}
+
+let isbnTimer = null;
+function onIsbnInput() {
+  clearTimeout(isbnTimer);
+  isbnTimer = setTimeout(lookupIsbn, 400);
+}
+
+function lookupIsbn() {
+  const raw = document.getElementById('f-isbn').value.trim();
+  const status = document.getElementById('isbn-status');
+  if (!raw) { status.textContent = ''; return; }
+
+  const normalized = normalizeIsbn(raw);
+  const book = isbnIndex[raw] || isbnIndex[normalized];
+
+  if (book) {
+    document.getElementById('f-title').value = book.title;
+    document.getElementById('f-author').value = book.author;
+    document.getElementById('f-price').value = book.price;
+    // 発売日をフォーマット
+    if (book.pub_date && book.pub_date !== '19000101' && book.pub_date.length === 8) {
+      const y = book.pub_date.slice(0,4), m = book.pub_date.slice(4,6), d = book.pub_date.slice(6,8);
+      document.getElementById('f-pubdate').value = `${y}/${parseInt(m)}/${parseInt(d)}`;
+    }
+    status.className = 'isbn-status ok';
+    status.textContent = `${book.title} / ${book.author || '(著者不明)'}`;
+    updatePreview();
+  } else if (normalized.length >= 10) {
+    status.className = 'isbn-status err';
+    status.textContent = 'マスタに該当なし（手入力してください）';
+  } else {
+    status.className = 'isbn-status';
+    status.textContent = '';
+  }
+}
+
+// === Sales Data ===
+let salesData = [];
+
+function addSalesRow(store='', stock='', sold='') {
+  salesData.push({ store, stock, sold });
+  renderSalesTable();
+}
+
+function removeSalesRow(idx) {
+  salesData.splice(idx, 1);
+  renderSalesTable();
+  updatePreview();
+}
+
+function clearSales() {
+  salesData = [];
+  renderSalesTable();
+  updatePreview();
+}
+
+function renderSalesTable() {
+  const tbody = document.getElementById('sales-tbody');
+  tbody.innerHTML = salesData.map((s, i) => `
+    <tr>
+      <td><input value="${s.store}" oninput="salesData[${i}].store=this.value;updatePreview()"></td>
+      <td><input value="${s.stock}" oninput="salesData[${i}].stock=this.value;updatePreview()"></td>
+      <td><input value="${s.sold}" oninput="salesData[${i}].sold=this.value;updatePreview()"></td>
+      <td><button class="btn-del" onclick="removeSalesRow(${i})">×</button></td>
+    </tr>
+  `).join('');
+}
+
+// === Preview ===
+function getFormData() {
+  return {
+    isbn: document.getElementById('f-isbn').value,
+    title: document.getElementById('f-title').value || '書籍タイトル',
+    subtitle: document.getElementById('f-subtitle').value || '',
+    author: document.getElementById('f-author').value || '',
+    price: document.getElementById('f-price').value || '',
+    size: document.getElementById('f-size').value || '',
+    pages: document.getElementById('f-pages').value || '',
+    pubdate: document.getElementById('f-pubdate').value || '',
+    doctype: document.getElementById('f-doctype').value,
+    edition: document.getElementById('f-edition').value || '',
+    available: document.getElementById('f-available').value || '',
+    catchCopy: document.getElementById('f-catch').value || '',
+    prText: document.getElementById('f-pr').value || '',
+  };
+}
+
+function updatePreview() {
+  const d = getFormData();
+  const isbn13 = normalizeIsbn(d.isbn);
+  const coverUrl = isbn13.length === 13 ? `https://www.books.or.jp/img/books_icon/${isbn13}.jpg` : '';
+
+  // Build sales table rows
+  const activeSales = salesData.filter(s => s.store);
+  const salesRows = activeSales.map(s =>
+    `<tr><td>${esc(s.store)}</td><td>${esc(s.stock)}</td><td>${esc(s.sold)}</td></tr>`
+  ).join('');
+
+  // Top 3 sales highlights for yellow box
+  const highlights = activeSales.slice(0, 3).map(s =>
+    `${esc(s.store)} ${esc(s.stock)}→${esc(s.sold)}`
+  ).join('　／　');
+
+  const bookSpecs = [d.size, d.pages ? d.pages + '頁' : '', d.price ? '本体' + d.price + '円+税' : ''].filter(Boolean).join('　');
+
+  // Genre from book master
+  const bookData = isbnIndex[isbn13] || isbnIndex[d.isbn] || {};
+  const genre = bookData.genre || '';
+
+  document.getElementById('order-preview').innerHTML = `
+    <!-- Green Banner -->
+    <div class="of-banner">
+      ${genre ? `<span class="of-genre-tag">${esc(genre)}</span>` : ''}
+      大和書房　${esc(d.doctype)}
+    </div>
+
+    <!-- Catch Copy -->
+    <div class="of-catch-banner">${d.catchCopy ? esc(d.catchCopy) : '　'}</div>
+
+    <!-- FAX Row -->
+    <div class="of-fax-row">
+      <span class="left">大和書房営業部</span>
+      <span class="right">FAX：03-3207-8740 / 03-3207-8480<br>BOOKインタラクティブからも注文できます</span>
+    </div>
+
+    <!-- Title -->
+    <div class="of-title">${esc(d.title)}</div>
+    <div class="of-subtitle">${d.subtitle ? esc(d.subtitle) : ''}</div>
+    <div class="of-author-line">
+      <span class="name">${d.author ? esc(d.author) + '　著' : ''}</span>
+      <span class="specs">${esc(bookSpecs)}</span>
+    </div>
+
+    <!-- Two Column Main Area -->
+    <div class="of-main-area">
+      <!-- Left Column: PR + Cover -->
+      <div class="of-col-left">
+        <div class="of-pr-text">${d.prText ? esc(d.prText) : ''}</div>
+        <div class="of-cover-container">
+          ${coverUrl
+            ? `<img src="${coverUrl}" onerror="this.outerHTML='<span class=of-cover-placeholder>書影を読み込めません</span>'" alt="書影">`
+            : '<span class="of-cover-placeholder">[ 書影画像 ]</span>'}
+        </div>
+        <div class="of-materials-box">
+          <div class="label">拡材のご希望</div>
+          □ A4パネル（30冊以上からお承りします）<br>□ A6POP
+        </div>
+      </div>
+
+      <!-- Right Column: Sales + Display -->
+      <div class="of-col-right">
+        ${highlights ? `<div class="of-sales-highlight-box">${highlights}</div>` : '<div class="of-sales-highlight-box" style="visibility:hidden">　</div>'}
+        <div class="of-sales-table-wrap">
+          <div class="of-section-label">初速販売実績</div>
+          <table class="of-sales-table">
+            <tr><th>書店名</th><th>入数</th><th>売数</th></tr>
+            ${salesRows || '<tr><td colspan="3" style="text-align:center;color:#aaa;padding:12px">データなし</td></tr>'}
+          </table>
+        </div>
+        <div class="of-display-container">
+          <span class="of-display-placeholder">[ 展開写真 ]</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Table -->
+    <table class="of-order-table">
+      <tr>
+        <th>書 店 印</th>
+        <th>注文数</th>
+        <th colspan="2">大和書房　${d.author ? esc(d.author) + '　著' : ''}</th>
+      </tr>
+      <tr>
+        <td class="stamp-cell"></td>
+        <td class="qty-cell">　　冊</td>
+        <td colspan="2" style="text-align:left;font-size:0.72rem;color:#555;padding:4px 8px">
+          ${esc(d.title)}<br>${isbn13 ? 'ISBN ' + isbn13 : ''}
+        </td>
+      </tr>
+    </table>
+
+    <!-- Reprint Date -->
+    ${d.available ? `<div class="of-reprint-date">${esc(d.available)}　${d.edition ? esc(d.edition) : ''}重版出来</div>` : '<div style="height:24px"></div>'}
+
+    <!-- Footer -->
+    <div class="of-footer-title">${esc(d.title)}</div>
+    <div class="of-footer-sub">${d.subtitle ? esc(d.subtitle) : ''}</div>
+    <div class="of-footer-isbn">ISBN${isbn13}　${d.price ? '本体' + d.price + '円+税' : ''}　${d.size || ''}　${d.pages ? d.pages + '頁' : ''}　大和書房</div>
+  `;
+}
+
+// Escape HTML to prevent XSS
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// === Word Generation ===
+async function generateWord() {
+  const d = getFormData();
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType,
+          AlignmentType, BorderStyle, ShadingType, HeadingLevel, convertInchesToTwip } = docx;
+
+  const doc = new Document({
+    sections: [{
+      properties: {
+        page: { margin: { top: 600, bottom: 600, left: 700, right: 700 } }
+      },
+      children: [
+        // Banner
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          shading: { type: ShadingType.SOLID, color: "1B5E20" },
+          spacing: { after: 200 },
+          children: [new TextRun({ text: `大和書房　${d.doctype}`, bold: true, size: 28, color: "FFFFFF", font: "MS ゴシック" })],
+        }),
+        // Catch copy
+        ...(d.catchCopy ? [new Paragraph({
+          alignment: AlignmentType.CENTER,
+          shading: { type: ShadingType.SOLID, color: "FFFF00" },
+          spacing: { after: 200 },
+          children: [new TextRun({ text: d.catchCopy, bold: true, size: 22, font: "MS ゴシック" })],
+        })] : []),
+        // FAX info
+        new Paragraph({
+          spacing: { after: 100 },
+          children: [
+            new TextRun({ text: "大和書房営業部", bold: true, size: 20, font: "MS ゴシック" }),
+            new TextRun({ text: "　　FAX：03-3207-8740　または　03-3207-8480", size: 16, font: "MS ゴシック" }),
+          ],
+        }),
+        // Title
+        new Paragraph({
+          spacing: { after: 80 },
+          children: [new TextRun({ text: d.title, bold: true, size: 36, font: "MS ゴシック" })],
+        }),
+        // Author + info
+        new Paragraph({
+          spacing: { after: 200 },
+          children: [
+            new TextRun({ text: `${d.author} 著`, bold: true, size: 22, font: "MS ゴシック" }),
+            new TextRun({ text: `　　${[d.size, d.pages ? d.pages + '頁' : '', d.price ? '本体' + d.price + '円' : ''].filter(Boolean).join('　')}`, size: 20, font: "MS ゴシック" }),
+          ],
+        }),
+        // PR text
+        ...(d.prText ? [new Paragraph({
+          spacing: { after: 200 },
+          children: [new TextRun({ text: d.prText, size: 20, font: "MS ゴシック" })],
+        })] : []),
+        // Sales table
+        ...(salesData.filter(s => s.store).length > 0 ? [
+          new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: "初速販売実績", bold: true, size: 22, font: "MS ゴシック" })] }),
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                children: ["書店名", "入数", "売数"].map(h => new TableCell({
+                  shading: { type: ShadingType.SOLID, color: "E8E8E8" },
+                  children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: h, bold: true, size: 18, font: "MS ゴシック" })] })],
+                })),
+              }),
+              ...salesData.filter(s => s.store).map(s => new TableRow({
+                children: [s.store, s.stock, s.sold].map((v, i) => new TableCell({
+                  children: [new Paragraph({ alignment: i > 0 ? AlignmentType.RIGHT : AlignmentType.LEFT, children: [new TextRun({ text: v, size: 18, font: "MS ゴシック" })] })],
+                })),
+              })),
+            ],
+          }),
+        ] : []),
+        // Spacer
+        new Paragraph({ spacing: { after: 200 }, children: [] }),
+        // Order section
+        new Paragraph({
+          spacing: { after: 100 },
+          children: [new TextRun({ text: "拡材のご希望", bold: true, size: 18, font: "MS ゴシック" })],
+        }),
+        new Paragraph({
+          spacing: { after: 200 },
+          children: [new TextRun({ text: "□ A4パネル（30冊以上からお承りします）　□ A6POP", size: 16, font: "MS ゴシック" })],
+        }),
+        // Order table
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          rows: [
+            new TableRow({
+              children: ["書 店 印", "注文数", `大和書房　${d.author}　著`].map(h => new TableCell({
+                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: h, size: 16, font: "MS ゴシック" })] })],
+              })),
+            }),
+            new TableRow({
+              children: ["", "", ""].map(v => new TableCell({
+                children: [new Paragraph({ spacing: { after: 400 }, children: [new TextRun({ text: v })] })],
+              })),
+            }),
+          ],
+        }),
+        // Reprint date
+        ...(d.available ? [new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          spacing: { before: 200, after: 100 },
+          children: [new TextRun({ text: `${d.available} ${d.edition || ''}重版出来`, bold: true, size: 24, color: "C41E3A", font: "MS ゴシック" })],
+        })] : []),
+        // Footer
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 200 },
+          children: [new TextRun({ text: d.title, bold: true, size: 28, font: "MS ゴシック" })],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: `ISBN${normalizeIsbn(d.isbn)}　${d.price ? '本体' + d.price + '円' : ''}　${d.pages ? d.pages + '頁' : ''}　大和書房`, size: 14, font: "MS ゴシック", color: "888888" })],
+        }),
+      ],
+    }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  const filename = `注文書_${d.title.slice(0, 20)}_${new Date().toISOString().slice(0,10)}.docx`;
+  saveAs(blob, filename);
+}
+
+// === Init ===
+loadBookMaster();
+// デフォルト売行きサンプル
+addSalesRow('', '', '');
+addSalesRow('', '', '');
+addSalesRow('', '', '');
+updatePreview();
+</script>
+</body>
+</html>
