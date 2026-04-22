@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kintone 全社DX基盤 構想 — 大和書房 × オモシク</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --navy-light: #2a2a44;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --success-bg: rgba(52,211,153,0.08);
+  --green: #27ae60;
+  --green-bg: rgba(39,174,96,0.08);
+  --red: #c04040;
+  --red-bg: rgba(192,64,64,0.08);
+  --blue: #3498db;
+  --blue-bg: rgba(52,152,219,0.08);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.08);
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6,182,212,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-warm);
+  color: var(--text-1);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative; min-height: 55vh;
+  display: flex; align-items: center; justify-content: center;
+  background: #0a0a14; overflow: hidden; text-align: center;
+  padding: 80px 28px 64px;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,148,74,0.3), transparent);
+}
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg::before {
+  content: ''; position: absolute; top: -40%; right: -20%;
+  width: 900px; height: 900px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,148,74,0.18) 0%, transparent 65%);
+  animation: float-orb 10s ease-in-out infinite;
+}
+.hero-bg::after {
+  content: ''; position: absolute; bottom: -25%; left: -15%;
+  width: 750px; height: 750px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,64,64,0.12) 0%, transparent 65%);
+  animation: float-orb 13s ease-in-out infinite reverse;
+}
+.hero-bg-extra {
+  position: absolute; top: 30%; left: 40%;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(42,122,110,0.1) 0%, transparent 60%);
+  animation: float-orb 16s ease-in-out infinite 3s; z-index: 0;
+}
+.hero-mesh {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.06;
+  background-image:
+    linear-gradient(30deg, transparent 48%, rgba(232,148,74,0.4) 49%, rgba(232,148,74,0.4) 51%, transparent 52%),
+    linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.15) 49%, rgba(255,255,255,0.15) 51%, transparent 52%);
+  background-size: 80px 80px; animation: mesh-drift 25s linear infinite;
+}
+.hero-scanlines {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+}
+.hero-particles { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.particle {
+  position: absolute; border-radius: 50%; opacity: 0;
+  animation: particle-drift 8s linear infinite;
+}
+.particle-amber { background: var(--accent-light); }
+.particle-white { background: rgba(255,255,255,0.5); }
+.hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 18px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; color: var(--accent-light);
+  border: 1px solid rgba(232,148,74,0.25); border-radius: 20px;
+  margin-bottom: 28px; opacity: 0; animation: hero-fade-in 1s 0.3s forwards;
+}
+.hero h1 {
+  font-family: var(--font-en), var(--font-jp);
+  font-size: clamp(1.6rem, 3.8vw, 2.2rem);
+  font-weight: 800; color: #f0ece6; line-height: 1.5;
+  margin-bottom: 20px; letter-spacing: -0.01em;
+  opacity: 0; animation: hero-fade-in 1s 0.5s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero .lead {
+  font-size: 0.9rem; color: rgba(240,236,230,0.6);
+  font-weight: 300; line-height: 1.9; max-width: 620px; margin: 0 auto;
+  opacity: 0; animation: hero-fade-in 1s 0.7s forwards;
+}
+.hero-footer {
+  margin-top: 36px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  opacity: 0; animation: hero-fade-in 1s 0.9s forwards;
+}
+.hero-footer .meta { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); }
+.hero-footer .meta strong { color: rgba(240,236,230,0.5); font-weight: 500; }
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.08); }
+  66% { transform: translate(-30px, 30px) scale(0.94); }
+}
+@keyframes particle-drift {
+  0% { opacity: 0; transform: translateY(0) scale(1); }
+  10% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-100vh) scale(0.4); }
+}
+@keyframes mesh-drift { 0% { transform: translate(0,0); } 100% { transform: translate(80px,80px); } }
+@keyframes hero-fade-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Page Layout ─── */
+.page-layout {
+  display: flex; gap: 36px; align-items: flex-start;
+  max-width: 1120px; margin: 0 auto; padding: 40px 28px 0;
+}
+.main-content { flex: 1; min-width: 0; }
+
+/* ─── TOC Sidebar ─── */
+.toc-sidebar {
+  position: sticky; top: 24px;
+  width: 220px; flex-shrink: 0;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 16px;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+.toc-sidebar::-webkit-scrollbar { width: 3px; }
+.toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+.toc-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.toc-title {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+.toc-part {
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 14px; margin-bottom: 6px; padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+.toc-part:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.toc-part-a { color: var(--accent); }
+.toc-part-b { color: var(--cyan); }
+.toc-part-c { color: var(--green); }
+.toc-part-d { color: var(--purple); }
+
+.toc-link {
+  display: block; font-size: 0.72rem; color: var(--text-3);
+  text-decoration: none; padding: 3px 0 3px 10px;
+  border-left: 2px solid transparent;
+  line-height: 1.4; transition: all 0.15s;
+}
+.toc-link:hover { color: var(--text-1); }
+.toc-link.active { font-weight: 600; }
+.toc-link.active.toc-a { color: var(--accent-dark); border-left-color: var(--accent); }
+.toc-link.active.toc-b { color: var(--cyan); border-left-color: var(--cyan); }
+.toc-link.active.toc-c { color: var(--green); border-left-color: var(--green); }
+.toc-link.active.toc-d { color: var(--purple); border-left-color: var(--purple); }
+
+.toc-num {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--text-3); margin-right: 4px;
+}
+
+/* ─── Part Divider ─── */
+.part-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 56px 0 28px; padding-bottom: 12px;
+}
+.part-divider:first-child { margin-top: 0; }
+.part-badge {
+  font-family: var(--font-en); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 4px; color: #fff;
+}
+.part-badge-a { background: var(--accent); }
+.part-badge-b { background: var(--cyan); }
+.part-badge-c { background: var(--green); }
+.part-badge-d { background: var(--purple); }
+.part-name { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+
+/* ─── Section ─── */
+.sec { padding: 40px 0 48px; border-bottom: 1px solid var(--border-light); }
+.sec:last-child { border-bottom: none; }
+.sec[id] { scroll-margin-top: 24px; }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--font-en); font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 8px;
+}
+.section-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-label-cyan { color: var(--cyan); }
+.section-label-cyan::before { background: var(--cyan); }
+.section-label-green { color: var(--green); }
+.section-label-green::before { background: var(--green); }
+.section-label-purple { color: var(--purple); }
+.section-label-purple::before { background: var(--purple); }
+
+.section-title {
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 800;
+  color: var(--text-1); margin-bottom: 8px; line-height: 1.4;
+}
+.section-subtitle {
+  font-size: 0.88rem; color: var(--text-2); margin-bottom: 32px; line-height: 1.85;
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-card); border-radius: 12px; padding: 24px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 16px;
+}
+.card-accent { border-left: 3px solid var(--accent); }
+.card-green { border-left: 3px solid var(--green); }
+.card-red { border-left: 3px solid var(--red); }
+.card-blue { border-left: 3px solid var(--blue); }
+.card-purple { border-left: 3px solid var(--purple); }
+.card-cyan { border-left: 3px solid var(--cyan); }
+.card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.card-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.card-icon-accent { background: var(--accent-bg); }
+.card-icon-green { background: var(--green-bg); }
+.card-icon-red { background: var(--red-bg); }
+.card-icon-blue { background: var(--blue-bg); }
+.card-icon-purple { background: var(--purple-bg); }
+.card-icon-cyan { background: var(--cyan-bg); }
+.card h4 { font-size: 0.98rem; font-weight: 700; }
+.card p { font-size: 0.86rem; color: var(--text-2); margin-bottom: 6px; line-height: 1.75; }
+.card p:last-child { margin-bottom: 0; }
+
+/* ─── Challenge / App Grid ─── */
+.challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.challenge-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-top: 3px solid var(--accent); border-radius: 0 0 12px 12px;
+  padding: 22px 18px; transition: transform 0.2s, box-shadow 0.2s;
+}
+.challenge-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.challenge-card h3 { font-size: 0.92rem; font-weight: 700; color: var(--text-1); margin-bottom: 8px; line-height: 1.4; }
+.challenge-card .symptom { font-size: 0.82rem; color: var(--text-2); margin-bottom: 12px; line-height: 1.7; }
+.challenge-card .impact-tag {
+  font-size: 0.75rem; color: var(--accent-dark); font-weight: 600;
+  padding: 6px 10px; background: var(--accent-bg); border-radius: 6px; line-height: 1.5;
+}
+.challenge-card-cyan { border-top-color: var(--cyan); }
+.challenge-card-cyan .impact-tag { color: var(--cyan); background: var(--cyan-bg); }
+.challenge-card-green { border-top-color: var(--green); }
+.challenge-card-green .impact-tag { color: var(--green); background: var(--green-bg); }
+.challenge-card-red { border-top-color: var(--red); }
+.challenge-card-red .impact-tag { color: var(--red); background: var(--red-bg); }
+.challenge-card-purple { border-top-color: var(--purple); }
+.challenge-card-purple .impact-tag { color: var(--purple); background: var(--purple-bg); }
+
+/* ─── Impact Grid ─── */
+.impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.impact-item {
+  background: var(--bg-card); border-radius: 12px; padding: 20px; text-align: center;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+}
+.impact-number {
+  font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--accent); line-height: 1.2;
+}
+.impact-label { font-size: 0.74rem; color: var(--text-3); margin-top: 4px; }
+
+/* ─── Flow Diagram ─── */
+.flow-diagram {
+  background: var(--navy); border-radius: 12px; padding: 24px 16px; margin: 20px 0; color: #fff; text-align: center;
+}
+.flow-step { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 4px; flex-wrap: wrap; }
+.flow-arrow { text-align: center; color: var(--accent-light); font-size: 18px; margin: 4px 0; }
+.flow-box {
+  display: inline-block; padding: 9px 16px; border-radius: 8px;
+  font-size: 0.8rem; font-weight: 500; max-width: 380px;
+}
+.flow-green { background: rgba(39,174,96,0.2); border: 1px solid rgba(39,174,96,0.4); }
+.flow-red { background: rgba(192,64,64,0.2); border: 1px solid rgba(192,64,64,0.4); }
+.flow-blue { background: rgba(52,152,219,0.2); border: 1px solid rgba(52,152,219,0.4); }
+.flow-amber { background: rgba(232,148,74,0.2); border: 1px solid rgba(232,148,74,0.4); }
+.flow-purple { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.4); }
+
+/* ─── Comparison Table ─── */
+.compare-box {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: var(--shadow-sm); margin: 16px 0;
+}
+.compare-box table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.compare-box thead th {
+  background: var(--accent-bg); padding: 10px 14px; text-align: left;
+  font-weight: 600; color: var(--accent-dark); border-bottom: 1px solid var(--accent-border); font-size: 0.76rem;
+}
+.compare-box tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); color: var(--text-2); }
+.compare-box tbody tr:last-child td { border-bottom: none; }
+.compare-box tbody td:first-child { font-weight: 600; color: var(--text-1); }
+.compare-box .recommended { background: rgba(52,211,153,0.05); }
+.compare-box .recommended td { color: var(--text-1); font-weight: 500; }
+.compare-box-cyan thead th { background: var(--cyan-bg); color: var(--cyan); border-bottom-color: rgba(6,182,212,0.2); }
+.compare-box-green thead th { background: var(--green-bg); color: var(--green); border-bottom-color: rgba(39,174,96,0.2); }
+.compare-box-purple thead th { background: var(--purple-bg); color: var(--purple); border-bottom-color: rgba(139,92,246,0.2); }
+
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+.tag-high { background: var(--green-bg); color: var(--green); }
+.tag-mid { background: var(--blue-bg); color: var(--blue); }
+.tag-low { background: var(--red-bg); color: var(--red); }
+.tag-free { background: var(--green-bg); color: var(--green); }
+.tag-new { background: var(--purple-bg); color: var(--purple); }
+.tag-done { background: var(--green-bg); color: var(--green); }
+.tag-wip { background: var(--accent-bg); color: var(--accent-dark); }
+.tag-plan { background: var(--cyan-bg); color: var(--cyan); }
+
+/* ─── Accordion ─── */
+.accordion-section { margin-top: 20px; }
+.accordion-item {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 8px; overflow: hidden; transition: box-shadow 0.2s;
+}
+.accordion-item:hover { box-shadow: var(--shadow-sm); }
+.accordion-summary {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; cursor: pointer; font-size: 0.86rem; font-weight: 600;
+  color: var(--text-1); list-style: none; user-select: none; gap: 12px;
+}
+.accordion-summary::-webkit-details-marker { display: none; }
+.accordion-summary::after {
+  content: '+'; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 400;
+  color: var(--accent); flex-shrink: 0; transition: transform 0.2s;
+}
+details[open] > .accordion-summary::after { content: '\2212'; }
+.accordion-body {
+  padding: 0 18px 16px; font-size: 0.82rem; color: var(--text-2); line-height: 1.8;
+}
+.accordion-body p { margin-bottom: 8px; }
+.accordion-body ul { padding-left: 18px; margin-bottom: 8px; }
+.accordion-body li { margin-bottom: 4px; }
+.accordion-body strong { color: var(--text-1); }
+
+/* ─── Step / Phase Cards ─── */
+.step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 16px 0; }
+.step-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px 18px; text-align: center; transition: transform 0.2s, box-shadow 0.2s;
+}
+.step-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.step-num {
+  font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.06em; color: var(--accent); margin-bottom: 4px;
+}
+.step-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+.step-card p { font-size: 0.78rem; color: var(--text-2); line-height: 1.65; margin: 0; }
+.step-card .step-meta { font-size: 0.7rem; color: var(--text-3); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-light); }
+
+/* ─── Callout ─── */
+.callout {
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: 10px; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.86rem; color: var(--text-1); line-height: 1.8;
+}
+.callout strong { color: var(--accent-dark); }
+.callout-green { background: var(--green-bg); border-color: rgba(39,174,96,0.2); }
+.callout-green strong { color: var(--green); }
+.callout-red { background: var(--red-bg); border-color: rgba(192,64,64,0.2); }
+.callout-red strong { color: var(--red); }
+.callout-cyan { background: var(--cyan-bg); border-color: rgba(6,182,212,0.2); }
+.callout-cyan strong { color: var(--cyan); }
+.callout-purple { background: var(--purple-bg); border-color: rgba(139,92,246,0.2); }
+.callout-purple strong { color: var(--purple); }
+
+/* ─── Two Column ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+/* ─── Feature Table ─── */
+.feature-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 10px 0; }
+.feature-table th {
+  text-align: left; padding: 8px 10px; font-weight: 600;
+  color: var(--text-3); font-size: 0.72rem; letter-spacing: 0.06em;
+  border-bottom: 2px solid var(--border);
+}
+.feature-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); color: var(--text-2); }
+.feature-table td:first-child { font-weight: 500; color: var(--text-1); }
+
+/* ─── Action Checklist ─── */
+.action-list { list-style: none; padding: 0; margin: 12px 0; }
+.action-list li {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px;
+  background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 10px;
+  margin-bottom: 8px; font-size: 0.84rem; color: var(--text-2); line-height: 1.7;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.action-list li:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.action-num {
+  flex-shrink: 0; width: 26px; height: 26px;
+  background: var(--accent-bg); color: var(--accent-dark);
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.action-list li strong { color: var(--text-1); }
+
+/* ─── Roadmap ─── */
+.roadmap-timeline { position: relative; padding-left: 28px; margin: 24px 0; }
+.roadmap-timeline::before {
+  content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--green), var(--cyan), var(--purple));
+}
+.roadmap-phase { position: relative; margin-bottom: 28px; }
+.roadmap-dot {
+  position: absolute; left: -28px; top: 4px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg-card); border: 3px solid var(--accent); z-index: 1;
+}
+.roadmap-phase:nth-child(2) .roadmap-dot { border-color: var(--green); }
+.roadmap-phase:nth-child(3) .roadmap-dot { border-color: var(--cyan); }
+.roadmap-phase:nth-child(4) .roadmap-dot { border-color: var(--purple); }
+.roadmap-phase:last-child .roadmap-dot { border-color: #e879f9; }
+.roadmap-time {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  color: var(--accent); letter-spacing: 0.05em; margin-bottom: 2px;
+}
+.roadmap-phase:nth-child(2) .roadmap-time { color: var(--green); }
+.roadmap-phase:nth-child(3) .roadmap-time { color: var(--cyan); }
+.roadmap-phase:nth-child(4) .roadmap-time { color: var(--purple); }
+.roadmap-phase:last-child .roadmap-time { color: #e879f9; }
+.roadmap-title { font-size: 0.96rem; font-weight: 700; margin-bottom: 4px; }
+.roadmap-desc { font-size: 0.84rem; color: var(--text-2); line-height: 1.7; margin-bottom: 4px; }
+.roadmap-apps { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+.roadmap-app {
+  font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;
+  background: var(--bg-warm-2); color: var(--text-2);
+}
+
+/* ─── Matrix (価値 vs 難易度) ─── */
+.matrix-box {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; margin: 20px 0; box-shadow: var(--shadow-sm);
+}
+.matrix-grid {
+  display: grid; grid-template-columns: 48px 1fr 1fr; grid-template-rows: 1fr 1fr 48px;
+  gap: 6px; min-height: 340px;
+}
+.matrix-y-label { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.1em; grid-row: 1 / 3; }
+.matrix-x-label { grid-column: 2 / 4; text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; }
+.matrix-cell {
+  border: 1px dashed var(--border); border-radius: 8px; padding: 12px; min-height: 140px;
+  background: var(--bg-warm);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.matrix-cell-high-low { background: rgba(52,211,153,0.06); border-color: rgba(39,174,96,0.25); }
+.matrix-cell-high-high { background: rgba(232,148,74,0.08); border-color: rgba(232,148,74,0.3); }
+.matrix-cell-low-low { background: rgba(6,182,212,0.05); border-color: rgba(6,182,212,0.2); }
+.matrix-cell-low-high { background: rgba(139,92,246,0.05); border-color: rgba(139,92,246,0.2); }
+.matrix-cell-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 4px; text-transform: uppercase; }
+.matrix-chip {
+  display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;
+  background: var(--bg-card); border: 1px solid var(--border-light);
+}
+.matrix-chip-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ─── Demo Showcase ─── */
+.demo-showcase {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-warm-2) 100%);
+  border: 1px solid var(--accent-border); border-radius: 14px; padding: 28px;
+  box-shadow: var(--shadow-md); margin: 24px 0;
+}
+.demo-showcase-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+.demo-showcase-icon {
+  width: 52px; height: 52px; border-radius: 12px;
+  background: var(--gradient-hero);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; color: #fff; flex-shrink: 0;
+}
+.demo-showcase-title h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+.demo-showcase-title .subtitle { font-size: 0.78rem; color: var(--text-3); }
+.demo-showcase-body { font-size: 0.86rem; color: var(--text-2); line-height: 1.8; }
+
+/* ─── Global Nav (mobile only) ─── */
+.gnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(246,243,238,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%); transition: transform 0.35s ease;
+  display: none;
+}
+.gnav.visible { transform: translateY(0); }
+.gnav-inner {
+  max-width: 960px; margin: 0 auto; padding: 0 20px;
+  display: flex; align-items: center; height: 44px; gap: 4px;
+}
+.gnav-logo {
+  font-family: var(--font-en); font-size: 0.65rem; font-weight: 700;
+  color: var(--text-1); letter-spacing: 0.05em; margin-right: auto; white-space: nowrap;
+}
+.gnav-link {
+  font-size: 0.65rem; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 5px 8px; border-radius: 4px;
+  transition: color 0.2s, background 0.2s; white-space: nowrap;
+}
+.gnav-link:hover { color: var(--text-1); background: rgba(0,0,0,0.04); }
+.gnav-link.active { color: var(--accent); font-weight: 600; }
+
+/* ─── Footer ─── */
+.closing { background: var(--navy); padding: 44px 28px 28px; text-align: center; }
+.closing-msg { font-size: 1rem; font-weight: 600; color: rgba(240,236,230,0.8); margin-bottom: 10px; line-height: 1.7; }
+.closing-sub { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); letter-spacing: 0.05em; }
+
+/* ─── Responsive ─── */
+@media (max-width: 960px) {
+  .toc-sidebar { display: none; }
+  .page-layout { display: block; padding: 24px 20px 0; }
+  .gnav { display: block; }
+  .sec[id] { scroll-margin-top: 56px; }
+}
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .challenge-grid { grid-template-columns: 1fr; }
+  .matrix-grid { min-height: 280px; }
+  .matrix-cell { min-height: 120px; padding: 10px; }
+  .gnav-link { font-size: 0.58rem; padding: 5px 5px; }
+  .gnav-logo { font-size: 0.58rem; }
+}
+@media print {
+  .hero { min-height: auto; padding: 40px 20px; }
+  .toc-sidebar { display: none; }
+  .gnav { display: none; }
+  .page-layout { display: block; }
+  .sec { padding: 24px 0; }
+  .flow-diagram, .arch-diagram { background: #333; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ MOBILE NAV ═══════════════ -->
+<nav class="gnav" id="gnav">
+  <div class="gnav-inner">
+    <span class="gnav-logo">大和書房 &times; オモシク</span>
+    <a href="#sec01" class="gnav-link">課題</a>
+    <a href="#sec03" class="gnav-link">Quick Win</a>
+    <a href="#sec05" class="gnav-link">Roadmap</a>
+    <a href="#sec07" class="gnav-link">Next</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bg-extra"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">Kintone 全社DX基盤 構想</div>
+    <h1>現場の<em>申請・契約・支払</em>を<br>ひとつの基盤に集約する</h1>
+    <p class="lead">4/10 総務ヒアリングと受領フォーマットを踏まえた<br>優先度整理・ロードマップ・クイックウィンのご提案</p>
+    <div class="hero-footer">
+      <div class="meta"><strong>Date</strong> 2026.04.23</div>
+      <div class="meta"><strong>For</strong> 総務部 窪田様・高橋様・河合様</div>
+      <div class="meta"><strong>By</strong> 西川太雄 / オモシク代表</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ PAGE LAYOUT ═══════════════ -->
+<div class="page-layout">
+
+<!-- ─── TOC Sidebar ─── -->
+<nav class="toc-sidebar" id="toc">
+  <div class="toc-title">Contents</div>
+
+  <div class="toc-part toc-part-a">Part A &mdash; 現状の棚卸し</div>
+  <a href="#sec01" class="toc-link toc-a"><span class="toc-num">01</span>業務アプリ候補マップ</a>
+  <a href="#sec02" class="toc-link toc-a"><span class="toc-num">02</span>業務フロー実態</a>
+
+  <div class="toc-part toc-part-b">Part B &mdash; クイックウィン</div>
+  <a href="#sec03" class="toc-link toc-b"><span class="toc-num">03</span>A1 慶弔見舞金申請</a>
+  <a href="#sec04" class="toc-link toc-b"><span class="toc-num">04</span>横展開の型</a>
+
+  <div class="toc-part toc-part-c">Part C &mdash; ロードマップ</div>
+  <a href="#sec05" class="toc-link toc-c"><span class="toc-num">05</span>Phase 0〜4 全体像</a>
+  <a href="#sec06" class="toc-link toc-c"><span class="toc-num">06</span>難易度×価値 マトリクス</a>
+
+  <div class="toc-part toc-part-d">Part D &mdash; 進め方</div>
+  <a href="#sec07" class="toc-link toc-d"><span class="toc-num">07</span>4/23 MTG アジェンダ</a>
+  <a href="#sec08" class="toc-link toc-d"><span class="toc-num">08</span>体制・投資のご相談</a>
+</nav>
+
+<!-- ─── Main Content ─── -->
+<div class="main-content">
+
+<!-- ══════════ PART A: 現状の棚卸し ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-a">Part A</span>
+  <span class="part-name">現状の棚卸し</span>
+</div>
+
+<!-- SEC 01: 業務アプリ候補マップ -->
+<section class="sec" id="sec01">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title">業務アプリ候補マップ &mdash; 4/10 ヒアリング＋受領資料から</h2>
+  <p class="section-subtitle">窪田様・高橋様のヒアリングと、ご提供いただいた業務フロー・フォーマット資料を突合せた結果、Kintoneで扱うべき業務領域は大きく6カテゴリに整理できました。</p>
+
+  <div class="challenge-grid">
+    <div class="challenge-card">
+      <h3>慶弔見舞金申請 <span class="tag tag-done" style="margin-left:4px;">A1</span></h3>
+      <p class="symptom">出産・結婚・死亡弔慰の3種。リモート社員がわざわざ出社して紙申請している。最後に紙出力が必要（会計監査向け）。</p>
+      <div class="impact-tag">独立・即実装可／横展開の型に</div>
+    </div>
+    <div class="challenge-card challenge-card-cyan">
+      <h3>発注書（社外PDF）<span class="tag tag-plan" style="margin-left:4px;">A2</span></h3>
+      <p class="symptom">デザイン／撮影／だいわlog／リーディングの4種。支払基準日（責了日／納品日）で使い分けが曖昧。PDFで相手に送付＆SharePoint保管。</p>
+      <div class="impact-tag">取引先マスタ・書籍マスタと連動</div>
+    </div>
+    <div class="challenge-card challenge-card-cyan">
+      <h3>支払依頼 <span class="tag tag-plan" style="margin-left:4px;">A3</span></h3>
+      <p class="symptom">月末に高橋様がエクセルを全部統合→THINK's入力→freee登録（BizRobo）。相手先名のバラつきがRPAの自動化を阻害。</p>
+      <div class="impact-tag">取引先マスタ正規化の心臓部</div>
+    </div>
+    <div class="challenge-card challenge-card-green">
+      <h3>出版契約書類依頼 <span class="tag tag-plan" style="margin-left:4px;">A4</span></h3>
+      <p class="symptom">編集者→河合様→高橋様→河合様の二重確認フロー。出版契約書／出版覚書／文庫出版同意書の3種フォーマット分岐（紙／電子）。</p>
+      <div class="impact-tag">DocuSign連携前提</div>
+    </div>
+    <div class="challenge-card challenge-card-green">
+      <h3>業務委託契約書依頼 <span class="tag tag-plan" style="margin-left:4px;">A6</span></h3>
+      <p class="symptom">編集者→高橋様→河合様（DocuSign）。2024年10月改訂、ライター／編集／監修・翻訳の2種。A4との情報重複が発生している。</p>
+      <div class="impact-tag">A4の前段。正規化で二度手間解消</div>
+    </div>
+    <div class="challenge-card challenge-card-purple">
+      <h3>海外版権契約管理 <span class="tag tag-plan" style="margin-left:4px;">A8</span></h3>
+      <p class="symptom">1990年代からの蓄積が<strong>981行 × 248列</strong>の1エクセルに集約。言語・契約方式・入金履歴が混在。担当者自身が「トリッキー」と認識。</p>
+      <div class="impact-tag">前段の整形作業が必須</div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:24px">
+    <strong>4/23 MTG の出発点：</strong>
+    上記6カテゴリは「窪田様のやりたいこと16項目」の土台になります。16項目のリストをいただいて、どのアプリに束ねていくか、どの順番で着手するかを<strong>Part C のロードマップ</strong>ですり合わせさせてください。
+  </div>
+</section>
+
+<!-- SEC 02: 業務フロー実態 -->
+<section class="sec" id="sec02">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title">業務フロー実態 &mdash; 受領いただいた★フロー.docxより</h2>
+  <p class="section-subtitle">契約業務・支払業務のフロー説明文書から、誰が何をしているか、どこで滞留や二度手間が発生しているかを可視化しました。</p>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin: 16px 0 10px;">契約業務フロー（出版契約書類）</h3>
+
+  <div class="flow-diagram">
+    <div class="flow-step"><span class="flow-box flow-blue">編集部：「出版契約書類依頼.xlsx」を記入</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-green">河合様：内容チェック（項目漏れ・電子署名名義確認）</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-amber">高橋様：支払日入力 → 河合様に戻す</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-green">河合様：Wordフォーマット（出版契約書/覚書/文庫同意書）へ転記 → DocuSign発行</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-purple">高橋様：THINK's に権利者・印税率登録</span></div>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>フロー.docx 記載の課題:</strong>
+    &nbsp;&nbsp;&bull;&nbsp;業務委託契約書との<strong>紐づけがない</strong>ため、支払条件の二度手間<br>
+    &nbsp;&nbsp;&bull;&nbsp;河合→高橋→河合 の<strong>二重確認</strong>が非効率<br>
+    &nbsp;&nbsp;&bull;&nbsp;電子署名名義が<strong>不正確なまま申請</strong>される
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin: 32px 0 10px;">支払業務フロー（発注＆支払依頼）</h3>
+
+  <div class="flow-diagram">
+    <div class="flow-step"><span class="flow-box flow-blue">編集部：発注書4種のどれかを選択して記入</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-amber">編集部：PDF化して相手に送付 → SharePointに保管</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-blue">編集部：「支払依頼.xlsx」で高橋様に申請</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-green">高橋様：支払日入力</span></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><span class="flow-box flow-purple">月末：高橋様がエクセル全部統合 → THINK's → freee（BizRoboが担当）</span></div>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>フロー.docx 記載の課題:</strong>
+    &nbsp;&nbsp;&bull;&nbsp;発注書4種の<strong>使い分けが不明確</strong>、フォーマット崩壊も発生<br>
+    &nbsp;&nbsp;&bull;&nbsp;途中で金額変更 → 発注書更新せずに支払依頼へ進む<br>
+    &nbsp;&nbsp;&bull;&nbsp;<strong>同じ相手先でも社名／個人名がバラバラ</strong> → THINK's確認が手動必須 → RPA化不能
+  </div>
+
+  <div class="callout callout-cyan" style="margin-top: 20px;">
+    <strong>Kintone化の核心：</strong>
+    「必須項目のブランク」「フォーマット崩し」「相手先名のバラつき」は、すべて<strong>エクセルの自由度ゆえに発生している構造問題</strong>です。Kintoneの<strong>バリデーション・マスタ参照・プロセス管理</strong>で構造的に解決できます。エラーが出にくい仕組みに変えることで、現在のBizRobo運用の不安定性も自然と解消されます。
+  </div>
+</section>
+
+<!-- ══════════ PART B: クイックウィン ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-b">Part B</span>
+  <span class="part-name">クイックウィン &mdash; 先に1つ動くものを</span>
+</div>
+
+<!-- SEC 03: A1 慶弔見舞金申請 -->
+<section class="sec" id="sec03">
+  <div class="section-label section-label-cyan">Section 03</div>
+  <h2 class="section-title">A1 慶弔見舞金申請 &mdash; 4/23 MTG 冒頭でデモ</h2>
+  <p class="section-subtitle">16項目を全部議論する前に、まず<strong>一番独立していて1-2日で作れるアプリ</strong>を動くデモで見ていただきます。4/23 MTGの冒頭、3分のライブデモからスタート予定です。</p>
+
+  <div class="demo-showcase">
+    <div class="demo-showcase-header">
+      <div class="demo-showcase-icon">&#x1F4E9;</div>
+      <div class="demo-showcase-title">
+        <h3>慶弔見舞金申請アプリ（出産・結婚・死亡弔慰 統合版）</h3>
+        <div class="subtitle">3種の申請書を1アプリに統合／承認フロー／帳票印刷まで一気通貫</div>
+      </div>
+    </div>
+    <div class="demo-showcase-body">
+      受領いただいた「出産祝金請求書.xlsx」「結婚祝金請求届.xlsx」「死亡弔慰金請求書.xlsx」をベースに、Kintone 1アプリ化して作成しました。共通項目 7 割 / 事由別固有 3 割の構造を、<strong>「条件付き表示ルール」</strong>で1画面に統合。承認フロー（所属長 → 総務部）をKintone標準の<strong>「プロセス管理」</strong>で実装、最終的な紙出力は<strong>JSカスタマイズの「帳票印刷」</strong>で A4 プレビューまで。
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin: 28px 0 12px;">このアプリで実演する Kintone の4大機能</h3>
+
+  <div class="step-grid">
+    <div class="step-card">
+      <div class="step-num">FEATURE 01</div>
+      <h4>条件付き表示</h4>
+      <p>事由区分（出産／結婚／死亡弔慰）で固有フィールドが自動ON/OFF</p>
+      <div class="step-meta">3種を1画面に統合</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">FEATURE 02</div>
+      <h4>プロセス管理</h4>
+      <p>申請者 → 所属長 → 総務 の承認パスを標準機能で</p>
+      <div class="step-meta">差戻しルートもOK</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">FEATURE 03</div>
+      <h4>金額自動計算</h4>
+      <p>事由×対象者との関係 から規程金額をマスタ参照で自動セット</p>
+      <div class="step-meta">人為ミス防止</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">FEATURE 04</div>
+      <h4>帳票印刷</h4>
+      <p>既存フォーマット体裁でA4印刷プレビュー／会計監査向け</p>
+      <div class="step-meta">紙運用を残せる</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin: 28px 0 12px;">実演シナリオ（4/23 MTG で 3 ケース入力体験）</h3>
+
+  <div class="compare-box compare-box-cyan">
+    <table>
+      <thead><tr><th>ケース</th><th>入力体験</th><th>期待アウトプット</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>出産祝金</strong></td>
+          <td>編集部社員 → 出生児氏名・性別入力 → 扶養追加「あり」</td>
+          <td>金額 20,000 円自動セット → 所属長承認 → 総務承認 → A4 印刷プレビュー</td>
+        </tr>
+        <tr>
+          <td><strong>結婚祝金</strong></td>
+          <td>本人申請 → 配偶者氏名・住所変更「あり」</td>
+          <td>扶養異動届の案内表示 → 承認フロー → 印刷</td>
+        </tr>
+        <tr>
+          <td><strong>死亡弔慰金</strong></td>
+          <td>本人申請 → 関係「父母」選択</td>
+          <td>関係別に金額自動セット → 承認フロー → 印刷</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-cyan">
+    <strong>「動くもの」を見ていただく意義：</strong>
+    16項目の議論を「想像ベース」で詰めるのは難しいです。この A1 で<strong>「Kintoneはこう動く／現場はこう使う」</strong>を体感いただくと、残り15項目の優先度・方針の議論が格段にスピードアップします。
+  </div>
+</section>
+
+<!-- SEC 04: 横展開の型 -->
+<section class="sec" id="sec04">
+  <div class="section-label section-label-cyan">Section 04</div>
+  <h2 class="section-title">横展開の型 &mdash; A1 を1つ作れば 10 業務に転用可能</h2>
+  <p class="section-subtitle">慶弔見舞金で確立した<strong>「申請 → 承認 → マスタ参照 → 帳票出力」</strong>の型は、社内申請系のほぼすべてに転用できます。まず1つ完成形を作れば、残りは<strong>コピー＆設定変更</strong>で量産できるのがKintoneの強みです。</p>
+
+  <div class="compare-box">
+    <table>
+      <thead><tr><th>カテゴリ</th><th>対象業務</th><th>A1からの転用難度</th><th>備考</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>社内申請系</strong></td>
+          <td>出張申請／交通費精算／経費申請／有給申請／忌引申請／慶弔休暇</td>
+          <td><span class="tag tag-high">★ 低</span></td>
+          <td>A1のアプリコピーで半日〜1日で量産</td>
+        </tr>
+        <tr>
+          <td><strong>人事異動系</strong></td>
+          <td>扶養異動届／住所変更届／退職願／転勤申請</td>
+          <td><span class="tag tag-high">★ 低</span></td>
+          <td>承認フローと帳票テンプレ差し替え</td>
+        </tr>
+        <tr>
+          <td><strong>物品・備品系</strong></td>
+          <td>備品購入申請／書籍購入稟議／名刺発注／システム利用申請</td>
+          <td><span class="tag tag-mid">★★ 中</span></td>
+          <td>添付書類（見積書等）の取り扱い追加</td>
+        </tr>
+        <tr>
+          <td><strong>現契約フロー</strong></td>
+          <td>業務委託契約書（A6）／出版契約書類（A4）</td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td>取引先マスタ・書籍マスタ連携が必要（Phase 1）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>費用対効果の本質：</strong>
+    「A1 単体」のインパクトは小さくても、<strong>「1つ作って10業務を量産する」</strong>前提で見れば、1アプリあたり半日〜1日で積み上がります。社内申請のペーパーレス化を短期間で総務部の主要業務にまで広げられます。
+  </div>
+</section>
+
+<!-- ══════════ PART C: ロードマップ ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-c">Part C</span>
+  <span class="part-name">ロードマップ &mdash; 全体像と優先順位</span>
+</div>
+
+<!-- SEC 05: Phase 0〜4 -->
+<section class="sec" id="sec05">
+  <div class="section-label section-label-green">Section 05</div>
+  <h2 class="section-title">Phase 0〜4 全体像 &mdash; 段階的にDX基盤を拡張する</h2>
+  <p class="section-subtitle">いきなり全部一気にやると混乱します。<strong>「現場が使える状態」を順番に作る</strong>ことで、各Phaseでフィードバックを受けながら次のPhaseを磨き込んでいきます。</p>
+
+  <div class="roadmap-timeline">
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 0 &nbsp;/&nbsp; 〜 2026-05</div>
+      <div class="roadmap-title">マスタ同期＋クイックウィン</div>
+      <div class="roadmap-desc">
+        THINK's → Kintone マスタ自動同期（書籍・書店・取引先）の本番投入。並行して<strong>A1 慶弔見舞金申請</strong>を本番運用。社員マスタ・金額規程マスタの整備。BizRobo の現状整理も含む。
+      </div>
+      <div class="roadmap-apps">
+        <span class="roadmap-app">マスタ同期</span>
+        <span class="roadmap-app">A1 慶弔見舞金</span>
+        <span class="roadmap-app">社員マスタ</span>
+      </div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 1 &nbsp;/&nbsp; 2026-05 〜 07</div>
+      <div class="roadmap-title">契約・発注・支払の4アプリ連携</div>
+      <div class="roadmap-desc">
+        <strong>A6 業務委託契約書 → A4 出版契約書類 → A2 発注書 → A3 支払依頼</strong> の順で実装。取引先マスタの正規化効果が最大化。契約書申請の二度手間と、支払依頼のRPA阻害要因（相手先名のバラつき）を構造的に解消。
+      </div>
+      <div class="roadmap-apps">
+        <span class="roadmap-app">A6 業務委託</span>
+        <span class="roadmap-app">A4 出版契約書類</span>
+        <span class="roadmap-app">A2 発注書</span>
+        <span class="roadmap-app">A3 支払依頼</span>
+      </div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 2 &nbsp;/&nbsp; 2026-07 〜 09</div>
+      <div class="roadmap-title">freee／THINK's／DocuSign 自動連携</div>
+      <div class="roadmap-desc">
+        Phase 1 の4アプリを外部システムと自動連携。<strong>BizRobo廃止</strong>し、月末のエクセル統合作業を解消。DocuSign Webhook 連携で契約書発行を半自動化。freee への CSV/API 連携で経理工数削減。
+      </div>
+      <div class="roadmap-apps">
+        <span class="roadmap-app">freee連携</span>
+        <span class="roadmap-app">DocuSign連携</span>
+        <span class="roadmap-app">BizRobo廃止</span>
+      </div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 3 &nbsp;/&nbsp; 2026-09 〜</div>
+      <div class="roadmap-title">海外版権＋社内申請 横展開</div>
+      <div class="roadmap-desc">
+        <strong>A8 海外版権契約管理</strong>（担当者と248列の整形ワークショップ実施 → Kintone化）。A1テンプレートから出張・有給・交通費・経費・忌引・扶養異動など<strong>社内申請系を一斉に横展開</strong>。
+      </div>
+      <div class="roadmap-apps">
+        <span class="roadmap-app">A8 海外版権</span>
+        <span class="roadmap-app">社内申請テンプレ量産</span>
+      </div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 4 &nbsp;/&nbsp; 並行</div>
+      <div class="roadmap-title">営業ダッシュボード統合</div>
+      <div class="roadmap-desc">
+        井坂様領域の営業DXを統合。<strong>営業予実・新刊締切・重版予定・配本判断</strong>を Kintoneポータルで一元化。既存の Amazon BuyBox 監視基盤・注文書ジェネレーターも Kintoneビューに取り込み、全社データハブを完成。
+      </div>
+      <div class="roadmap-apps">
+        <span class="roadmap-app">営業ダッシュボード</span>
+        <span class="roadmap-app">Amazon統合</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-cyan">
+    <strong>なぜ A6 → A4 → A2 → A3 の順？：</strong>
+    受領いただいた★契約業務フロー.docxに「業務委託契約書と出版契約書類の紐づけがない」と課題が明記されていました。<strong>A6 を先に作れば、A4 の入力は半分が取引先マスタと A6 からのルックアップで済む</strong>ようになり、河合様・高橋様の二度手間が自然と解消されます。
+  </div>
+</section>
+
+<!-- SEC 06: 難易度×価値マトリクス -->
+<section class="sec" id="sec06">
+  <div class="section-label section-label-green">Section 06</div>
+  <h2 class="section-title">難易度 × 価値 マトリクス &mdash; 16項目の仕分け</h2>
+  <p class="section-subtitle">4/23 MTG では、窪田様の持参されるリスト16項目をこのマトリクスに載せて、着手順を合意していきます。ここに掲載しているのは、受領資料から見えている<strong>6カテゴリ分の仮配置</strong>です。</p>
+
+  <div class="matrix-box">
+    <div class="matrix-grid">
+      <div class="matrix-y-label">価値 &nbsp;→&nbsp; 高</div>
+
+      <div class="matrix-cell matrix-cell-high-low">
+        <div class="matrix-cell-title">&#x2728; 即着手 / クイックウィン</div>
+        <span class="matrix-chip matrix-chip-primary">A1 慶弔見舞金</span>
+        <p style="font-size:0.75rem;color:var(--text-2);margin-top:6px;line-height:1.6">低コスト・即効。<strong>まずこれで型を作る</strong></p>
+      </div>
+      <div class="matrix-cell matrix-cell-high-high">
+        <div class="matrix-cell-title">&#x1F680; 戦略投資 / Phase 1 本命</div>
+        <span class="matrix-chip">A6 業務委託契約書</span>
+        <span class="matrix-chip">A4 出版契約書類</span>
+        <span class="matrix-chip">A2 発注書</span>
+        <span class="matrix-chip">A3 支払依頼</span>
+        <p style="font-size:0.75rem;color:var(--text-2);margin-top:6px;line-height:1.6">業務インパクト大・マスタ整備必須</p>
+      </div>
+
+      <div class="matrix-cell matrix-cell-low-low">
+        <div class="matrix-cell-title">&#x1F4E6; 後回しで良い</div>
+        <p style="font-size:0.75rem;color:var(--text-3);margin-top:6px;line-height:1.6">（16項目受領後に仕分け）</p>
+      </div>
+      <div class="matrix-cell matrix-cell-low-high">
+        <div class="matrix-cell-title">&#x1F4A1; 要仕込み / 前段作業あり</div>
+        <span class="matrix-chip">A8 海外版権</span>
+        <p style="font-size:0.75rem;color:var(--text-2);margin-top:6px;line-height:1.6">248列エクセルの整形が必要。<strong>担当者と共同ワークショップ</strong></p>
+      </div>
+
+      <div></div>
+      <div class="matrix-x-label">難易度 &nbsp;→&nbsp; 高</div>
+    </div>
+  </div>
+
+  <div class="compare-box compare-box-green">
+    <table>
+      <thead><tr><th>アプリ</th><th>難易度</th><th>価値</th><th>着手前に必要なもの</th><th>備考</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>A1 慶弔見舞金</strong></td>
+          <td><span class="tag tag-high">★ 低</span></td>
+          <td><span class="tag tag-mid">★★ 中</span></td>
+          <td>社員マスタ（簡易CSV可）</td>
+          <td>独立。横展開の型</td>
+        </tr>
+        <tr>
+          <td><strong>A6 業務委託契約書</strong></td>
+          <td><span class="tag tag-mid">★★ 中</span></td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td>取引先マスタ、承認分担表</td>
+          <td>A4の前段に</td>
+        </tr>
+        <tr>
+          <td><strong>A4 出版契約書類</strong></td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td>取引先マスタ、書籍マスタ、A6</td>
+          <td>3種フォーマット分岐</td>
+        </tr>
+        <tr>
+          <td><strong>A2 発注書</strong></td>
+          <td><span class="tag tag-mid">★★ 中</span></td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td>取引先マスタ、PDF体裁</td>
+          <td>4種統合可能</td>
+        </tr>
+        <tr>
+          <td><strong>A3 支払依頼</strong></td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td>A2、取引先マスタ、freee連携仕様</td>
+          <td>RPA代替の本丸</td>
+        </tr>
+        <tr>
+          <td><strong>A8 海外版権</strong></td>
+          <td><span class="tag tag-low">★★★ 高</span></td>
+          <td><span class="tag tag-mid">★★ 中</span></td>
+          <td>248列の整形ワークショップ</td>
+          <td>前段作業必須</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════ PART D: 進め方 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-d">Part D</span>
+  <span class="part-name">進め方 &mdash; 4/23 からのアクション</span>
+</div>
+
+<!-- SEC 07: 4/23 MTG アジェンダ -->
+<section class="sec" id="sec07">
+  <div class="section-label section-label-purple">Section 07</div>
+  <h2 class="section-title">4/23 MTG アジェンダ（60〜90分）</h2>
+  <p class="section-subtitle">「動くもの」を見ていただいたあと、<strong>16項目をこのマップに載せて優先度を合意</strong>するのが当日のゴールです。</p>
+
+  <ul class="action-list">
+    <li>
+      <div class="action-num">1</div>
+      <div><strong>0〜10分 &nbsp;/&nbsp; A1 慶弔見舞金ライブデモ</strong><br>
+      3種（出産・結婚・死亡弔慰）の入力体験を実際にやっていただきます。「Kintoneはこう動く」を体感 → 議論の共通言語を作ります。</div>
+    </li>
+    <li>
+      <div class="action-num">2</div>
+      <div><strong>10〜30分 &nbsp;/&nbsp; やりたいこと16項目の棚卸し</strong><br>
+      窪田様のリストと、Part A の6カテゴリ（A1〜A8）を突合。足りないもの・重複を整理します。</div>
+    </li>
+    <li>
+      <div class="action-num">3</div>
+      <div><strong>30〜50分 &nbsp;/&nbsp; 難易度×価値マトリクスで仕分け</strong><br>
+      Section 06 のマトリクスに16項目を配置。どれをクイックウィン／Phase 1／Phase 2 に回すかを合意します。</div>
+    </li>
+    <li>
+      <div class="action-num">4</div>
+      <div><strong>50〜70分 &nbsp;/&nbsp; Phase 0〜4 ロードマップ合意</strong><br>
+      Section 05 の全体像ロードマップを確定版として合意。スコープ・時期・ステークホルダーの期待値を揃えます。</div>
+    </li>
+    <li>
+      <div class="action-num">5</div>
+      <div><strong>70〜85分 &nbsp;/&nbsp; 次アクション・体制</strong><br>
+      5月キックオフ項目（A6→A4→A2→A3の順の確認）、費用見積のタイムライン、Kintoneユーザー拡張。</div>
+    </li>
+    <li>
+      <div class="action-num">6</div>
+      <div><strong>85〜90分 &nbsp;/&nbsp; 質疑応答</strong><br>
+      BizRobo の整理、DocuSign 連携タイミング、freee 連携方式、他部署（編集部・営業部）拡張の温度感。</div>
+    </li>
+  </ul>
+</section>
+
+<!-- SEC 08: 体制・投資のご相談 -->
+<section class="sec" id="sec08">
+  <div class="section-label section-label-purple">Section 08</div>
+  <h2 class="section-title">体制・投資のご相談</h2>
+  <p class="section-subtitle">この1.5ヶ月で <strong>注文書OCR／注文書ジェネレーター／Amazon BuyBox 対策／Kintone×THINK's 同期</strong> を納品しました。次のスコープ拡張（業務アプリ実装）にあたり、体制と投資のご相談をさせてください。</p>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin: 16px 0 12px;">既納品ベース（1.5ヶ月の成果）</h3>
+
+  <div class="impact-grid">
+    <div class="impact-item">
+      <div class="impact-number" style="font-size:0.95rem">注文書OCR</div>
+      <div class="impact-label">PoC完了・精度96%</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number" style="font-size:0.95rem">注文書生成</div>
+      <div class="impact-label">本番稼働中</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number" style="font-size:0.95rem">Amazon監視</div>
+      <div class="impact-label">監視基盤完成</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number" style="font-size:0.95rem">THINK's同期</div>
+      <div class="impact-label">技術検証完了</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:0.95rem; font-weight:700; margin: 32px 0 12px;">今後ご相談したいポイント</h3>
+
+  <div class="accordion-section">
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">① 優先順位・スコープの温度感</summary>
+      <div class="accordion-body">
+        <p>Kintone／RPA（BizRobo置換）／セールスプロモーションの3領域、どれをどの比重で進めるか。本ドキュメントでは<strong>Kintone 基盤を軸に、BizRobo を自然に代替していく</strong>流れを想定しています。</p>
+      </div>
+    </details>
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">② 現在の支援体制（月次関わり方）</summary>
+      <div class="accordion-body">
+        <p>現状契約のスコープに対して、今回のKintone基盤構築は<strong>想定より広いスコープ</strong>になっています。月次の稼働時間・訪問頻度・優先順位を率直にすり合わせさせてください。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">③ 既存ツール（BizRobo等）の整理方針</summary>
+      <div class="accordion-body">
+        <p>BizRobo の契約状態・運用実態を確認させていただいて、Kintone 置換後の<strong>廃止スケジュール</strong>を設計します。浮いた費用を Kintone ライセンス拡張（編集部・営業部）に振り替える方向感で構想しています。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">④ 役割分担（オモシク／社内／他社ベンダー）</summary>
+      <div class="accordion-body">
+        <p>Kintone 構築・JSカスタマイズ・マスタ連携は弊社、日々の運用（マスタ更新・申請承認）は総務部、というのが基本線。松本課長が着手されている注文入力アプリとの<strong>連携方針</strong>も4/23 で整理できればと思います。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">⑤ Kintone ユーザー範囲の拡張</summary>
+      <div class="accordion-body">
+        <p>現在は総務部中心。Phase 1 で契約書申請を Kintone 化する際、編集部への配布が必要になります。Phase 4 の営業ダッシュボード導入時には営業部も。<strong>段階的なユーザー拡張計画</strong>をロードマップに織り込みたいです。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="callout callout-purple" style="margin-top:28px">
+    <strong>オモシクからのお願い：</strong>
+    このドキュメントを<strong>議論の土台</strong>として、4/23 MTG でご意見いただければ幸いです。「ここが違う」「この項目は抜けている」「優先順位はこうしたい」など、忌憚ないフィードバックをお願いします。Kintoneが単なる社内システムではなく、大和書房の<strong>全社DX基盤</strong>として育っていくように伴走します。
+  </div>
+</section>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+
+<!-- ═══════════════ Footer ═══════════════ -->
+<footer class="closing">
+  <p class="closing-msg">現場の「めんどう」を、ひとつずつ仕組みに変えていく。</p>
+  <p class="closing-sub" style="margin-bottom:12px">omoshiku &mdash; "想い"と"仕組み"で"面白く"</p>
+  <p class="closing-sub">大和書房 &times; オモシク &mdash; Kintone 全社DX基盤 構想</p>
+  <p class="closing-sub" style="margin-top:8px">Confidential | 2026-04-23 &nbsp;/&nbsp; 総務部 窪田様・高橋様・河合様向け</p>
+</footer>
+
+<script>
+(function() {
+  /* ─── Particles ─── */
+  var pc = document.getElementById('particles');
+  for (var i = 0; i < 45; i++) {
+    var p = document.createElement('div');
+    var isAmber = Math.random() > 0.4;
+    p.className = 'particle ' + (isAmber ? 'particle-amber' : 'particle-white');
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-10px';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (5 + Math.random() * 7) + 's';
+    var size = 1.5 + Math.random() * 2.5;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    pc.appendChild(p);
+  }
+
+  /* ─── TOC Sidebar: IntersectionObserver ─── */
+  var tocLinks = document.querySelectorAll('.toc-link');
+  var sections = [];
+  tocLinks.forEach(function(a) {
+    var target = document.querySelector(a.getAttribute('href'));
+    if (target) sections.push({ el: target, link: a });
+  });
+
+  if (sections.length) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          tocLinks.forEach(function(l) { l.classList.remove('active'); });
+          var match = sections.find(function(s) { return s.el === e.target; });
+          if (match) match.link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+
+    sections.forEach(function(s) { io.observe(s.el); });
+  }
+
+  /* ─── Mobile Nav: show/hide ─── */
+  var gnav = document.getElementById('gnav');
+  var hero = document.querySelector('.hero');
+  var gnavLinks = gnav ? gnav.querySelectorAll('.gnav-link') : [];
+  var allSections = document.querySelectorAll('.sec[id]');
+
+  function updateMobileNav() {
+    if (!gnav || window.innerWidth > 960) return;
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    gnav.classList.toggle('visible', heroBottom < 60);
+
+    var currentId = '';
+    allSections.forEach(function(s) {
+      if (s.getBoundingClientRect().top < 100) currentId = s.id;
+    });
+    gnavLinks.forEach(function(a) {
+      var href = a.getAttribute('href').replace('#', '');
+      a.classList.toggle('active', href === currentId);
+    });
+  }
+
+  window.addEventListener('scroll', updateMobileNav, { passive: true });
+  window.addEventListener('resize', updateMobileNav, { passive: true });
+  updateMobileNav();
+})();
+</script>
+</body>
+</html>

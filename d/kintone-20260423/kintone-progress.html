@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大和書房 × オモシク｜1.5ヶ月進捗共有 & 今後の体制ご提案</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --navy-light: #2a2a44;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --success-bg: rgba(52,211,153,0.08);
+  --green: #27ae60;
+  --green-bg: rgba(39,174,96,0.08);
+  --red: #c04040;
+  --red-bg: rgba(192,64,64,0.08);
+  --blue: #3498db;
+  --blue-bg: rgba(52,152,219,0.08);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.08);
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6,182,212,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-jp); background: var(--bg-warm); color: var(--text-1);
+  line-height: 1.8; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+
+/* Hero */
+.hero { position: relative; min-height: 55vh; display: flex; align-items: center; justify-content: center;
+  background: #0a0a14; overflow: hidden; text-align: center; padding: 80px 28px 64px; }
+.hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,148,74,0.3), transparent); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg::before { content: ''; position: absolute; top: -40%; right: -20%; width: 900px; height: 900px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,148,74,0.18) 0%, transparent 65%); animation: float-orb 10s ease-in-out infinite; }
+.hero-bg::after { content: ''; position: absolute; bottom: -25%; left: -15%; width: 750px; height: 750px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,64,64,0.12) 0%, transparent 65%); animation: float-orb 13s ease-in-out infinite reverse; }
+.hero-bg-extra { position: absolute; top: 30%; left: 40%; width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(42,122,110,0.1) 0%, transparent 60%); animation: float-orb 16s ease-in-out infinite 3s; z-index: 0; }
+.hero-mesh { position: absolute; inset: 0; z-index: 0; opacity: 0.06;
+  background-image: linear-gradient(30deg, transparent 48%, rgba(232,148,74,0.4) 49%, rgba(232,148,74,0.4) 51%, transparent 52%),
+    linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.15) 49%, rgba(255,255,255,0.15) 51%, transparent 52%);
+  background-size: 80px 80px; animation: mesh-drift 25s linear infinite; }
+.hero-scanlines { position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px); }
+.hero-particles { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.particle { position: absolute; border-radius: 50%; opacity: 0; animation: particle-drift 8s linear infinite; }
+.particle-amber { background: var(--accent-light); }
+.particle-white { background: rgba(255,255,255,0.5); }
+.hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 18px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; color: var(--accent-light); border: 1px solid rgba(232,148,74,0.25); border-radius: 20px;
+  margin-bottom: 28px; opacity: 0; animation: hero-fade-in 1s 0.3s forwards; }
+.hero h1 { font-family: var(--font-en), var(--font-jp); font-size: clamp(1.6rem, 3.8vw, 2.2rem); font-weight: 800; color: #f0ece6; line-height: 1.5;
+  margin-bottom: 20px; letter-spacing: -0.01em; opacity: 0; animation: hero-fade-in 1s 0.5s forwards; }
+.hero h1 em { font-style: normal; background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero .lead { font-size: 0.9rem; color: rgba(240,236,230,0.6); font-weight: 300; line-height: 1.9; max-width: 620px; margin: 0 auto;
+  opacity: 0; animation: hero-fade-in 1s 0.7s forwards; }
+.hero-footer { margin-top: 36px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; opacity: 0; animation: hero-fade-in 1s 0.9s forwards; }
+.hero-footer .meta { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); }
+.hero-footer .meta strong { color: rgba(240,236,230,0.5); font-weight: 500; }
+
+@keyframes float-orb { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -40px) scale(1.08); } 66% { transform: translate(-30px, 30px) scale(0.94); } }
+@keyframes particle-drift { 0% { opacity: 0; transform: translateY(0) scale(1); } 10% { opacity: 0.7; } 85% { opacity: 0.5; } 100% { opacity: 0; transform: translateY(-100vh) scale(0.4); } }
+@keyframes mesh-drift { 0% { transform: translate(0,0); } 100% { transform: translate(80px,80px); } }
+@keyframes hero-fade-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Layout */
+.page-layout { display: flex; gap: 36px; align-items: flex-start; max-width: 1120px; margin: 0 auto; padding: 40px 28px 0; }
+.main-content { flex: 1; min-width: 0; }
+
+/* TOC */
+.toc-sidebar { position: sticky; top: 24px; width: 220px; flex-shrink: 0; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 16px; max-height: calc(100vh - 48px); overflow-y: auto; box-shadow: var(--shadow-sm); }
+.toc-sidebar::-webkit-scrollbar { width: 3px; }
+.toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+.toc-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.toc-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+.toc-part { font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 14px; margin-bottom: 6px; padding-top: 10px; border-top: 1px solid var(--border-light); }
+.toc-part:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.toc-part-a { color: var(--accent); } .toc-part-b { color: var(--cyan); }
+.toc-part-c { color: var(--green); } .toc-part-d { color: var(--purple); }
+.toc-link { display: block; font-size: 0.72rem; color: var(--text-3); text-decoration: none; padding: 3px 0 3px 10px;
+  border-left: 2px solid transparent; line-height: 1.4; transition: all 0.15s; }
+.toc-link:hover { color: var(--text-1); }
+.toc-link.active { font-weight: 600; }
+.toc-link.active.toc-a { color: var(--accent-dark); border-left-color: var(--accent); }
+.toc-link.active.toc-b { color: var(--cyan); border-left-color: var(--cyan); }
+.toc-link.active.toc-c { color: var(--green); border-left-color: var(--green); }
+.toc-link.active.toc-d { color: var(--purple); border-left-color: var(--purple); }
+.toc-num { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-3); margin-right: 4px; }
+
+/* Part Divider */
+.part-divider { display: flex; align-items: center; gap: 12px; margin: 56px 0 28px; padding-bottom: 12px; }
+.part-divider:first-child { margin-top: 0; }
+.part-badge { font-family: var(--font-en); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 4px; color: #fff; }
+.part-badge-a { background: var(--accent); } .part-badge-b { background: var(--cyan); }
+.part-badge-c { background: var(--green); } .part-badge-d { background: var(--purple); }
+.part-name { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+
+/* Section */
+.sec { padding: 40px 0 48px; border-bottom: 1px solid var(--border-light); }
+.sec:last-child { border-bottom: none; }
+.sec[id] { scroll-margin-top: 24px; }
+.section-label { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-en); font-size: 0.65rem;
+  font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.section-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-label-cyan { color: var(--cyan); } .section-label-cyan::before { background: var(--cyan); }
+.section-label-green { color: var(--green); } .section-label-green::before { background: var(--green); }
+.section-label-purple { color: var(--purple); } .section-label-purple::before { background: var(--purple); }
+.section-title { font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 800; color: var(--text-1); margin-bottom: 8px; line-height: 1.4; }
+.section-subtitle { font-size: 0.88rem; color: var(--text-2); margin-bottom: 32px; line-height: 1.85; }
+
+/* Cards */
+.card { background: var(--bg-card); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 16px; }
+.card-accent { border-left: 3px solid var(--accent); }
+.card-green { border-left: 3px solid var(--green); }
+.card-red { border-left: 3px solid var(--red); }
+.card-blue { border-left: 3px solid var(--blue); }
+.card-purple { border-left: 3px solid var(--purple); }
+.card-cyan { border-left: 3px solid var(--cyan); }
+.card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.card-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.card-icon-accent { background: var(--accent-bg); } .card-icon-green { background: var(--green-bg); }
+.card-icon-red { background: var(--red-bg); } .card-icon-blue { background: var(--blue-bg); }
+.card-icon-purple { background: var(--purple-bg); } .card-icon-cyan { background: var(--cyan-bg); }
+.card h4 { font-size: 0.98rem; font-weight: 700; }
+.card p { font-size: 0.86rem; color: var(--text-2); margin-bottom: 6px; line-height: 1.75; }
+.card p:last-child { margin-bottom: 0; }
+
+/* Achievement cards */
+.achievement-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.achievement-card { background: var(--bg-card); border: 1px solid var(--border); border-top: 3px solid var(--accent);
+  border-radius: 0 0 12px 12px; padding: 22px 20px; transition: transform 0.2s, box-shadow 0.2s; }
+.achievement-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.achievement-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--text-1); margin-bottom: 6px; line-height: 1.4; }
+.achievement-card .ac-code { font-size: 0.62rem; font-weight: 700; color: var(--accent); letter-spacing: 0.12em; margin-bottom: 2px; }
+.achievement-card .ac-desc { font-size: 0.82rem; color: var(--text-2); margin-bottom: 12px; line-height: 1.7; }
+.achievement-card .ac-status { font-size: 0.72rem; color: var(--green); font-weight: 600; padding: 4px 10px; background: var(--green-bg); border-radius: 6px; display: inline-block; }
+.achievement-card .ac-status.wip { color: var(--accent-dark); background: var(--accent-bg); }
+.achievement-card-cyan { border-top-color: var(--cyan); }
+.achievement-card-cyan .ac-code { color: var(--cyan); }
+.achievement-card-green { border-top-color: var(--green); }
+.achievement-card-green .ac-code { color: var(--green); }
+.achievement-card-purple { border-top-color: var(--purple); }
+.achievement-card-purple .ac-code { color: var(--purple); }
+
+/* Impact Grid */
+.impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.impact-item { background: var(--bg-card); border-radius: 12px; padding: 20px; text-align: center; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); }
+.impact-number { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--accent); line-height: 1.2; }
+.impact-label { font-size: 0.74rem; color: var(--text-3); margin-top: 4px; }
+
+/* Compare / Feature table */
+.compare-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); margin: 16px 0; }
+.compare-box table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.compare-box thead th { background: var(--accent-bg); padding: 10px 14px; text-align: left; font-weight: 600;
+  color: var(--accent-dark); border-bottom: 1px solid var(--accent-border); font-size: 0.76rem; }
+.compare-box tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); color: var(--text-2); }
+.compare-box tbody tr:last-child td { border-bottom: none; }
+.compare-box tbody td:first-child { font-weight: 600; color: var(--text-1); }
+.compare-box .recommended { background: rgba(52,211,153,0.05); }
+.compare-box .recommended td { color: var(--text-1); font-weight: 500; }
+.compare-box-cyan thead th { background: var(--cyan-bg); color: var(--cyan); border-bottom-color: rgba(6,182,212,0.2); }
+.compare-box-green thead th { background: var(--green-bg); color: var(--green); border-bottom-color: rgba(39,174,96,0.2); }
+.compare-box-purple thead th { background: var(--purple-bg); color: var(--purple); border-bottom-color: rgba(139,92,246,0.2); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+.tag-high { background: var(--green-bg); color: var(--green); }
+.tag-mid { background: var(--blue-bg); color: var(--blue); }
+.tag-low { background: var(--red-bg); color: var(--red); }
+.tag-done { background: var(--green-bg); color: var(--green); }
+.tag-wip { background: var(--accent-bg); color: var(--accent-dark); }
+.tag-plan { background: var(--cyan-bg); color: var(--cyan); }
+
+/* Accordion */
+.accordion-section { margin-top: 20px; }
+.accordion-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 8px; overflow: hidden; transition: box-shadow 0.2s; }
+.accordion-item:hover { box-shadow: var(--shadow-sm); }
+.accordion-summary { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;
+  cursor: pointer; font-size: 0.86rem; font-weight: 600; color: var(--text-1); list-style: none; user-select: none; gap: 12px; }
+.accordion-summary::-webkit-details-marker { display: none; }
+.accordion-summary::after { content: '+'; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 400;
+  color: var(--accent); flex-shrink: 0; transition: transform 0.2s; }
+details[open] > .accordion-summary::after { content: '\2212'; }
+.accordion-body { padding: 0 18px 16px; font-size: 0.82rem; color: var(--text-2); line-height: 1.8; }
+.accordion-body p { margin-bottom: 8px; }
+.accordion-body ul { padding-left: 18px; margin-bottom: 8px; }
+.accordion-body li { margin-bottom: 4px; }
+.accordion-body strong { color: var(--text-1); }
+
+/* Callout */
+.callout { background: var(--accent-bg); border: 1px solid var(--accent-border); border-radius: 10px; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.86rem; color: var(--text-1); line-height: 1.8; }
+.callout strong { color: var(--accent-dark); }
+.callout-green { background: var(--green-bg); border-color: rgba(39,174,96,0.2); }
+.callout-green strong { color: var(--green); }
+.callout-red { background: var(--red-bg); border-color: rgba(192,64,64,0.2); }
+.callout-red strong { color: var(--red); }
+.callout-cyan { background: var(--cyan-bg); border-color: rgba(6,182,212,0.2); }
+.callout-cyan strong { color: var(--cyan); }
+.callout-purple { background: var(--purple-bg); border-color: rgba(139,92,246,0.2); }
+.callout-purple strong { color: var(--purple); }
+
+/* Two-col */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+/* Action list */
+.action-list { list-style: none; padding: 0; margin: 12px 0; }
+.action-list li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: var(--bg-card);
+  border: 1px solid var(--border-light); border-radius: 10px; margin-bottom: 8px; font-size: 0.84rem;
+  color: var(--text-2); line-height: 1.7; transition: transform 0.2s, box-shadow 0.2s; }
+.action-list li:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.action-num { flex-shrink: 0; width: 26px; height: 26px; background: var(--accent-bg); color: var(--accent-dark);
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; }
+.action-list li strong { color: var(--text-1); }
+
+/* Roadmap */
+.roadmap-timeline { position: relative; padding-left: 28px; margin: 24px 0; }
+.roadmap-timeline::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--green), var(--cyan), var(--purple)); }
+.roadmap-phase { position: relative; margin-bottom: 28px; }
+.roadmap-dot { position: absolute; left: -28px; top: 4px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg-card); border: 3px solid var(--accent); z-index: 1; }
+.roadmap-phase:nth-child(2) .roadmap-dot { border-color: var(--green); }
+.roadmap-phase:nth-child(3) .roadmap-dot { border-color: var(--cyan); }
+.roadmap-phase:nth-child(4) .roadmap-dot { border-color: var(--purple); }
+.roadmap-time { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 2px; }
+.roadmap-phase:nth-child(2) .roadmap-time { color: var(--green); }
+.roadmap-phase:nth-child(3) .roadmap-time { color: var(--cyan); }
+.roadmap-phase:nth-child(4) .roadmap-time { color: var(--purple); }
+.roadmap-title { font-size: 0.96rem; font-weight: 700; margin-bottom: 4px; }
+.roadmap-desc { font-size: 0.84rem; color: var(--text-2); line-height: 1.7; margin-bottom: 4px; }
+
+/* Link card / related pages */
+.related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+.related-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;
+  text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; display: block; }
+.related-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent-border); }
+.related-card .r-tag { font-size: 0.62rem; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 4px; }
+.related-card .r-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.related-card .r-desc { font-size: 0.78rem; color: var(--text-3); line-height: 1.6; }
+
+/* Mobile Nav */
+.gnav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(246,243,238,0.92);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+  transform: translateY(-100%); transition: transform 0.35s ease; display: none; }
+.gnav.visible { transform: translateY(0); }
+.gnav-inner { max-width: 960px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 44px; gap: 4px; }
+.gnav-logo { font-family: var(--font-en); font-size: 0.65rem; font-weight: 700; color: var(--text-1); letter-spacing: 0.05em; margin-right: auto; white-space: nowrap; }
+.gnav-link { font-size: 0.65rem; font-weight: 500; color: var(--text-2); text-decoration: none; padding: 5px 8px;
+  border-radius: 4px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+.gnav-link:hover { color: var(--text-1); background: rgba(0,0,0,0.04); }
+.gnav-link.active { color: var(--accent); font-weight: 600; }
+
+/* Footer */
+.closing { background: var(--navy); padding: 44px 28px 28px; text-align: center; }
+.closing-msg { font-size: 1rem; font-weight: 600; color: rgba(240,236,230,0.8); margin-bottom: 10px; line-height: 1.7; }
+.closing-sub { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); letter-spacing: 0.05em; }
+
+/* Responsive */
+@media (max-width: 960px) {
+  .toc-sidebar { display: none; }
+  .page-layout { display: block; padding: 24px 20px 0; }
+  .gnav { display: block; }
+  .sec[id] { scroll-margin-top: 56px; }
+}
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .achievement-grid { grid-template-columns: 1fr; }
+  .gnav-link { font-size: 0.58rem; padding: 5px 5px; }
+  .gnav-logo { font-size: 0.58rem; }
+}
+@media print {
+  .hero { min-height: auto; padding: 40px 20px; }
+  .toc-sidebar { display: none; }
+  .gnav { display: none; }
+  .page-layout { display: block; }
+  .sec { padding: 24px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile Nav -->
+<nav class="gnav" id="gnav">
+  <div class="gnav-inner">
+    <span class="gnav-logo">大和書房 &times; オモシク</span>
+    <a href="#sec01" class="gnav-link">成果</a>
+    <a href="#sec03" class="gnav-link">Kintone</a>
+    <a href="#sec04" class="gnav-link">RPA</a>
+    <a href="#sec05" class="gnav-link">営業</a>
+    <a href="#sec06" class="gnav-link">体制</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bg-extra"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">1.5ヶ月進捗共有 &amp; 今後の体制ご提案</div>
+    <h1>現場の手作業を、<em>動くシステム</em>に<br>—— この1.5ヶ月の棚卸し</h1>
+    <p class="lead">注文書OCR／注文書生成／Amazon監視／Kintone×THINK's の4成果を土台に、<br>今後の検討テーマと支援体制のご相談をまとめました。</p>
+    <div class="hero-footer">
+      <div class="meta"><strong>Date</strong> 2026.04.22</div>
+      <div class="meta"><strong>For</strong> 社長・窪田様・井坂様</div>
+      <div class="meta"><strong>By</strong> 西川太雄 / オモシク代表</div>
+    </div>
+  </div>
+</header>
+
+<div class="page-layout">
+
+<!-- TOC -->
+<nav class="toc-sidebar" id="toc">
+  <div class="toc-title">Contents</div>
+
+  <div class="toc-part toc-part-a">Part A &mdash; 1.5ヶ月の成果</div>
+  <a href="#sec01" class="toc-link toc-a"><span class="toc-num">01</span>成果物サマリー（4件）</a>
+  <a href="#sec02" class="toc-link toc-a"><span class="toc-num">02</span>成果物詳細</a>
+
+  <div class="toc-part toc-part-b">Part B &mdash; 今後の検討テーマ</div>
+  <a href="#sec03" class="toc-link toc-b"><span class="toc-num">03</span>Kintone 全社DX基盤化</a>
+  <a href="#sec04" class="toc-link toc-b"><span class="toc-num">04</span>RPA（BizRobo代替）</a>
+  <a href="#sec05" class="toc-link toc-b"><span class="toc-num">05</span>セールスプロモーション</a>
+
+  <div class="toc-part toc-part-c">Part C &mdash; 体制のご相談</div>
+  <a href="#sec06" class="toc-link toc-c"><span class="toc-num">06</span>現状の支援規模と拡張</a>
+  <a href="#sec07" class="toc-link toc-c"><span class="toc-num">07</span>ご相談したいポイント</a>
+
+  <div class="toc-part toc-part-d">Part D &mdash; 関連資料</div>
+  <a href="#sec08" class="toc-link toc-d"><span class="toc-num">08</span>関連ドキュメント</a>
+</nav>
+
+<!-- Main -->
+<div class="main-content">
+
+<!-- PART A -->
+<div class="part-divider">
+  <span class="part-badge part-badge-a">Part A</span>
+  <span class="part-name">この1.5ヶ月の成果</span>
+</div>
+
+<!-- SEC 01 -->
+<section class="sec" id="sec01">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title">成果物サマリー &mdash; 4件</h2>
+  <p class="section-subtitle">3月上旬のキックオフから約1.5ヶ月で、以下4つのシステム／基盤をお納めしました。それぞれ独立して稼働しつつ、Kintoneを中心に将来的に統合していく構想です。</p>
+
+  <div class="impact-grid">
+    <div class="impact-item"><div class="impact-number" style="font-size:0.9rem;">注文書OCR</div><div class="impact-label">PoC完了・精度96%</div></div>
+    <div class="impact-item"><div class="impact-number" style="font-size:0.9rem;">注文書生成</div><div class="impact-label">本番稼働中</div></div>
+    <div class="impact-item"><div class="impact-number" style="font-size:0.9rem;">Amazon監視</div><div class="impact-label">基盤完成・通知開始</div></div>
+    <div class="impact-item"><div class="impact-number" style="font-size:0.9rem;">Kintone同期</div><div class="impact-label">技術検証完了</div></div>
+  </div>
+
+  <div class="achievement-grid">
+    <div class="achievement-card">
+      <div class="ac-code">ACHIEVEMENT 01</div>
+      <h3>注文書OCR自動入力</h3>
+      <p class="ac-desc">FAX注文書（月1,400〜2,400枚）をGemini Vision OCRで読み取り、THINK's一括入力用Excelを自動生成。マスタ照合精度96%達成（52件中50件）。</p>
+      <span class="ac-status wip">進行中：本稼働準備</span>
+    </div>
+    <div class="achievement-card achievement-card-cyan">
+      <div class="ac-code">ACHIEVEMENT 02</div>
+      <h3>注文書ジェネレーター</h3>
+      <p class="ac-desc">発注側WEB UIを自社ドメイン `order.daiwashobo.omoshiku.jp` で本番稼働中。新刊・在庫切替対応、ISBN自動検索、PDF/Word書き出し、JSON保存＆読込に対応。</p>
+      <span class="ac-status">本番稼働</span>
+    </div>
+    <div class="achievement-card achievement-card-green">
+      <div class="ac-code">ACHIEVEMENT 03</div>
+      <h3>Amazon BuyBox 対策</h3>
+      <p class="ac-desc">Keepa API で稼働在庫5,882点の Buy Box 状況を日次監視し、Email通知。discover社への外部委託（数万円/回）を月額約8,000円に置換。SP-API Vendor統合待ち。</p>
+      <span class="ac-status">基盤完成</span>
+    </div>
+    <div class="achievement-card achievement-card-purple">
+      <div class="ac-code">ACHIEVEMENT 04</div>
+      <h3>Kintone × THINK's 連携</h3>
+      <p class="ac-desc">THINK's のマスタ（書籍・書店・取引先・在庫）を Kintone に日次自動同期する技術検証完了。5月からの本番投入可能。全社DX基盤化の土台。</p>
+      <span class="ac-status">検証完了</span>
+    </div>
+  </div>
+
+  <div class="callout callout-green" style="margin-top:24px">
+    <strong>共通の効果：</strong>
+    いずれも<strong>「人の手作業を、再現可能なシステム」に置き換える</strong>方向で設計しました。マスタ照合96%・稼働中WEBアプリ・監視基盤・日次同期という<strong>具体的な実装物</strong>として、検証・継続改善が可能な状態で残すことを最優先しています。
+  </div>
+</section>
+
+<!-- SEC 02 -->
+<section class="sec" id="sec02">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title">成果物詳細</h2>
+  <p class="section-subtitle">各成果物のポイント・現在地・次のステップ。</p>
+
+  <div class="accordion-section">
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">① 注文書OCR自動入力（手入力削減）</summary>
+      <div class="accordion-body">
+        <p><strong>背景：</strong>FAX注文書が月1,400〜2,400枚届き、松本課長を中心に手入力対応。工数負荷・誤入力・属人化が課題。</p>
+        <p><strong>実装：</strong>大和書房社内の<strong>NucBox4（4F総務部設置）</strong>にRDP接続し、Gemini Vision API + マスタ照合パイプライン（v6.1）を構築。BEAT VPN不要で、社内PCから THINK's・共有フォルダへ直接アクセス可能な環境を実現。</p>
+        <p><strong>現状：</strong>マスタ照合精度96%（52件中50件）。エラー傾向は0/1混同・手書き5/6混同のみ。</p>
+        <p><strong>セッション進行：</strong>OA-1〜OA-6の6段階。現在 OA-1（全量実行）・OA-2（共有フォルダ連携）並行進行中。</p>
+        <p><strong>次のステップ：</strong>OA-3（THINK's一括入力画面への貼付検証）、OA-5（Windows Task Scheduler 自動実行）、OA-6（本稼働 Go/No-Go）。<strong>想定 5月中に完全自動化</strong>。</p>
+      </div>
+    </details>
+
+    <details class="accordion-item">
+      <summary class="accordion-summary">② 注文書ジェネレーター（発注側 Web UI）</summary>
+      <div class="accordion-body">
+        <p><strong>背景：</strong>書店側への発注書を、毎回エクセルで作成して担当者が運用。新刊・在庫でフォーマットが違う、ISBN手入力が手間、という課題。</p>
+        <p><strong>実装：</strong>Next.js 16 + React 19 でカスタムドメイン（<strong>order.daiwashobo.omoshiku.jp</strong>）に本番デプロイ。ISBN検索→自動入力、A4プレビュー、PDF/Word書き出し、JSON保存／読込（画像Base64込み）、新刊・在庫の自動切替、タイトル縦位置調整スライダーなど追加機能を継続デプロイ中。</p>
+        <p><strong>現状：</strong>本番稼働中。営業部が実務で使用。</p>
+        <p><strong>次のステップ：</strong>書店リスト連携、発注履歴の Kintone 連携、社内注文入力フローとの接続。</p>
+      </div>
+    </details>
+
+    <details class="accordion-item">
+      <summary class="accordion-summary">③ Amazon BuyBox 対策（せどり監視 × 在庫見える化）</summary>
+      <div class="accordion-body">
+        <p><strong>背景：</strong>稼働在庫5,882点のうち、せどり業者にBuy Boxを奪われる「カート落ち」問題。discover社への外部委託で数万円/回・2日遅延。</p>
+        <p><strong>実装：</strong>Keepa API で日次差分更新（トークン消費12,500/日）、Email通知（カート奪取・新規RED・日次サマリー3種）、Sheets自動更新。リポ：<code>TKOnishikawa/daiwashobo-amazon-monitor</code>（Private）。</p>
+        <p><strong>現状：</strong>Sprint 0 完了（基盤・スキャン・トークン管理・Email送信）。Sprint 1 で日次アラート実装中。</p>
+        <p><strong>次のステップ：</strong>Sprint 2 で SP-API Vendor 統合（Data Kiosk API、遅延34時間）。大和書房がVendor Central管理者になるとAPI開発者登録可能。Sprint 3 で運用安定化・週次レポート。</p>
+      </div>
+    </details>
+
+    <details class="accordion-item">
+      <summary class="accordion-summary">④ Kintone × THINK's 連携（マスタ日次同期）</summary>
+      <div class="accordion-body">
+        <p><strong>背景：</strong>THINK's の書籍・書店・取引先・在庫マスタを、各部署がエクセルCSVで個別ダウンロード→バラバラに保管していた。最新版が分からない問題が常態化。</p>
+        <p><strong>実装：</strong>THINK's → Kintone の日次自動同期（PostMessage方式、バージョンアップ対応）。Kintone側を参照先として各申請アプリ（契約書・発注書・支払依頼・慶弔等）から共通参照できる基盤。</p>
+        <p><strong>現状：</strong>技術検証完了。5月から本番投入可能。</p>
+        <p><strong>次のステップ：</strong>4/23 の総務部MTGで「やりたいこと16項目」の優先度合意 → Phase 0 として本基盤を稼働しつつ、Phase 1 で業務アプリ群を順次構築（詳細は<a href="#sec03" style="color:var(--accent)">Section 03</a>）。</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- PART B -->
+<div class="part-divider">
+  <span class="part-badge part-badge-b">Part B</span>
+  <span class="part-name">今後の検討テーマ</span>
+</div>
+
+<!-- SEC 03 -->
+<section class="sec" id="sec03">
+  <div class="section-label section-label-cyan">Section 03</div>
+  <h2 class="section-title">Kintone 活用 &mdash; 全社DX基盤化</h2>
+  <p class="section-subtitle">THINK's 連携を土台に、社内の<strong>申請・契約・支払・管理業務を Kintone に一元化</strong>していく構想です。4/23 総務部MTGで「やりたいこと16項目」の優先度合意、5月から本番構築開始。</p>
+
+  <h3 style="font-size:0.95rem;font-weight:700;margin:16px 0 12px;">Phase 0〜4 ロードマップ</h3>
+
+  <div class="roadmap-timeline">
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 0 &nbsp;/&nbsp; 〜 2026-05</div>
+      <div class="roadmap-title">マスタ同期 ＋ クイックウィン（慶弔申請）</div>
+      <div class="roadmap-desc">THINK's→Kintone マスタ同期の本番投入。並行して慶弔見舞金申請（出産・結婚・死亡弔慰統合）を先行実装し、<strong>横展開の型</strong>を作る。</div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 1 &nbsp;/&nbsp; 2026-05 〜 07</div>
+      <div class="roadmap-title">契約・発注・支払 4アプリ連携</div>
+      <div class="roadmap-desc">業務委託契約 → 出版契約書類 → 発注書 → 支払依頼 の順で構築。取引先マスタの正規化で、契約申請の二度手間と支払依頼のRPA阻害要因を構造的に解消。</div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 2 &nbsp;/&nbsp; 2026-07 〜 09</div>
+      <div class="roadmap-title">freee ／ THINK's ／ DocuSign 自動連携</div>
+      <div class="roadmap-desc">Phase 1 の4アプリを外部システム接続。<strong>BizRobo廃止</strong>。月末の手作業統合を解消し、リアルタイム連携へ。</div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">PHASE 3 &nbsp;/&nbsp; 2026-09 〜</div>
+      <div class="roadmap-title">海外版権 ＋ 社内申請系 横展開</div>
+      <div class="roadmap-desc">248列の海外版権管理エクセルを整形・Kintone化。慶弔の型から出張・有給・交通費・経費・忌引など社内申請系を量産。</div>
+    </div>
+  </div>
+
+  <div class="callout callout-cyan">
+    <strong>4/23 総務部MTG のゴール：</strong>
+    「やりたいこと16項目」を優先度マトリクス（難易度×価値）に載せて、Phase 0〜3 のスコープを合意。
+    詳細は別資料 <a href="./kintone-roadmap.html" style="color:var(--cyan);font-weight:600">「Kintone 全社DX基盤 構想」</a> を総務部向けに作成済。
+  </div>
+</section>
+
+<!-- SEC 04 -->
+<section class="sec" id="sec04">
+  <div class="section-label section-label-cyan">Section 04</div>
+  <h2 class="section-title">RPA &mdash; BizRobo 代替</h2>
+  <p class="section-subtitle">4/10 総務ヒアリングで、<strong>BizRobo（レイテック社）</strong>運用に関する課題が挙がりました。ロボットが動作不安定でテスト段階で停止したまま、自己管理・修正対応がしづらい。この費用を浮かせて、より便利な投資に振り替えたいご意向です。</p>
+
+  <div class="two-col">
+    <div class="card card-red">
+      <div class="card-header"><div class="card-icon card-icon-red">&#x26A0;</div><h4>現状の課題</h4></div>
+      <p>・ ロボットがテスト段階で停止したまま<br>・ 自己管理・修正が難しい（ブラックボックス）<br>・ 相手先名のバラつきでRPA化不能な工程あり<br>・ 年間費用が固定でかかり続ける</p>
+    </div>
+    <div class="card card-green">
+      <div class="card-header"><div class="card-icon card-icon-green">&#x2728;</div><h4>Kintone基盤での解決</h4></div>
+      <p>・ バリデーションを先に効かせエラー発生率を下げる<br>・ マスタ参照で相手先名を正規化 → RPA阻害要因を解消<br>・ API/Webhookで直接連携（ロボット不要）<br>・ 浮いた費用をKintoneライセンス拡張に転用</p>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>移行戦略：</strong>
+    松本課長が既に着手済の Kintone注文入力アプリを土台に、支払依頼（A3）・発注書（A2）・契約書申請（A4/A6）を順次構築することで、BizRoboの担当業務を置き換えていきます。新しいロボットを作らず、<strong>「エラーが出にくい仕組み」に構造転換</strong>する方向です。
+  </div>
+</section>
+
+<!-- SEC 05 -->
+<section class="sec" id="sec05">
+  <div class="section-label section-label-cyan">Section 05</div>
+  <h2 class="section-title">セールスプロモーション &mdash; 営業DX</h2>
+  <p class="section-subtitle">2/28・3/3 ヒアリングで井坂様・営業チームからいただいた素材を踏まえ、<strong>Kintoneポータルを中心とする営業情報の一元化</strong>から着手するイメージです。</p>
+
+  <div class="roadmap-timeline">
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">SHORT &nbsp;/&nbsp; 短期</div>
+      <div class="roadmap-title">Kintone ポータルで情報一元化</div>
+      <div class="roadmap-desc">新刊締切・重版予定・部門横断情報を一箇所で参照できる<strong>営業ダッシュボード</strong>。Phase 1〜2 の副産物として整備可能。</div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">MID &nbsp;/&nbsp; 中期</div>
+      <div class="roadmap-title">初速可視化ダッシュボード（POS × Kintone）</div>
+      <div class="roadmap-desc">発売直後の売れ行きを POSデータと連動して可視化。配本判断・重版判断の精度向上、機会損失の定量化。</div>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">LONG &nbsp;/&nbsp; 長期</div>
+      <div class="roadmap-title">再販判断支援・営業ナレッジベース</div>
+      <div class="roadmap-desc">営業勝ちパターン分析、SNS・LINE活用などヒアリング済素材をKintoneにナレッジ化。部門横断でノウハウを資産化。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>既存基盤との接続：</strong>
+    Amazon BuyBox 対策と注文書ジェネレーターは <strong>この営業DXの一部として機能する位置付け</strong>です。監視アラート・発注業務を Kintone 営業ダッシュボードから横断できるようにすることで、部門横断の意思決定が加速します。
+  </div>
+</section>
+
+<!-- PART C -->
+<div class="part-divider">
+  <span class="part-badge part-badge-c">Part C</span>
+  <span class="part-name">支援体制のご相談</span>
+</div>
+
+<!-- SEC 06 -->
+<section class="sec" id="sec06">
+  <div class="section-label section-label-green">Section 06</div>
+  <h2 class="section-title">現状の支援規模 と 拡張</h2>
+  <p class="section-subtitle">この1.5ヶ月の成果を踏まえると、<strong>当初想定よりも支援スコープが広がっている</strong>のが現状です。今後は Kintone基盤構築・RPA置換・営業DX の3方向で継続的な稼働が必要になります。</p>
+
+  <div class="compare-box compare-box-green">
+    <table>
+      <thead><tr><th>領域</th><th>当初想定（3月）</th><th>1.5ヶ月経過（4/22）</th><th>今後の継続稼働</th></tr></thead>
+      <tbody>
+        <tr><td><strong>注文書業務</strong></td><td>OCRの技術検証</td><td>PoC完了＋本番環境構築＋ジェネレーター本番化</td><td>運用安定化・Phase2拡張</td></tr>
+        <tr><td><strong>Amazon対策</strong></td><td>調査・検討</td><td>Keepa監視基盤＋通知稼働</td><td>SP-API統合（Sprint 2-3）</td></tr>
+        <tr><td><strong>Kintone</strong></td><td>技術検証のみ</td><td>マスタ同期完了＋業務アプリ構想</td><td>Phase 0〜3（1年規模）</td></tr>
+        <tr><td><strong>RPA整理</strong></td><td>スコープ外</td><td>課題ヒアリング完了</td><td>Kintoneで段階置換</td></tr>
+        <tr><td><strong>営業DX</strong></td><td>スコープ外</td><td>素材ヒアリング完了</td><td>短期〜長期の3段階</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>現在のスコープ感：</strong>
+    注文書業務＋Amazon対策が<strong>基礎コース</strong>とすれば、Kintone基盤構築はそれの2〜3倍の規模感、そこにRPA整理・営業DXが加わっていくイメージです。現状の契約範囲とご期待のズレがないよう、率直にすり合わせさせてください。
+  </div>
+</section>
+
+<!-- SEC 07 -->
+<section class="sec" id="sec07">
+  <div class="section-label section-label-green">Section 07</div>
+  <h2 class="section-title">ご相談したいポイント</h2>
+  <p class="section-subtitle">本日のMTGで、以下の4点をすり合わせさせてください。</p>
+
+  <ul class="action-list">
+    <li>
+      <div class="action-num">1</div>
+      <div>
+        <strong>今後の優先テーマの温度感</strong><br>
+        Kintone 基盤／RPA 置換／セールスプロモーション の3領域。どこに比重を置くか、本日の議論で方向感を合意したいです。弊社としては<strong>Kintone 基盤 → RPA自然置換 → 営業DX統合</strong>の順がROI最大と考えています。
+      </div>
+    </li>
+    <li>
+      <div class="action-num">2</div>
+      <div>
+        <strong>現状の支援体制（月次関わり方）の調整</strong><br>
+        Kintone基盤構築は数ヶ月〜1年単位の継続稼働になります。月次の稼働時間・訪問頻度・優先順位を、<strong>現契約の延長 or 拡張契約</strong>でどう整理するかご相談したいです。
+      </div>
+    </li>
+    <li>
+      <div class="action-num">3</div>
+      <div>
+        <strong>BizRobo など既存ツールの整理方針</strong><br>
+        浮いた費用を Kintone ライセンス拡張（編集部・営業部）に振り替える方向で構想中。BizRobo の契約状態と廃止スケジュールを共有いただけると、具体的な振替額の設計ができます。
+      </div>
+    </li>
+    <li>
+      <div class="action-num">4</div>
+      <div>
+        <strong>役割分担（オモシク／社内／他社ベンダー）</strong><br>
+        Kintone 構築は弊社、日々の運用は社内、Amazon広告は discover社、が基本線。松本課長が着手中の Kintone 注文入力アプリとの連携方針、営業DXを誰が担うか、等を整理したいです。
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- PART D -->
+<div class="part-divider">
+  <span class="part-badge part-badge-d">Part D</span>
+  <span class="part-name">関連資料</span>
+</div>
+
+<!-- SEC 08 -->
+<section class="sec" id="sec08">
+  <div class="section-label section-label-purple">Section 08</div>
+  <h2 class="section-title">関連ドキュメント</h2>
+  <p class="section-subtitle">詳細は以下の別資料をご覧ください。</p>
+
+  <div class="related-grid">
+    <a class="related-card" href="./kintone-roadmap.html">
+      <div class="r-tag">KINTONE &mdash; 総務部向け</div>
+      <div class="r-title">Kintone 全社DX基盤 構想</div>
+      <div class="r-desc">4/23 総務部MTG 用。16項目の棚卸し・Phase 0〜4 ロードマップ・難易度×価値マトリクス・A1慶弔アプリのご紹介。</div>
+    </a>
+    <a class="related-card" href="https://daiwashobo.takao-huagr.workers.dev/" target="_blank" rel="noopener">
+      <div class="r-tag">PORTAL &mdash; 成果物一覧</div>
+      <div class="r-title">大和書房 × オモシク ポータル</div>
+      <div class="r-desc">公開中／進行中の全成果物へのハブ。注文書OCRレポート、ジェネレーター、Amazon監視など。</div>
+    </a>
+  </div>
+
+  <div class="callout callout-purple" style="margin-top:24px">
+    <strong>事前にお伺いできると議論が深まる事項：</strong><br>
+    &bull; BizRobo（レイテック社）の現行契約・運用実態の概況<br>
+    &bull; 契約書3種フォーマットの提供可能時期（注文書OCR の Phase2 で活用）<br>
+    &bull; Kintone 管理者権限の付与可否（総務部への段階的拡張）<br>
+    &bull; 今後の営業DX・セルプロ領域への関心の温度感
+  </div>
+</section>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+
+<!-- Footer -->
+<footer class="closing">
+  <p class="closing-msg">手作業を、ひとつずつ仕組みに。そして全体を、ひとつのポータルに。</p>
+  <p class="closing-sub" style="margin-bottom:12px">omoshiku &mdash; "想い"と"仕組み"で"面白く"</p>
+  <p class="closing-sub">大和書房 &times; オモシク &mdash; 1.5ヶ月進捗共有 &amp; 今後の体制ご提案</p>
+  <p class="closing-sub" style="margin-top:8px">Confidential | 2026-04-22 &nbsp;/&nbsp; 社長・窪田様・井坂様 向け</p>
+</footer>
+
+<script>
+(function() {
+  var pc = document.getElementById('particles');
+  for (var i = 0; i < 45; i++) {
+    var p = document.createElement('div');
+    var isAmber = Math.random() > 0.4;
+    p.className = 'particle ' + (isAmber ? 'particle-amber' : 'particle-white');
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-10px';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (5 + Math.random() * 7) + 's';
+    var size = 1.5 + Math.random() * 2.5;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    pc.appendChild(p);
+  }
+
+  var tocLinks = document.querySelectorAll('.toc-link');
+  var sections = [];
+  tocLinks.forEach(function(a) {
+    var target = document.querySelector(a.getAttribute('href'));
+    if (target) sections.push({ el: target, link: a });
+  });
+  if (sections.length) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          tocLinks.forEach(function(l) { l.classList.remove('active'); });
+          var match = sections.find(function(s) { return s.el === e.target; });
+          if (match) match.link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+    sections.forEach(function(s) { io.observe(s.el); });
+  }
+
+  var gnav = document.getElementById('gnav');
+  var hero = document.querySelector('.hero');
+  var gnavLinks = gnav ? gnav.querySelectorAll('.gnav-link') : [];
+  var allSections = document.querySelectorAll('.sec[id]');
+  function updateMobileNav() {
+    if (!gnav || window.innerWidth > 960) return;
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    gnav.classList.toggle('visible', heroBottom < 60);
+    var currentId = '';
+    allSections.forEach(function(s) {
+      if (s.getBoundingClientRect().top < 100) currentId = s.id;
+    });
+    gnavLinks.forEach(function(a) {
+      var href = a.getAttribute('href').replace('#', '');
+      a.classList.toggle('active', href === currentId);
+    });
+  }
+  window.addEventListener('scroll', updateMobileNav, { passive: true });
+  window.addEventListener('resize', updateMobileNav, { passive: true });
+  updateMobileNav();
+})();
+</script>
+</body>
+</html>
