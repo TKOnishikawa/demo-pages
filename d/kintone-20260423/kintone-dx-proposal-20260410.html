@@ -128,6 +128,32 @@ p.body-text { font-size: 12.5px; color: var(--text-2); margin-bottom: 10px; line
 /* Arch */
 .arch { background: var(--bg-warm); border: 1px solid var(--border-light); border-radius: 10px; padding: 20px; margin: 14px 0; font-family: 'Sora', monospace; font-size: 11px; line-height: 1.7; color: var(--text-2); white-space: pre; overflow-x: auto; }
 
+/* Architecture Diagram (HTML version) */
+.arch-diagram { background: var(--bg-warm); border: 1px solid var(--border-light); border-radius: 10px; padding: 22px; margin: 14px 0; }
+.arch-layer-label { font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; text-align: center; margin-bottom: 10px; }
+.arch-source-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+@media(max-width:768px) { .arch-source-grid { grid-template-columns: repeat(3, 1fr); } }
+@media(max-width:480px) { .arch-source-grid { grid-template-columns: repeat(2, 1fr); } }
+.arch-source { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px 8px; text-align: center; }
+.arch-source strong { display: block; font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+.arch-source span { display: block; font-size: 10px; color: var(--text-3); line-height: 1.3; }
+.arch-arrow { text-align: center; font-size: 18px; color: var(--accent); margin: 10px 0; line-height: 1; }
+.arch-hub { background: var(--accent-bg); border: 1.5px solid var(--accent); border-radius: 10px; padding: 16px 20px; }
+.arch-hub-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent-dark); text-align: center; margin-bottom: 12px; }
+.arch-hub-rows { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.arch-hub-row { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--text-2); }
+.arch-hub-label { display: inline-block; min-width: 56px; padding: 2px 8px; background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 4px; font-size: 10px; font-weight: 700; color: var(--accent-dark); text-align: center; }
+.arch-hub-tagline { text-align: center; font-size: 12px; font-weight: 700; color: var(--accent-dark); padding-top: 10px; border-top: 1px dashed var(--accent-border); }
+
+/* Agenda */
+.agenda-box { background: var(--bg-warm); border-left: 4px solid var(--accent); border-radius: 8px; padding: 16px 20px; margin: 18px 0 28px; }
+.agenda-title { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: var(--accent-dark); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+.agenda-list { list-style: none; padding: 0; margin: 0; counter-reset: agenda; }
+.agenda-list li { counter-increment: agenda; padding: 6px 0 6px 32px; position: relative; font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+.agenda-list li::before { content: counter(agenda, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent); width: 24px; text-align: right; }
+.agenda-list li strong { color: var(--navy); font-weight: 700; }
+.agenda-list li span { color: var(--text-3); font-size: 11px; margin-left: 6px; }
+
 /* Vision */
 .vision-box { background: var(--accent-bg); border: 2px solid var(--accent-border); border-radius: 12px; padding: 22px 28px; margin: 14px 0; text-align: center; }
 .vision-box h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 8px; }
@@ -157,6 +183,17 @@ p.body-text { font-size: 12.5px; color: var(--text-2); margin-bottom: 10px; line
       <div class="brand-tagline">「想い」と「仕組み」で「面白く」</div>
       <div class="doc-date">2026年4月10日</div>
     </div>
+  </div>
+
+  <!-- ============ AGENDA ============ -->
+  <div class="agenda-box">
+    <div class="agenda-title">本日のアジェンダ</div>
+    <ol class="agenda-list">
+      <li><strong>Part 1 — 出版・メディア業界の成功事例</strong><span>KADOKAWA / 一迅社 / 産経新聞社 / 日刊工業新聞社</span></li>
+      <li><strong>Part 2 — まず何から始めるか</strong><span>総務部からの3つの出発点</span></li>
+      <li><strong>Part 3 — 目指す理想像</strong><span>kintoneを「全社の業務ハブ」にする</span></li>
+      <li><strong>Part 4 — ステップ・バイ・ステップ</strong><span>段階的に広げていく進め方</span></li>
+    </ol>
   </div>
 
   <!-- ============ PART 1: 成功事例 ============ -->
@@ -329,26 +366,27 @@ p.body-text { font-size: 12.5px; color: var(--text-2); margin-bottom: 10px; line
       <p>THINK'S・インテージPOS・各種書店データ・freee・注文書アプリ——<br>バラバラだったデータをkintoneに集約し、全社員が必要な情報にすぐアクセスできる状態を作ります。</p>
     </div>
 
-    <div class="arch">
-  ┌─────── 各システム（データソース）──────┐
-  │                                        │
-  │  THINK'S     各種POS      freee        │
-  │  (受注/在庫)  (書店売上)   (会計/給与)  │
-  │      │          │           │          │
-  │  注文書App   Amazon監視   Google WS    │
-  │  (自社開発)   (Keepa)     (メール等)    │
-  └──┬───┬───┬───┬───┬───┬───┬──────────┘
-     │   │   │   │   │   │   │
-     ▼   ▼   ▼   ▼   ▼   ▼   ▼
-  ┌────────────────────────────────────────┐
-  │       kintone（全社の業務ハブ）          │
-  │                                        │
-  │   マスタ: 書籍 / 著者 / 取引先 / 社員   │
-  │   業務:   申請 / 契約 / IT管理 / 日報   │
-  │   集計:   ダッシュボード / レポート      │
-  │                                        │
-  │   ★ 日常業務で全社員が毎日使う基盤 ★    │
-  └────────────────────────────────────────┘</div>
+    <div class="arch-diagram">
+      <div class="arch-layer-label">各システム（データソース）</div>
+      <div class="arch-source-grid">
+        <div class="arch-source"><strong>THINK'S</strong><span>受注／在庫</span></div>
+        <div class="arch-source"><strong>各種POS</strong><span>書店売上</span></div>
+        <div class="arch-source"><strong>freee</strong><span>会計／給与</span></div>
+        <div class="arch-source"><strong>注文書App</strong><span>自社開発</span></div>
+        <div class="arch-source"><strong>Amazon監視</strong><span>Keepa</span></div>
+        <div class="arch-source"><strong>Google WS</strong><span>メール等</span></div>
+      </div>
+      <div class="arch-arrow">▼ ▼ ▼</div>
+      <div class="arch-hub">
+        <div class="arch-hub-title">kintone（全社の業務ハブ）</div>
+        <div class="arch-hub-rows">
+          <div class="arch-hub-row"><span class="arch-hub-label">マスタ</span>書籍 ／ 著者 ／ 取引先 ／ 社員</div>
+          <div class="arch-hub-row"><span class="arch-hub-label">業務</span>申請 ／ 契約 ／ IT管理 ／ 日報</div>
+          <div class="arch-hub-row"><span class="arch-hub-label">集計</span>ダッシュボード ／ レポート</div>
+        </div>
+        <div class="arch-hub-tagline">★ 日常業務で全社員が毎日使う基盤 ★</div>
+      </div>
+    </div>
 
     <div class="highlight-box">
       <h4>設計の原則</h4>
