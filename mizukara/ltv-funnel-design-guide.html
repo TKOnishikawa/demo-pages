@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTV推進室｜ファネル設計ガイド — ミズカラ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --gradient-hero: linear-gradient(135deg, #e8944a 0%, #d4582f 50%, #c04040 100%);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --navy-light: #2a2a44;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --success-bg: rgba(52,211,153,0.08);
+  --green: #27ae60;
+  --green-bg: rgba(39,174,96,0.08);
+  --red: #c04040;
+  --red-bg: rgba(192,64,64,0.08);
+  --blue: #3498db;
+  --blue-bg: rgba(52,152,219,0.08);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.08);
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6,182,212,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --font-jp: 'Noto Sans JP', sans-serif;
+  --font-en: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-jp);
+  background: var(--bg-warm);
+  color: var(--text-1);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative; min-height: 55vh;
+  display: flex; align-items: center; justify-content: center;
+  background: #0a0a14; overflow: hidden; text-align: center;
+  padding: 80px 28px 64px;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,148,74,0.3), transparent);
+}
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg::before {
+  content: ''; position: absolute; top: -40%; right: -20%;
+  width: 900px; height: 900px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,148,74,0.18) 0%, transparent 65%);
+  animation: float-orb 10s ease-in-out infinite;
+}
+.hero-bg::after {
+  content: ''; position: absolute; bottom: -25%; left: -15%;
+  width: 750px; height: 750px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,64,64,0.12) 0%, transparent 65%);
+  animation: float-orb 13s ease-in-out infinite reverse;
+}
+.hero-bg-extra {
+  position: absolute; top: 30%; left: 40%;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(42,122,110,0.1) 0%, transparent 60%);
+  animation: float-orb 16s ease-in-out infinite 3s; z-index: 0;
+}
+.hero-mesh {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.06;
+  background-image:
+    linear-gradient(30deg, transparent 48%, rgba(232,148,74,0.4) 49%, rgba(232,148,74,0.4) 51%, transparent 52%),
+    linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.15) 49%, rgba(255,255,255,0.15) 51%, transparent 52%);
+  background-size: 80px 80px; animation: mesh-drift 25s linear infinite;
+}
+.hero-scanlines {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+}
+.hero-particles { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.particle {
+  position: absolute; border-radius: 50%; opacity: 0;
+  animation: particle-drift 8s linear infinite;
+}
+.particle-amber { background: var(--accent-light); }
+.particle-white { background: rgba(255,255,255,0.5); }
+.hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 18px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; color: var(--accent-light);
+  border: 1px solid rgba(232,148,74,0.25); border-radius: 20px;
+  margin-bottom: 28px; opacity: 0; animation: hero-fade-in 1s 0.3s forwards;
+}
+.hero h1 {
+  font-family: var(--font-en), var(--font-jp);
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  font-weight: 800; color: #f0ece6; line-height: 1.5;
+  margin-bottom: 20px; letter-spacing: -0.01em;
+  opacity: 0; animation: hero-fade-in 1s 0.5s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero .lead {
+  font-size: 0.9rem; color: rgba(240,236,230,0.6);
+  font-weight: 300; line-height: 1.9; max-width: 620px; margin: 0 auto;
+  opacity: 0; animation: hero-fade-in 1s 0.7s forwards;
+}
+.hero-footer {
+  margin-top: 36px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+  opacity: 0; animation: hero-fade-in 1s 0.9s forwards;
+}
+.hero-footer .meta { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); }
+.hero-footer .meta strong { color: rgba(240,236,230,0.5); font-weight: 500; }
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.08); }
+  66% { transform: translate(-30px, 30px) scale(0.94); }
+}
+@keyframes particle-drift {
+  0% { opacity: 0; transform: translateY(0) scale(1); }
+  10% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-100vh) scale(0.4); }
+}
+@keyframes mesh-drift { 0% { transform: translate(0,0); } 100% { transform: translate(80px,80px); } }
+@keyframes hero-fade-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Page Layout ─── */
+.page-layout {
+  display: flex; gap: 36px; align-items: flex-start;
+  max-width: 1160px; margin: 0 auto; padding: 40px 28px 0;
+}
+.main-content { flex: 1; min-width: 0; }
+
+/* ─── TOC Sidebar ─── */
+.toc-sidebar {
+  position: sticky; top: 24px;
+  width: 230px; flex-shrink: 0;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 16px;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+.toc-sidebar::-webkit-scrollbar { width: 3px; }
+.toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+.toc-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.toc-title {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+.toc-part {
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 14px; margin-bottom: 6px; padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+.toc-part:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.toc-part-a { color: var(--accent); }
+.toc-part-b { color: var(--cyan); }
+.toc-part-c { color: var(--green); }
+.toc-part-d { color: var(--purple); }
+
+.toc-link {
+  display: block; font-size: 0.72rem; color: var(--text-3);
+  text-decoration: none; padding: 3px 0 3px 10px;
+  border-left: 2px solid transparent;
+  line-height: 1.4; transition: all 0.15s;
+}
+.toc-link:hover { color: var(--text-1); }
+.toc-link.active { font-weight: 600; }
+.toc-link.active.toc-a { color: var(--accent-dark); border-left-color: var(--accent); }
+.toc-link.active.toc-b { color: var(--cyan); border-left-color: var(--cyan); }
+.toc-link.active.toc-c { color: var(--green); border-left-color: var(--green); }
+.toc-link.active.toc-d { color: var(--purple); border-left-color: var(--purple); }
+
+.toc-num {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--text-3); margin-right: 4px;
+}
+
+/* ─── Part Divider ─── */
+.part-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 56px 0 28px; padding-bottom: 12px;
+}
+.part-divider:first-child { margin-top: 0; }
+.part-badge {
+  font-family: var(--font-en); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 4px; color: #fff;
+}
+.part-badge-a { background: var(--accent); }
+.part-badge-b { background: var(--cyan); }
+.part-badge-c { background: var(--green); }
+.part-badge-d { background: var(--purple); }
+.part-name { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+
+/* ─── Section ─── */
+.sec { padding: 40px 0 48px; border-bottom: 1px solid var(--border-light); }
+.sec:last-child { border-bottom: none; }
+.sec[id] { scroll-margin-top: 24px; }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--font-en); font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 8px;
+}
+.section-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-label-cyan { color: var(--cyan); }
+.section-label-cyan::before { background: var(--cyan); }
+.section-label-green { color: var(--green); }
+.section-label-green::before { background: var(--green); }
+.section-label-purple { color: var(--purple); }
+.section-label-purple::before { background: var(--purple); }
+
+.section-title {
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem); font-weight: 800;
+  color: var(--text-1); margin-bottom: 8px; line-height: 1.4;
+}
+.section-subtitle {
+  font-size: 0.88rem; color: var(--text-2); margin-bottom: 32px; line-height: 1.8;
+}
+.sub-h { font-size: 0.98rem; font-weight: 700; margin: 28px 0 12px; color: var(--text-1); }
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-card); border-radius: 12px; padding: 24px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 16px;
+}
+.card-accent { border-left: 3px solid var(--accent); }
+.card-green { border-left: 3px solid var(--green); }
+.card-red { border-left: 3px solid var(--red); }
+.card-blue { border-left: 3px solid var(--blue); }
+.card-purple { border-left: 3px solid var(--purple); }
+.card-cyan { border-left: 3px solid var(--cyan); }
+.card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.card-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.card-icon-accent { background: var(--accent-bg); }
+.card-icon-green { background: var(--green-bg); }
+.card-icon-red { background: var(--red-bg); }
+.card-icon-blue { background: var(--blue-bg); }
+.card-icon-purple { background: var(--purple-bg); }
+.card-icon-cyan { background: var(--cyan-bg); }
+.card h4 { font-size: 0.95rem; font-weight: 700; }
+.card p { font-size: 0.84rem; color: var(--text-2); margin-bottom: 6px; line-height: 1.7; }
+.card p:last-child { margin-bottom: 0; }
+
+/* ─── Challenge Grid ─── */
+.challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.challenge-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-top: 3px solid var(--accent); border-radius: 0 0 12px 12px;
+  padding: 22px 18px; transition: transform 0.2s, box-shadow 0.2s;
+}
+.challenge-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.challenge-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--text-1); margin-bottom: 8px; line-height: 1.4; }
+.challenge-card .symptom { font-size: 0.82rem; color: var(--text-2); margin-bottom: 12px; line-height: 1.7; }
+.challenge-card .impact-tag {
+  font-size: 0.75rem; color: var(--accent-dark); font-weight: 600;
+  padding: 6px 10px; background: var(--accent-bg); border-radius: 6px; line-height: 1.5;
+  display: inline-block;
+}
+.challenge-card-cyan { border-top-color: var(--cyan); }
+.challenge-card-cyan .impact-tag { color: var(--cyan); background: var(--cyan-bg); }
+.challenge-card-green { border-top-color: var(--green); }
+.challenge-card-green .impact-tag { color: var(--green); background: var(--green-bg); }
+.challenge-card-purple { border-top-color: var(--purple); }
+.challenge-card-purple .impact-tag { color: var(--purple); background: var(--purple-bg); }
+.challenge-card-red { border-top-color: var(--red); }
+.challenge-card-red .impact-tag { color: var(--red); background: var(--red-bg); }
+
+/* ─── Impact Grid ─── */
+.impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.impact-item {
+  background: var(--bg-card); border-radius: 12px; padding: 20px; text-align: center;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+}
+.impact-number {
+  font-family: var(--font-mono); font-size: 1.7rem; font-weight: 700; color: var(--accent); line-height: 1.2;
+}
+.impact-label { font-size: 0.74rem; color: var(--text-3); margin-top: 4px; }
+
+/* ─── Flow / Arch ─── */
+.flow-diagram {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px 20px; margin: 20px 0;
+  color: var(--text-1); text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.flow-step { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 4px; flex-wrap: wrap; }
+.flow-arrow-label {
+  display: inline-block; margin: 8px 0; font-size: 0.72rem;
+  color: var(--text-3); font-family: var(--font-en);
+}
+.flow-arrow-label::before { content: '\2193'; display: inline-block; margin-right: 6px; color: var(--accent); font-size: 16px; font-weight: 700; }
+.flow-box {
+  display: inline-block; padding: 12px 22px; border-radius: 10px;
+  font-size: 0.88rem; font-weight: 600; max-width: 560px; color: var(--text-1);
+  box-shadow: var(--shadow-sm);
+}
+.flow-box small { display: block; font-size: 0.72rem; color: var(--text-2); font-weight: 400; margin-top: 4px; }
+.flow-a { background: var(--accent-bg); border: 1px solid var(--accent-border); }
+.flow-b { background: var(--cyan-bg); border: 1px solid rgba(6,182,212,0.22); }
+.flow-c { background: var(--green-bg); border: 1px solid rgba(39,174,96,0.22); }
+.flow-d { background: var(--purple-bg); border: 1px solid rgba(139,92,246,0.22); }
+.flow-red { background: var(--red-bg); border: 1px solid rgba(192,64,64,0.22); }
+
+/* ダーク版（Dashboard モックのみ） */
+.flow-diagram-dark {
+  background: var(--navy); color: #fff;
+}
+.flow-diagram-dark .flow-box { color: #fff; }
+.flow-diagram-dark .flow-arrow-label { color: rgba(240,236,230,0.5); }
+.flow-diagram-dark .flow-a { background: rgba(232,148,74,0.2); border: 1px solid rgba(232,148,74,0.4); }
+.flow-diagram-dark .flow-b { background: rgba(6,182,212,0.2); border: 1px solid rgba(6,182,212,0.4); }
+.flow-diagram-dark .flow-c { background: rgba(39,174,96,0.2); border: 1px solid rgba(39,174,96,0.4); }
+.flow-diagram-dark .flow-d { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.4); }
+.flow-diagram-dark .flow-red { background: rgba(192,64,64,0.2); border: 1px solid rgba(192,64,64,0.4); }
+
+/* ─── Compare Table ─── */
+.compare-box {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: var(--shadow-sm); margin: 16px 0;
+}
+.compare-box table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.compare-box thead th {
+  background: var(--accent-bg); padding: 10px 14px; text-align: left;
+  font-weight: 600; color: var(--accent-dark); border-bottom: 1px solid var(--accent-border); font-size: 0.76rem;
+}
+.compare-box tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); color: var(--text-2); vertical-align: top; }
+.compare-box tbody tr:last-child td { border-bottom: none; }
+.compare-box tbody td:first-child { font-weight: 600; color: var(--text-1); }
+.compare-box .recommended { background: rgba(52,211,153,0.05); }
+.compare-box .recommended td { color: var(--text-1); font-weight: 500; }
+.compare-box-cyan thead th { background: var(--cyan-bg); color: var(--cyan); border-bottom-color: rgba(6,182,212,0.2); }
+.compare-box-green thead th { background: var(--green-bg); color: var(--green); border-bottom-color: rgba(39,174,96,0.2); }
+.compare-box-purple thead th { background: var(--purple-bg); color: var(--purple); border-bottom-color: rgba(139,92,246,0.2); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; }
+.tag-high { background: var(--green-bg); color: var(--green); }
+.tag-mid { background: var(--blue-bg); color: var(--blue); }
+.tag-low { background: var(--red-bg); color: var(--red); }
+.tag-accent { background: var(--accent-bg); color: var(--accent-dark); }
+.tag-cyan { background: var(--cyan-bg); color: var(--cyan); }
+.tag-purple { background: var(--purple-bg); color: var(--purple); }
+
+/* ─── Accordion ─── */
+.accordion-section { margin-top: 20px; }
+.accordion-item {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 8px; overflow: hidden; transition: box-shadow 0.2s;
+}
+.accordion-item:hover { box-shadow: var(--shadow-sm); }
+.accordion-summary {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; cursor: pointer; font-size: 0.86rem; font-weight: 600;
+  color: var(--text-1); list-style: none; user-select: none; gap: 12px;
+}
+.accordion-summary::-webkit-details-marker { display: none; }
+.accordion-summary::after {
+  content: '+'; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 400;
+  color: var(--accent); flex-shrink: 0; transition: transform 0.2s;
+}
+details[open] > .accordion-summary::after { content: '\2212'; }
+.accordion-body {
+  padding: 0 18px 16px; font-size: 0.82rem; color: var(--text-2); line-height: 1.8;
+}
+.accordion-body p { margin-bottom: 8px; }
+.accordion-body ul { padding-left: 18px; margin-bottom: 8px; }
+.accordion-body li { margin-bottom: 4px; }
+.accordion-body strong { color: var(--text-1); }
+
+/* ─── Step Cards ─── */
+.step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 16px 0; }
+.step-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px 18px; text-align: center; transition: transform 0.2s, box-shadow 0.2s;
+}
+.step-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.step-num {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--accent); margin-bottom: 4px;
+}
+.step-card h4 { font-size: 0.86rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+.step-card p { font-size: 0.8rem; color: var(--text-2); line-height: 1.65; margin: 0; }
+.step-card .step-meta { font-size: 0.7rem; color: var(--text-3); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-light); }
+
+/* ─── Callout ─── */
+.callout {
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: 10px; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.86rem; color: var(--text-1); line-height: 1.8;
+}
+.callout strong { color: var(--accent-dark); }
+.callout-green { background: var(--green-bg); border-color: rgba(39,174,96,0.2); }
+.callout-green strong { color: var(--green); }
+.callout-red { background: var(--red-bg); border-color: rgba(192,64,64,0.2); }
+.callout-red strong { color: var(--red); }
+.callout-cyan { background: var(--cyan-bg); border-color: rgba(6,182,212,0.2); }
+.callout-cyan strong { color: var(--cyan); }
+.callout-purple { background: var(--purple-bg); border-color: rgba(139,92,246,0.2); }
+.callout-purple strong { color: var(--purple); }
+
+/* ─── Two Column ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+/* ─── Formula Box ─── */
+.formula-box {
+  background: var(--navy); color: #fff;
+  border-radius: 12px; padding: 28px 24px; margin: 20px 0;
+  font-family: var(--font-mono);
+}
+.formula-box .formula-main {
+  font-size: clamp(0.85rem, 1.6vw, 1.05rem); text-align: center; margin-bottom: 14px; font-weight: 700;
+  line-height: 1.8;
+}
+.formula-box .formula-sub {
+  font-size: 0.74rem; color: rgba(240,236,230,0.55); text-align: center; line-height: 1.7;
+  font-family: var(--font-jp);
+}
+.formula-box em {
+  font-style: normal;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* ─── Driver Chips ─── */
+.driver-chip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 18px 0; }
+.driver-chip {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 16px; transition: transform 0.2s, box-shadow 0.2s;
+  border-top: 3px solid var(--accent);
+}
+.driver-chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.driver-chip .dnum {
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent-dark);
+  font-weight: 700; margin-bottom: 6px;
+}
+.driver-chip h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+.driver-chip .dnote { font-size: 0.76rem; color: var(--text-2); line-height: 1.65; margin-bottom: 8px; }
+.driver-chip .dtheory {
+  font-size: 0.68rem; color: var(--text-3); font-family: var(--font-en);
+  padding-top: 8px; border-top: 1px dashed var(--border-light);
+}
+.driver-chip.chip-cyan { border-top-color: var(--cyan); }
+.driver-chip.chip-cyan .dnum { color: var(--cyan); }
+.driver-chip.chip-green { border-top-color: var(--green); }
+.driver-chip.chip-green .dnum { color: var(--green); }
+.driver-chip.chip-purple { border-top-color: var(--purple); }
+.driver-chip.chip-purple .dnum { color: var(--purple); }
+.driver-chip.chip-red { border-top-color: var(--red); }
+.driver-chip.chip-red .dnum { color: var(--red); }
+.driver-chip.chip-blue { border-top-color: var(--blue); }
+.driver-chip.chip-blue .dnum { color: var(--blue); }
+
+/* ─── Persona Grid ─── */
+.persona-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 22px; margin-bottom: 12px; border-left: 3px solid var(--purple);
+}
+.persona-card h4 { font-size: 0.96rem; font-weight: 700; margin-bottom: 8px; color: var(--purple); }
+.persona-card .persona-row { font-size: 0.82rem; color: var(--text-2); margin: 4px 0; }
+.persona-card .persona-row strong { color: var(--text-1); min-width: 140px; display: inline-block; }
+
+/* ─── Action Checklist ─── */
+.action-list { list-style: none; padding: 0; margin: 12px 0; }
+.action-list li {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px;
+  background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 10px;
+  margin-bottom: 8px; font-size: 0.84rem; color: var(--text-2); line-height: 1.6;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.action-list li:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.action-num {
+  flex-shrink: 0; width: 28px; height: 28px;
+  background: var(--accent-bg); color: var(--accent-dark);
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.action-list li strong { color: var(--text-1); }
+
+/* ─── Roadmap ─── */
+.roadmap-timeline { position: relative; padding-left: 30px; margin: 20px 0; }
+.roadmap-timeline::before {
+  content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--cyan), var(--green), var(--purple));
+}
+.roadmap-phase { position: relative; margin-bottom: 28px; }
+.roadmap-dot {
+  position: absolute; left: -30px; top: 4px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg-card); border: 3px solid var(--accent); z-index: 1;
+}
+.roadmap-phase.rp-2 .roadmap-dot { border-color: var(--cyan); }
+.roadmap-phase.rp-3 .roadmap-dot { border-color: var(--green); }
+.roadmap-phase.rp-4 .roadmap-dot { border-color: var(--purple); }
+.roadmap-phase.rp-5 .roadmap-dot { border-color: var(--red); }
+.roadmap-time {
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+  color: var(--accent); letter-spacing: 0.05em; margin-bottom: 2px;
+}
+.roadmap-phase.rp-2 .roadmap-time { color: var(--cyan); }
+.roadmap-phase.rp-3 .roadmap-time { color: var(--green); }
+.roadmap-phase.rp-4 .roadmap-time { color: var(--purple); }
+.roadmap-phase.rp-5 .roadmap-time { color: var(--red); }
+.roadmap-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.roadmap-desc { font-size: 0.84rem; color: var(--text-2); line-height: 1.8; }
+
+/* ─── Dashboard Mock ─── */
+.dashboard-mock {
+  background: var(--navy); color: #fff;
+  border-radius: 12px; padding: 28px 24px; margin: 20px 0;
+  font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.9;
+}
+.dashboard-mock h5 { font-size: 0.85rem; margin-bottom: 12px; color: var(--accent-light); font-family: var(--font-jp); font-weight: 700; }
+.dashboard-mock .score-row { display: flex; align-items: center; gap: 12px; margin: 4px 0; }
+.dashboard-mock .score-bar { display: inline-block; color: var(--accent-light); font-family: var(--font-mono); }
+.dashboard-mock .score-warn { color: var(--red); }
+.dashboard-mock .score-ok { color: var(--success); }
+.dashboard-mock .dash-divider { border-top: 1px dashed rgba(255,255,255,0.12); margin: 14px 0; }
+.dashboard-mock .dash-label { color: rgba(240,236,230,0.5); font-family: var(--font-jp); }
+.dashboard-mock .dash-section { padding: 10px 0; }
+
+/* ─── Feature Table ─── */
+.feature-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 10px 0; }
+.feature-table th {
+  text-align: left; padding: 10px 12px; font-weight: 600;
+  color: var(--text-3); font-size: 0.72rem; letter-spacing: 0.06em;
+  border-bottom: 2px solid var(--border);
+}
+.feature-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-light); color: var(--text-2); vertical-align: top; }
+.feature-table td:first-child { font-weight: 500; color: var(--text-1); }
+
+/* ─── Global Nav (mobile only) ─── */
+.gnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(246,243,238,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%); transition: transform 0.35s ease;
+  display: none;
+}
+.gnav.visible { transform: translateY(0); }
+.gnav-inner {
+  max-width: 960px; margin: 0 auto; padding: 0 20px;
+  display: flex; align-items: center; height: 44px; gap: 4px;
+}
+.gnav-logo {
+  font-family: var(--font-en); font-size: 0.65rem; font-weight: 700;
+  color: var(--text-1); letter-spacing: 0.05em; margin-right: auto; white-space: nowrap;
+}
+.gnav-link {
+  font-size: 0.65rem; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 5px 8px; border-radius: 4px;
+  transition: color 0.2s, background 0.2s; white-space: nowrap;
+}
+.gnav-link:hover { color: var(--text-1); background: rgba(0,0,0,0.04); }
+.gnav-link.active { color: var(--accent); font-weight: 600; }
+
+/* ─── Footer ─── */
+.closing { background: var(--navy); padding: 44px 28px 28px; text-align: center; }
+.closing-msg { font-size: 1rem; font-weight: 600; color: rgba(240,236,230,0.75); margin-bottom: 10px; }
+.closing-sub { font-size: 0.72rem; color: rgba(240,236,230,0.3); font-family: var(--font-en); letter-spacing: 0.05em; }
+
+/* ─── Responsive ─── */
+@media (max-width: 960px) {
+  .toc-sidebar { display: none; }
+  .page-layout { display: block; padding: 24px 20px 0; }
+  .gnav { display: block; }
+  .sec[id] { scroll-margin-top: 56px; }
+  .three-col { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .challenge-grid { grid-template-columns: 1fr; }
+  .driver-chip-grid { grid-template-columns: 1fr; }
+  .gnav-link { font-size: 0.58rem; padding: 5px 5px; }
+  .gnav-logo { font-size: 0.58rem; }
+}
+@media print {
+  .hero { min-height: auto; padding: 40px 20px; }
+  .toc-sidebar { display: none; }
+  .gnav { display: none; }
+  .page-layout { display: block; }
+  .sec { padding: 24px 0; }
+  .flow-diagram, .formula-box, .dashboard-mock { background: #333; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ MOBILE NAV ═══════════════ -->
+<nav class="gnav" id="gnav">
+  <div class="gnav-inner">
+    <span class="gnav-logo">LTV推進室 &times; ファネル設計ガイド</span>
+    <a href="#sec00" class="gnav-link">全体像</a>
+    <a href="#sec01" class="gnav-link">基盤</a>
+    <a href="#sec04" class="gnav-link">公式</a>
+    <a href="#sec08" class="gnav-link">実装</a>
+    <a href="#sec11" class="gnav-link">ゴール</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bg-extra"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">LTV推進室 &mdash; ファネル設計ガイド v1.1</div>
+    <h1>顧客の<em>理想状態 × バリア × トリガー</em>を<br>再現可能な型にする</h1>
+    <p class="lead">ミズカラが LTV最大化を実現するための接続ルート設計思想・公式・実装プロセス。<br>KGI &rarr; KPI &rarr; KAI の階層で測り、ドライバー &times; ブレーキ &times; 場の力 で動かす。</p>
+    <div class="hero-footer">
+      <div class="meta"><strong>By</strong> LTV推進室</div>
+      <div class="meta"><strong>For</strong> CXO・チーフコーチ・ファネル設計メンバー</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ PAGE LAYOUT ═══════════════ -->
+<div class="page-layout">
+
+<!-- ─── TOC Sidebar ─── -->
+<nav class="toc-sidebar" id="toc">
+  <div class="toc-title">Contents</div>
+
+  <div class="toc-part" style="color:var(--text-1);">構築プロセス全体像</div>
+  <a href="#sec00" class="toc-link"><span class="toc-num">00</span>5段階プロセス（俯瞰）</a>
+
+  <div class="toc-part toc-part-a">Part A &mdash; 基盤理解</div>
+  <a href="#sec01" class="toc-link toc-a"><span class="toc-num">01</span>なぜこの整理が必要か</a>
+  <a href="#sec02" class="toc-link toc-a"><span class="toc-num">02</span>用語定義（4階層）</a>
+  <a href="#sec03" class="toc-link toc-a"><span class="toc-num">03</span>思想7原則</a>
+  <a href="#sec03b" class="toc-link toc-a"><span class="toc-num">3.5</span>KGI / KPI / KAI 階層と CRM</a>
+  <a href="#sec03c" class="toc-link toc-a"><span class="toc-num">3.6</span>ゴール数値（各ルートのKGI）</a>
+
+  <div class="toc-part toc-part-b">Part B &mdash; 成立の公式</div>
+  <a href="#sec04" class="toc-link toc-b"><span class="toc-num">04</span>統合公式の全体像</a>
+  <a href="#sec05" class="toc-link toc-b"><span class="toc-num">05</span>7つのドライバー</a>
+  <a href="#sec06" class="toc-link toc-b"><span class="toc-num">06</span>3つのブレーキ</a>
+  <a href="#sec07" class="toc-link toc-b"><span class="toc-num">07</span>4つの場の力</a>
+
+  <div class="toc-part toc-part-c">Part C &mdash; 実装プロセス</div>
+  <a href="#sec08" class="toc-link toc-c"><span class="toc-num">08</span>5段階プロセス</a>
+  <a href="#sec08b" class="toc-link toc-c"><span class="toc-num">8.5</span>成功エッセンス抽出ヒアリング</a>
+  <a href="#sec09" class="toc-link toc-c"><span class="toc-num">09</span>ペルソナ × ジャーニー</a>
+  <a href="#sec10" class="toc-link toc-c"><span class="toc-num">10</span>ボトルネック診断</a>
+
+  <div class="toc-part toc-part-d">Part D &mdash; ゴールと実行</div>
+  <a href="#sec11" class="toc-link toc-d"><span class="toc-num">11</span>最終ゴール像</a>
+  <a href="#sec12" class="toc-link toc-d"><span class="toc-num">12</span>整理の優先順位</a>
+</nav>
+
+<!-- ─── Main Content ─── -->
+<div class="main-content">
+
+<!-- ══════════ SEC 00: 構築プロセス全体像 ══════════ -->
+<section class="sec" id="sec00" style="padding-top: 0;">
+  <div class="section-label">Overview</div>
+  <h2 class="section-title">構築プロセス全体像 &mdash; 5段階で進める</h2>
+  <p class="section-subtitle">本ガイドはこの5段階で読み進めます。Part A〜D は <strong>STEP 1〜3</strong> の中身を詳しく扱います。STEP 4〜5（ボトルネック特定／KPI設計）は STEP 1〜3 の整理が終わってから着手します。</p>
+
+  <div class="flow-diagram" style="padding:32px 20px;">
+    <div class="flow-step">
+      <span class="flow-box flow-a" style="max-width:640px;">
+        <strong>STEP 1 &mdash; 構成要素・考え方の合意</strong>
+        <small>用語・公式・思想・KGI / KPI / KAI 階層を共通言語にする</small>
+      </span>
+    </div>
+    <div class="flow-arrow-label">共通言語が固まったら → 各プロダクトと各ファネルに展開</div>
+    <div class="flow-step">
+      <span class="flow-box flow-b" style="max-width:640px;">
+        <strong>STEP 2 &mdash; プロダクト価値定義 ＋ 仮説言語化</strong>
+        <small>各プロダクトの解決課題（誰の／どんな課題）＋ 各ファネルの バリア／ドライバー／トリガー の仮説とファクト</small>
+      </span>
+    </div>
+    <div class="flow-arrow-label">仮説が揃ったら → ジャーニーの中に配置</div>
+    <div class="flow-step">
+      <span class="flow-box flow-b" style="max-width:640px;">
+        <strong>STEP 3 &mdash; ジャーニー ×（バリア / ドライバー / トリガー）の整理</strong>
+        <small>各ステップで何を踏むか／空欄は意図的に踏まないと明示</small>
+      </span>
+    </div>
+    <div class="flow-arrow-label">マトリクスが埋まったら → 弱点を特定</div>
+    <div class="flow-step">
+      <span class="flow-box flow-c" style="max-width:640px;">
+        <strong>STEP 4 &mdash; ボトルネック特定と KPI / KAI 仮説抽出</strong>
+        <small>仮説検証の中から「やっぱそうやん」の成功エッセンス＝KPI候補と それを動かす KAI を見極める</small>
+      </span>
+    </div>
+    <div class="flow-arrow-label">KPI / KAI が見えたら → CRMに乗せる</div>
+    <div class="flow-step">
+      <span class="flow-box flow-d" style="max-width:640px;">
+        <strong>STEP 5 &mdash; CRM × データ × アクション連携設計</strong>
+        <small>KPIにヒットする KAI を CRMに項目として乗せる。ここで初めて定量化・データ取得・自動化を設計</small>
+      </span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>本ガイドの主目的：</strong>
+    STEP 1〜3 を CXO・チーフコーチ・ファネル設計メンバーで合意することがゴール。STEP 4〜5 は STEP 1〜3 の言語化が完了してから議論します（詳細は <a href="#sec08" style="color:var(--accent-dark);text-decoration:underline;">Section 08</a> 参照）。
+  </div>
+</section>
+
+<!-- ══════════ PART A: 基盤理解 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-a">Part A</span>
+  <span class="part-name">基盤理解 &mdash; なぜ・何を・どう整理するか</span>
+</div>
+
+<!-- SEC 01 -->
+<section class="sec" id="sec01">
+  <div class="section-label">Section 01</div>
+  <h2 class="section-title">なぜこの整理が必要か</h2>
+  <p class="section-subtitle">これまでの接続ファネル設計は、コーチの暗黙知と場の勢いに依存してきました。「今回はうまくいった」「あのコーチだから成約した」で終わらせず、再現性ある型に言語化することが目的です。</p>
+
+  <div class="challenge-grid">
+    <div class="challenge-card">
+      <h3>フォーマット穴埋めでは<br>本質が出ない</h3>
+      <p class="symptom">「書いてください」だと作業化する。顧客の生々しい言葉・コーチの暗黙知・場の力学が抜け落ちて、見栄えの良い表だけ残る。</p>
+      <div class="impact-tag">→ 問いで引き出す設計</div>
+    </div>
+    <div class="challenge-card">
+      <h3>属人的に見えるが<br>実は型化可能</h3>
+      <p class="symptom">「◯◯コーチだから売れた」は分解すれば設計要素。ラポール構築・テーマ反復・場のセレモニーに分けられる。</p>
+      <div class="impact-tag">→ 偶然を仕組みに</div>
+    </div>
+    <div class="challenge-card">
+      <h3>データ先行は<br>順序性を壊す</h3>
+      <p class="symptom">KPI・システム・データから逆算で顧客像を作ると、ビジネスロジックが不在のまま数字だけ追う羽目になる。</p>
+      <div class="impact-tag">→ 概念 → データの順序</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>LTV推進室の役割：</strong>
+    事業側（コーチ責任者）に「思想と問い」を配り、セルフで整理してもらう → ヒアリングで補完 → データ・KPI・システム要件に翻訳。フォーマットを埋めるのではなく、<strong>問いに答える</strong>ことで結果として整理が成立する構造を目指す。
+  </div>
+</section>
+
+<!-- SEC 02 -->
+<section class="sec" id="sec02">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title">用語定義 &mdash; 4階層で厳密に区別する</h2>
+  <p class="section-subtitle">「ファネル」は社内で多義的に使われるため、本ガイドでは接続ルート／ステップ／ドライバー／タッチポイントを厳密に使い分けます。ここが曖昧だと全ての議論がブレます。</p>
+
+  <div class="flow-diagram">
+    <div class="flow-step"><span class="flow-box flow-a">接続ルート<small>例: キャリスピ → セルフコア</small></span></div>
+    <div class="flow-arrow-label">内部に複数の段階がある</div>
+    <div class="flow-step"><span class="flow-box flow-b">ステップ<small>例: キャリスピ講義前 → 講義開始後 → リブースト合宿前後 → 卒業後</small></span></div>
+    <div class="flow-arrow-label">各段階を通過させる顧客内部状態</div>
+    <div class="flow-step"><span class="flow-box flow-c">ドライバー<small>例: 「自分一人では信念を書き換えられない」と腹落ちしている状態 / コーチへの全幅の信頼</small></span></div>
+    <div class="flow-arrow-label">その内部状態を作るコーチ側のアクション</div>
+    <div class="flow-step"><span class="flow-box flow-d">タッチポイント<small>例: パーソナルSS / グループSS / オフライン合宿 / Slack / LINE</small></span></div>
+  </div>
+
+  <div class="compare-box">
+    <table>
+      <thead><tr><th>用語</th><th>意味</th><th>キャリスピ→セルフコアでの例</th></tr></thead>
+      <tbody>
+        <tr><td><strong>接続ルート</strong><br>（ルート）</td><td>プロダクトA → プロダクトB の顧客動線全体。社内語の「ファネル」はこれを指すことが多い</td><td>キャリスピ受講中（または卒業後）の顧客が、セルフコア合宿を申込むまでの全体の流れ</td></tr>
+        <tr><td><strong>ステップ</strong></td><td>接続ルート内の段階。複数ステップでルートが構成される</td><td>① 講義前（受講前のオンボーディング）／② 講義開始後（キャリスピ本講義中の体験）／③ リブースト合宿前後（信念書き換え体験）／④ 卒業後（継続コミュニティでのフォロー）</td></tr>
+        <tr><td><strong>ドライバー</strong></td><td>購買を駆動する<strong>顧客内部の "あるべき状態"</strong>（心理・認知・信念）</td><td>「自分一人では信念を書き換えられない」と腹落ちしている状態</td></tr>
+        <tr><td><strong>トリガー</strong></td><td>ドライバー状態を<strong>引き起こす外部からの介入・刺激</strong>（接し方・問いかけ・タイミング）</td><td>リブースト合宿中の特定タイミングで「ここで止まると、その先の信念書き換えはセルフコアでしか深まらない」と提示する</td></tr>
+        <tr><td><strong>タッチポイント</strong></td><td>顧客との接点。トリガーを踏む「場」</td><td>パーソナルSS / グループSS / 合宿 / 懇親会 / Slack / LINE</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>最重要：ドライバー と トリガー の違い</strong><br>
+    <strong>ドライバー</strong>＝状態（What：何が揃っていればよいか）／<strong>トリガー</strong>＝アクション（How：誰がどう働きかけてその状態を作るか）。社内語で「成約トリガー」と呼ばれているものは、厳密にはドライバー（状態）を指していることが多い。本ガイドでは使い分ける。
+  </div>
+
+  <div class="flow-diagram" style="margin-top:16px">
+    <div class="flow-step"><span class="flow-box flow-d">トリガー<small>例: コーチが Day2 SS で "人生パターンの再生産" を問いかける</small></span></div>
+    <div class="flow-arrow-label">この働きかけによって</div>
+    <div class="flow-step"><span class="flow-box flow-c">ドライバー状態が顧客内部で成立<small>例: 「自分一人では変われない」と顧客が腹落ちする</small></span></div>
+    <div class="flow-arrow-label">その状態が整うことで</div>
+    <div class="flow-step"><span class="flow-box flow-a">購買行動 = ルート通過<small>例: Day11 にリブースト合宿を申込決断</small></span></div>
+  </div>
+
+  <p style="margin-top:14px;font-size:0.84rem;color:var(--text-2);">トリガーだけあってドライバーが無ければ「うざい売込み」、ドライバーが揃っていてもトリガーが無ければ「静かに離脱」。<strong>両方要る</strong>。</p>
+</section>
+
+<!-- SEC 03 -->
+<section class="sec" id="sec03">
+  <div class="section-label">Section 03</div>
+  <h2 class="section-title">思想7原則</h2>
+  <p class="section-subtitle">接続ルート設計の全体を貫く7つの原則。これが揃わないと、フォーマットは機能しません。</p>
+
+  <div class="accordion-section">
+    <details class="accordion-item" open>
+      <summary class="accordion-summary">原則 1 &mdash; 概念 → ジャーニー → オペレーション → CRM/データ の順序性を死守</summary>
+      <div class="accordion-body">
+        <p><strong>なぜ：</strong>データから逆算して顧客像を作ると、ビジネスロジックが不在のまま数字だけ追う。現場で実績のある概念があり、それをジャーニーで届けるオペがあり、それを支えるためにデータ・CRMがある。順序を入れ替えると型が再現しない。</p>
+        <p><strong>どう適用：</strong>このガイドは概念（理想状態／バリア）とジャーニー（トリガー／HOW）の言語化が主目的。KPI・データ要件は「可能な範囲」で書く。データから先に考えない。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">原則 2 &mdash; 顧客の「今この瞬間」の状態を捉える</summary>
+      <div class="accordion-body">
+        <p><strong>なぜ：</strong>2週間前のセッションメモから書くと、すでに顧客の状態は変わっている。LTV最大化は「今の顧客に今届く関わり」でしか成り立たない。</p>
+        <p><strong>どう適用：</strong>バリア・トリガー列は<strong>直近2週間以内</strong>のエピソードを引用。古いエピソードは別欄に分ける。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">原則 3 &mdash; 顧客の生の言葉・具体エピソードから入る</summary>
+      <div class="accordion-body">
+        <p><strong>なぜ：</strong>いきなり抽象化すると「モチベーションが低い」「不安を抱えている」など誰でも書ける回答になる。具体発話から入れば、そこにしかない暗黙知が引き出せる。</p>
+        <p><strong>どう適用：</strong>まず顧客の発言を 3-5件 そのまま貼る。抽象化はその後。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">原則 4 &mdash; トリガーは「再現可能な条件」として書く</summary>
+      <div class="accordion-body">
+        <p><strong>なぜ：</strong>「熱く語ったら成約した」は偶然。型にならない。「A状態の顧客にBを提示するとC%で前進する」と書けば、他のコーチも踏める。</p>
+        <p><strong>どう適用：</strong>トリガー列は「顧客の状態 × 接し方 × タイミング」の3点セット。最低3事例の裏付けがないものは「仮説」タグを付ける。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">原則 5 &mdash; 黄金ルート仮説を明示する</summary>
+      <div class="accordion-body">
+        <p><strong>なぜ：</strong>全顧客を同じように救おうとすると、どこにフォーカスすべきか見えなくなる。「最速で通過する人は誰で、何を体験したか」を先に置くと、逆算で設計できる。</p>
+        <p><strong>どう適用：</strong>最速通過者1名を想定して時系列で体験を書く。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">原則 6 &mdash; 目的はコーチ暗黙知の構造化</summary>
+      <div class="accordion-body">
+        <p><strong>なぜ：</strong>書くこと自体はゴールではない。「コーチ同士が見て<em>それ分かる／それは違う</em>と議論できる粒度」にすることがゴール。形骸化した美しいフォーマットより、議論が起きる生々しい記述の方が価値がある。</p>
+        <p><strong>どう適用：</strong>「綺麗に書こう」「体裁を整えよう」は捨てる。粗くていいから具体で書く。</p>
+      </div>
+    </details>
+    <details class="accordion-item">
+      <summary class="accordion-summary">原則 7 &mdash; KPI／データ列は「計測可能性の評価」まででよい</summary>
+      <div class="accordion-body">
+        <p><strong>なぜ：</strong>コーチ責任者が SQL や BQ の設計まで考える必要はない。「欲しい指標」「取れそうか・取れなさそうか」まで書ければ十分。翻訳は LTV推進室が並走する。</p>
+        <p><strong>どう適用：</strong>KPI候補列は「概念レベル」でOK。例：「セミナーでの質問回数」「Slackリアクション数」。厳密な定義・取得ロジックは書かなくていい。</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- SEC 03b: KGI / KPI / KAI 階層と CRM の位置づけ -->
+<section class="sec" id="sec03b">
+  <div class="section-label">Section 03.5</div>
+  <h2 class="section-title">KGI / KPI / KAI 階層と CRMの位置づけ</h2>
+  <p class="section-subtitle">LTV最大化に向かう指標体系は3階層。<strong>KGIは決まっている／KPIは仮説検証で見つける／KAIはKPIを動かすアクション</strong>。CRMはKAIを乗せる箱であって、いきなり作るものではない。</p>
+
+  <div class="flow-diagram" style="padding:28px 20px;">
+    <div class="flow-step">
+      <span class="flow-box flow-d" style="max-width:680px;">
+        <strong>KGI &mdash; ゴール（決まっている）</strong>
+        <small>各接続ルートの成立率。1期生・2期生の実績ベースで合意済み（詳細は次セクション）</small>
+      </span>
+    </div>
+    <div class="flow-arrow-label">KGIにヒットさせるための中間指標を仮説検証で見つける</div>
+    <div class="flow-step">
+      <span class="flow-box flow-b" style="max-width:680px;">
+        <strong>KPI &mdash; 中間指標（仮説段階）</strong>
+        <small>「これが動けばKGIにヒットする」と全員が信じられる中間指標。<br>例：顧客が「やっぱそうやん」「コーチやん」と腹落ち発話する回数 / グループSSでのクロージング後の決断発話数</small>
+      </span>
+    </div>
+    <div class="flow-arrow-label">KPIを動かすアクションを 5W1H で設計</div>
+    <div class="flow-step">
+      <span class="flow-box flow-c" style="max-width:680px;">
+        <strong>KAI &mdash; アクション指標（再現性の核）</strong>
+        <small>いつ・どこで・誰が・何を・どのように・なぜ — KPIにヒットするコーチアクション。<br>例：Day9 のグループSSで必ず「あなたの中の○○について」の問いを全体に立てる ／ リブースト合宿3日前にサポコーチとキャリスピコーチで状態連携</small>
+      </span>
+    </div>
+    <div class="flow-arrow-label">KAI を全コーチで再現するための情報基盤</div>
+    <div class="flow-step">
+      <span class="flow-box flow-a" style="max-width:680px;">
+        <strong>CRM &mdash; KAIを乗せる箱（手段）</strong>
+        <small>KAIを横断的に管理し、コーチが踏むべきアクションを可視化する場。LTV最大化が目的、CRMは手段</small>
+      </span>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>順序の死守：</strong>
+    KGI → KPI → KAI → CRM の順で進める。<strong>「いきなり全部入りのCRMシートを作る」は不可能</strong>。各ファネルで仮説検証 → 成功エッセンス（KPI候補とKAI）が見えた瞬間に、その項目だけをCRMに乗せる。チームコーチが見るシートはKAIだけが見えるシンプルなもの。情報過多にしない。
+  </div>
+
+  <div class="sub-h">3階層の対応関係（キャリスピ→セルフコア の例）</div>
+  <div class="compare-box">
+    <table>
+      <thead><tr><th>階層</th><th>状態</th><th>例</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>KGI</strong><br>ゴール</td>
+          <td><span class="tag tag-accent">確定</span></td>
+          <td>キャリスピ→セルフコア 60%成立</td>
+        </tr>
+        <tr>
+          <td><strong>KPI</strong><br>中間指標</td>
+          <td><span class="tag tag-cyan">仮説検証中</span></td>
+          <td>セルフコア懇親会翌日中の申込率 ／ デイ9グループSSでの腹落ち発話数</td>
+        </tr>
+        <tr>
+          <td><strong>KAI</strong><br>アクション</td>
+          <td><span class="tag tag-cyan">仮説検証中</span></td>
+          <td>Day9 のグループSSで「顧客の変容シェア」を必ず引き出す問いを立てる ／ 懇親会前にキャリスピチームコーチとサポコーチで顧客状態を連携</td>
+        </tr>
+        <tr>
+          <td><strong>CRM</strong><br>箱</td>
+          <td><span class="tag">後段</span></td>
+          <td>各顧客の最新状態・サポートコーチ・各KAIの実施有無・関わりログを横串で表示</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>「成立トリガー」と「KAIの中のトリガー」を混同しない：</strong>
+    本ガイドのトリガーは「ドライバー状態を引き起こす介入＝アクション」。これは KAI の中身そのもの。<strong>KAI = いつ・どこで・誰が・どのトリガーを踏むか</strong> と整理すると、既存の公式（ドライバー × ブレーキ × 場の力）と KGI/KPI/KAI 階層が綺麗に接続する。
+  </div>
+
+  <div class="sub-h">CRMが今ない世界で起きている2つの事象</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--red-bg);color:var(--red);font-size:20px;">!</div>
+        <h4>事象1 — 顧客情報の部門横断スコトーマ</h4>
+      </div>
+      <p>「あの顧客、セルフコアでどうだった？」がキャリスピのチームコーチに伝わっていない。サポートコーチが誰だったかさえ把握されず、関わりがブラックボックス化。リアルタイムで部門横断の連携が取れない結果、各事業部でコミュニケーションコストと脳みそコストが累積している。</p>
+      <p style="font-size:0.82rem;color:var(--text-2);margin-top:8px;"><strong>裏側：</strong>既存顧客のリソース最大化が目的なのに、その全顧客が可視化されていない。スコトーマを外すのが「スタートのスタート」。</p>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--red-bg);color:var(--red);font-size:20px;">!</div>
+        <h4>事象2 — 提案がコーチ力量に依存</h4>
+      </div>
+      <p>「顧客が今こんな状態だから、この課題を解決するためにこのプロダクト」というロジカルな提案が、コーチの確信どり（解釈）に依存している。成果のばらつきが避けられず、より避けても連携提案できる状態に持っていくには、再現性の型と共通情報基盤が要る。</p>
+      <p style="font-size:0.82rem;color:var(--text-2);margin-top:8px;"><strong>裏側：</strong>成功事例の中身は属人的な体感覚に閉じている。これを言語化＝再現性の核を抽出することが、CRMの項目を決める前提条件。</p>
+    </div>
+  </div>
+</section>
+
+<!-- SEC 03c: ゴール数値（各ルートのKGI） -->
+<section class="sec" id="sec03c">
+  <div class="section-label">Section 03.6</div>
+  <h2 class="section-title">ゴール数値 &mdash; 各ルートの成立率KGI</h2>
+  <p class="section-subtitle">本期のアウトカムとして、各接続ルートに合意済みの成立率KGIを設定。実績ベース（主に1期生・2期生）から逆算し、シミュレーションシートに反映している。</p>
+
+  <div class="compare-box compare-box-green">
+    <table>
+      <thead><tr><th>接続ルート</th><th>KGI（成立率ゴール）</th><th>備考</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>キャリスピ &rarr; リブースト</strong></td>
+          <td><strong>100%</strong></td>
+          <td>キャリスピ受講後の全員がリブーストに進む型。すでに過去ファネル設計で実績近接</td>
+        </tr>
+        <tr>
+          <td><strong>キャリスピ &rarr; セルフコア</strong></td>
+          <td><strong>60%</strong></td>
+          <td>1期生 実績ベース ≒ 48%（リブースト受講者母数）。<strong>売上インパクト最大ゾーン</strong>。最優先で再現性を取りに行く</td>
+        </tr>
+        <tr>
+          <td><strong>セルフコア &rarr; セルフコアダイヴ</strong></td>
+          <td><strong>80%</strong></td>
+          <td>セルフコア対象者の継続率を取りに行く</td>
+        </tr>
+        <tr>
+          <td><strong>キャリスピ &rarr; 自然 / リファラル</strong></td>
+          <td><strong>30%</strong></td>
+          <td>各期で対象者が変動するため、揺らぎを許容しつつ仮説検証</td>
+        </tr>
+        <tr>
+          <td><strong>アドバンス</strong></td>
+          <td><strong>50%</strong></td>
+          <td>未検証のため数値は仮置き。検証しながら調整</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>このKGIの位置づけ：</strong>
+    KGIは「決まっている」。KPIとKAIは「仮説検証で見つける」フェーズ。KGIをどう動かすかの中間指標とアクションを、各ファネルの担当が言語化していくのが本ガイドの実装プロセス（Part C）。
+  </div>
+
+  <div class="callout">
+    <strong>優先順位の指針：</strong>
+    売上インパクトが最大のキャリスピ &rarr; セルフコアと、案件規模の大きいJCC（顧客紹介）の2ルートから、成功エッセンスの抽出と再現性化を進める。リファラルは緻密度が高く、後段で取りに行く。
+  </div>
+</section>
+
+<!-- ══════════ PART B: 成立の公式 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-b">Part B</span>
+  <span class="part-name">成立の公式 &mdash; クロスセルは何で決まるか</span>
+</div>
+
+<!-- SEC 04 -->
+<section class="sec" id="sec04">
+  <div class="section-label section-label-cyan">Section 04</div>
+  <h2 class="section-title">統合公式の全体像</h2>
+  <p class="section-subtitle">クロスセル成立は、ドライバー（押す力）・ブレーキ（押し返す力）・場の力（増幅）の3要素で構造化できます。行動科学（B.J. Fogg の行動モデル）・顧客志向（Jobs-to-be-Done）・深掘り営業（SPIN）の3理論を合成した基盤に基づきます。</p>
+
+  <div class="formula-box">
+    <div class="formula-main">クロスセル成立度 = (<em>ドライバー駆動力</em> &minus; <em>ブレーキ抑制力</em>) &times; <em>場の増幅係数</em></div>
+    <div class="formula-sub">押す力と押し返す力の差を、場が増幅する</div>
+  </div>
+
+  <div class="sub-h">3つの要素の中身を図解</div>
+  <div class="three-col">
+    <div class="card card-cyan" style="text-align:left;">
+      <div class="card-header">
+        <div class="card-icon card-icon-cyan" style="font-size:22px;">&#x2192;</div>
+        <h4>ドライバー駆動力</h4>
+      </div>
+      <p style="color:var(--cyan);font-weight:700;font-size:0.76rem;margin-bottom:10px;">押す力 &mdash; 6要素の<strong>掛け算</strong></p>
+      <p>顧客内部に整えるべき "あるべき状態" が6つ。どれか1つでもゼロなら全体もゼロ（＝ルート通過せず）。</p>
+      <div style="margin-top:14px;padding:12px 14px;background:var(--cyan-bg);border-radius:8px;font-size:0.8rem;color:var(--text-1);line-height:1.9;font-weight:600;">
+        ラポール × バーニングニーズ化<br>× 未来への期待 × 決断<br>× 確信 × 合図
+      </div>
+    </div>
+    <div class="card card-red" style="text-align:left;">
+      <div class="card-header">
+        <div class="card-icon card-icon-red" style="font-size:22px;">&#x2190;</div>
+        <h4>ブレーキ抑制力</h4>
+      </div>
+      <p style="color:var(--red);font-weight:700;font-size:0.76rem;margin-bottom:10px;">押し返す力 &mdash; 3要素の<strong>足し算</strong></p>
+      <p>顧客の決断を押し返すブレーキが3種類。合算値がドライバー駆動力を超えると、ルート通過せず。</p>
+      <div style="margin-top:14px;padding:12px 14px;background:var(--red-bg);border-radius:8px;font-size:0.8rem;color:var(--text-1);line-height:1.9;font-weight:600;">
+        不安 ＋ 慣性 ＋ 摩擦
+      </div>
+    </div>
+    <div class="card card-purple" style="text-align:left;">
+      <div class="card-header">
+        <div class="card-icon card-icon-purple" style="font-size:22px;">&#x1F501;</div>
+        <h4>場の増幅係数</h4>
+      </div>
+      <p style="color:var(--purple);font-weight:700;font-size:0.76rem;margin-bottom:10px;">増幅器 &mdash; 4要素の<strong>掛け算</strong></p>
+      <p>コミュニティ・合宿・グループが生み出す力。(ドライバー − ブレーキ) の差を一気に拡大する。</p>
+      <div style="margin-top:14px;padding:12px 14px;background:var(--purple-bg);border-radius:8px;font-size:0.8rem;color:var(--text-1);line-height:1.9;font-weight:600;">
+        社会的証明 × 仲間の絆<br>× 集合的効力感 × 非日常の没入空間
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-cyan">
+    <strong>数学的な意味：</strong>
+    ドライバーは<strong>掛け算</strong>（1つでも欠けると成立しない）。ブレーキは<strong>足し算</strong>（複数同時で致命的）。場の力は<strong>増幅器</strong>（(ドライバー − ブレーキ) がプラスなら加速、マイナスなら離脱を加速）。<strong>一番弱いドライバーがボトルネック</strong>になる、という含意。
+  </div>
+
+  <div class="callout">
+    <strong>現場感との整合：</strong>
+    クロスセル成立を「①トリガー的なもの ②ブレーキの除去 ③場の力（クロージング・チーム連携）」の3要素に分解する見立ては、本ガイドの<strong>ドライバー駆動力 &times; ブレーキ抑制力 &times; 場の増幅係数</strong>と完全に整合する。現場の体感から自然に出てくる3要素を、設計フレームに落とし込んだのが本公式。
+  </div>
+
+  <div class="callout callout-green">
+    <strong>公式と KPI / KAI の接続：</strong>
+    本公式は<strong>「成立メカニズム」</strong>を表す。仮説検証で「やっぱそうやん」となった<strong>最も効くドライバー or ブレーキ or 場の力</strong>＝KPI候補、それを動かすコーチアクション（誰がいつどこで何を）＝KAI、という関係。公式は KPI候補を発見するための観察フレームでもある。
+  </div>
+</section>
+
+<!-- SEC 05 -->
+<section class="sec" id="sec05">
+  <div class="section-label section-label-cyan">Section 05</div>
+  <h2 class="section-title">6つのドライバー ＋ 1つのトリガー</h2>
+  <p class="section-subtitle">「ドライバー」は、顧客がクロスセルを決断するまでに<strong>内側で起きる状態変化</strong>。キャリスピ→リブースト の成約事例を分析して抽出された7分類がそのまま使えます。最初の6つがドライバー（内部状態）、7つめが行動を引き起こす "合図"＝トリガーです。</p>
+
+  <div class="callout callout-cyan">
+    <strong>キャリスピ→リブースト の7分類と同じ：</strong>
+    ①前提（信頼）／②認識の転換／③決断／④快楽の最大化／⑤手段の確信／⑥ブロック除去／⑦推奨 &mdash; 本ガイドの 6 ドライバー + トリガー + ブレーキ は、この社内語と1対1で対応します。コーチが普段使っている言葉そのものが、公式の要素名と一致します。
+  </div>
+
+  <div class="sub-h">各ドライバーの中身と具体例（キャリスピ→リブースト）</div>
+
+  <div class="driver-chip-grid">
+    <div class="driver-chip chip-cyan">
+      <div class="dnum">DRIVER 1 &mdash; 土台</div>
+      <h4>プロとしてのラポール</h4>
+      <p class="dnote"><strong>意味：</strong>「この人たちなら全部話せる」の関係性が出来上がっている状態。耳の痛い指摘も愛のある介入として受け取れる、防御を解いて聞ける状態。</p>
+      <p class="dnote"><strong>例：</strong>Day0ラポールSSでコーチに涙ながらに本音を話せた。「この人、ちゃんと聞いてくれる」と感じている。</p>
+      <p class="dtheory">理論: ラポール形成 / 影響力の武器（好意・権威・返報性）</p>
+    </div>
+    <div class="driver-chip chip-cyan">
+      <div class="dnum">DRIVER 2 &mdash; バーニングニーズ化</div>
+      <h4>課題が "バーニングニーズ" に昇華している</h4>
+      <p class="dnote"><strong>意味：</strong>表層の「困りごと」が、<strong>「これは絶対に解決しないとマズい」</strong>という自分事のバーニングニーズに変わっている状態。問題が "他人事" や "いつかやろう" のレベルに留まっていない。</p>
+      <p class="dnote"><strong>例：</strong>「キャリスピで自己理解できた」と満足していた顧客が、深掘り営業（SPIN）の<strong>示唆質問</strong>を通じて「気づいただけでは信念は変わらない、放置すれば5年後も同じパターンを繰り返す」と腹落ちし、「絶対これを終わらせたい」と本人が口にし始める。</p>
+      <p class="dtheory">理論: 深掘り営業（SPIN）の示唆質問 — 問題の "放置コスト" を顧客自身に言語化させる技法</p>
+    </div>
+    <div class="driver-chip chip-cyan">
+      <div class="dnum">DRIVER 3 &mdash; 未来への期待</div>
+      <h4>変わった先の未来への自己効力感</h4>
+      <p class="dnote"><strong>意味：</strong>変わった先の自分が眩しく、ワクワクしている状態。「自分には変わる力がある」「このプログラムなら変われる」という自己効力感が、不安や怖さを上回っている。</p>
+      <p class="dnote"><strong>例：</strong>「変わった先の自分の姿が想像できる」「セルフコア卒業後、こんな働き方ができる気がする」とSlackや SS で発言し始める。未来像をビジュアルに語れる。</p>
+      <p class="dtheory">理論: 自己効力感（Bandura）/ ゴール設定理論 ※社内語の「快楽の最大化」と同義</p>
+    </div>
+    <div class="driver-chip chip-cyan">
+      <div class="dnum">DRIVER 4 &mdash; 変革意志</div>
+      <h4>信念への介入欲求（決断）</h4>
+      <p class="dnote"><strong>意味：</strong>無意識レベルを書き換えたい、という深い欲求。表面変化では満足しない状態。</p>
+      <p class="dnote"><strong>例：</strong>「人生パターンを何としても書き換えたい」と本人が口にし始める。他人事ではなく自分事として引き受けている。</p>
+      <p class="dtheory">理論: 行動変容ステージ理論 / 自己決定理論</p>
+    </div>
+    <div class="driver-chip chip-cyan">
+      <div class="dnum">DRIVER 5 &mdash; 適合確信</div>
+      <h4>「これが自分に効く」の確信</h4>
+      <p class="dnote"><strong>意味：</strong>次プロダクトが自分の課題にピタッとハマる。自力では無理だが、これなら届くという確信。</p>
+      <p class="dnote"><strong>例：</strong>「リブーストは無意識領域への介入。自分の行動ブレーキの根源に効く唯一の手段だ」と論理的にも体感的にも腹落ちしている。</p>
+      <p class="dtheory">理論: 顧客のジョブ（JTBD）/ 解決策適合</p>
+    </div>
+    <div class="driver-chip chip-cyan">
+      <div class="dnum">TRIGGER &mdash; 行動喚起</div>
+      <h4>「今ここで決める」の具体的な一押し</h4>
+      <p class="dnote"><strong>意味：</strong>タイミング・場・声かけの揃った背中押し。1〜5が揃っていても、これが無いと行動にならない。</p>
+      <p class="dnote"><strong>例：</strong>Day11のゴール更新SSで、コーチが「今日この場でリブースト申込しますか？次期が最適だと思います」と直球で具体日程を提示する。</p>
+      <p class="dtheory">理論: 行動の掛け算（B=MAP）の Prompt / 希少性</p>
+    </div>
+  </div>
+
+  <div class="callout callout-cyan">
+    <strong>覚え方：</strong>
+    「<strong>ラ・バ・期・決・確・合</strong>」（ラポール・バーニングニーズ化・未来への期待・決断・確信・合図）<br>
+    さらに、成立外・次ルート入口の<strong>「推奨（波及効果のイメージ）」</strong>があり、これは成立後の波及 = 次ルート（リファラル）の入口。Q1理想状態の一部として扱う。
+  </div>
+
+  <div class="sub-h">深掘り営業（SPIN）の "示唆質問" について</div>
+  <div class="accordion-section">
+    <details class="accordion-item">
+      <summary class="accordion-summary">深掘り営業の4つの問い &mdash; 状況 / 問題 / 示唆 / 解決想像</summary>
+      <div class="accordion-body">
+        <p>Neil Rackham が35,000件のセールス通話を分析して見出した、B2B・高単価商材で再現性のある手法「SPIN」。日本語では「深掘り営業」と呼ばれます。4種の問いを順に繰り出します：</p>
+        <ul>
+          <li><strong>状況質問：</strong>現状の事実確認「今、どういう状況で取り組まれてますか？」</li>
+          <li><strong>問題質問：</strong>現状の不満・困りごと「今のやり方で困ってることは？」</li>
+          <li><strong>示唆質問 ← 核心：</strong>問題の"放置コスト"を顧客自身に言わせる「その問題が続いたらどうなりそう？」</li>
+          <li><strong>解決想像質問：</strong>解決後のベネフィットを顧客自身に語らせる「もしそれが解決したら何が変わる？」</li>
+        </ul>
+        <p><strong>示唆質問の核心：</strong>「問題」を「バーニングニーズ」に変換する技術。顧客は元々問題を認識していても、「まぁいいか」で流している。示唆質問で本人が「このままじゃヤバい、これは絶対に解決しないと」と気づく。<strong>コーチが言うのは説得、顧客が自分で気づくのがバーニングニーズ化</strong>。</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- SEC 06 -->
+<section class="sec" id="sec06">
+  <div class="section-label section-label-cyan">Section 06</div>
+  <h2 class="section-title">3つのブレーキ &mdash; 押し返す力の内訳</h2>
+  <p class="section-subtitle">ドライバーが揃っていても、ブレーキがあると行動に移りません。ブレーキは「不安・慣性・摩擦」の3分類で整理し、それぞれに異なる介入策を当てます。顧客のジョブ論（JTBD）の「進行を阻む力」が理論基盤です。</p>
+
+  <div class="driver-chip-grid">
+    <div class="driver-chip chip-red">
+      <div class="dnum">BRAKE 1</div>
+      <h4>不安</h4>
+      <p class="dnote">失敗・損失・拒絶への怖さ。「投資対効果が見えない」「家族の反対」「マルチっぽく見られないか」。</p>
+      <p class="dtheory">理論: 損失回避 (Kahneman &amp; Tversky)</p>
+    </div>
+    <div class="driver-chip chip-red">
+      <div class="dnum">BRAKE 2</div>
+      <h4>慣性（現状維持バイアス）</h4>
+      <p class="dnote">現状を変えないことを無意識に選ぶ力。「キャリスピで満足、これ以上要らないかも」「自分から働きかける習慣がない」。</p>
+      <p class="dtheory">理論: 現状維持バイアス / 保有効果</p>
+    </div>
+    <div class="driver-chip chip-red">
+      <div class="dnum">BRAKE 3</div>
+      <h4>摩擦</h4>
+      <p class="dnote">手続きの煩雑さ・認知負荷。「申込フォームが分かりにくい」「誰にどう紹介すればいいかわからない」。</p>
+      <p class="dtheory">理論: 摩擦理論 (Roger Dooley)</p>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>Lewin の知見（Force Field Analysis）：</strong>
+    「ドライバーを増やすより<strong>ブレーキを除く方が効率的</strong>。ドライバーを増やすと抵抗も比例して増えるが、ブレーキ除去は副作用なし」。この洞察が場のcoaching戦略の理論的根拠。
+  </div>
+
+  <div class="sub-h">接続ルート別のブレーキ事例</div>
+  <div class="compare-box">
+    <table>
+      <thead><tr><th>ブレーキ種別</th><th>リファラルルートでの例</th><th>リブースト→セルフコアでの例</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>不安</strong></td>
+          <td>「マルチっぽく見られないか」「友達に押し売りに見えないか」「高単価すぎて引かれそう」</td>
+          <td>「投資対効果が見えない」「家族の反対」「失敗したらどうしよう」</td>
+        </tr>
+        <tr>
+          <td><strong>慣性</strong></td>
+          <td>「自分から働きかける習慣がない」「変化を確信してから紹介したい」</td>
+          <td>「キャリスピで満足、これ以上要らないかも」「今のままで何とかなる」</td>
+        </tr>
+        <tr>
+          <td><strong>摩擦</strong></td>
+          <td>「URLどう発行する」「文面どう書く」「誰に送る」が決まらない</td>
+          <td>「申込フォームが分かりにくい」「日程選択肢が多すぎる」「家族への説明が面倒」</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sub-h">介入策のマッピング</div>
+  <div class="three-col">
+    <div class="card card-red">
+      <div class="card-header">
+        <div class="card-icon card-icon-red">&#x1F630;</div>
+        <h4>不安への介入</h4>
+      </div>
+      <p>FAQ・反論集の提供 / 成功事例の共有 / 家族説明テンプレの配布 / コーチからの直接的な安心メッセージ</p>
+    </div>
+    <div class="card card-red">
+      <div class="card-header">
+        <div class="card-icon card-icon-red">&#x1F9F1;</div>
+        <h4>慣性への介入</h4>
+      </div>
+      <p>小さな一歩の提案（Foot-in-the-door）/ 口頭合意の記録 / コミットメント宣言の場 / 現状維持の損失予告</p>
+    </div>
+    <div class="card card-red">
+      <div class="card-header">
+        <div class="card-icon card-icon-red">&#x2699;</div>
+        <h4>摩擦への介入</h4>
+      </div>
+      <p>1タップ共有 / 文面テンプレ提供 / 日程自動提案 / 選択肢を3つ以下に絞る / デフォルト設定</p>
+    </div>
+  </div>
+</section>
+
+<!-- SEC 07 -->
+<section class="sec" id="sec07">
+  <div class="section-label section-label-cyan">Section 07</div>
+  <h2 class="section-title">4つの場の力 &mdash; 個人コーチングの限界を超える</h2>
+  <p class="section-subtitle">ミズカラの本当の強みはコミュニティ・合宿・グループ体験にあります。場の力は5つの土台を "同時多発的に" 押し上げる力。個人1対1の限界を超えるメカニズムです。</p>
+
+  <div class="driver-chip-grid">
+    <div class="driver-chip chip-purple">
+      <div class="dnum">場の力 1</div>
+      <h4>社会的証明</h4>
+      <p class="dnote">周りが決めると自分も決める。迷ったとき、人は似た他者の行動をコピーする。「Aさんがセルフコア行くなら自分も」。</p>
+      <p class="dtheory">Cialdini (1984) Social Proof</p>
+    </div>
+    <div class="driver-chip chip-purple">
+      <div class="dnum">場の力 2</div>
+      <h4>仲間の絆（＝集団凝集性）</h4>
+      <p class="dnote">この仲間の中で変わる力。関係の深い集団では、集団の価値観が個人の価値観より強く働く。「このチームの一員として合宿行きたい」。</p>
+      <p class="dtheory">Lewin (1947) Group Cohesion</p>
+    </div>
+    <div class="driver-chip chip-purple">
+      <div class="dnum">場の力 3</div>
+      <h4>集合的効力感</h4>
+      <p class="dnote">「みんなとなら越えられる」の信念。一人では無理でも、仲間となら可能。個人の自己効力感を集団で増幅する。</p>
+      <p class="dtheory">Bandura (1997) Collective Efficacy</p>
+    </div>
+    <div class="driver-chip chip-purple">
+      <div class="dnum">場の力 4</div>
+      <h4>非日常の没入空間</h4>
+      <p class="dnote">日常を切り離した特別な場。通常の意思決定ロジックが緩み、新しい信念を受け取りやすい。合宿3日で普段なら半年の変容が起きる。</p>
+      <p class="dtheory">Turner (1969) Liminality</p>
+    </div>
+  </div>
+
+  <div class="sub-h">場の力は "どのドライバー／ブレーキに効くか" が違う</div>
+  <div class="compare-box compare-box-purple">
+    <table>
+      <thead><tr><th>場の力</th><th>強く押し上げるドライバー</th><th>大きく弱めるブレーキ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>社会的証明</strong></td><td>合図 / 他者の決断が自分の "今だ" の合図になる</td><td>摩擦 / 他者が先にやってるので手順迷いが減る</td></tr>
+        <tr><td><strong>仲間の絆</strong></td><td>ラポール / コーチへのラポールを横にも拡張</td><td>不安 / 信頼できる仲間の中では怖さが薄れる</td></tr>
+        <tr><td><strong>集合的効力感</strong></td><td>未来への期待・決断 / 個人の自己効力感を集団で増幅</td><td>不安 / 「一人じゃないから大丈夫」で恐怖が溶ける</td></tr>
+        <tr><td><strong>非日常の没入空間</strong></td><td>バーニングニーズ化 / 日常の思考ルールが緩み新しい視座が入る</td><td>慣性・摩擦 / 日常の手続き・習慣が遠のく</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-purple">
+    <strong>「場の力は偶然」の誤解を解く：</strong>
+    属人的・偶発的に見える場の力も、サポートコーチへの信頼／チームワーク設計／特定テーマの反復刺激／決断セレモニーの配置／非日常空間の構造に分解すれば、<strong>再現可能な設計要素</strong>として型化できる。
+  </div>
+
+  <div class="sub-h">Cialdini 6原則との関係（なぜ場の力は4つに絞るか）</div>
+  <div class="compare-box">
+    <table>
+      <thead><tr><th>Cialdini 6原則</th><th>本ガイドでの扱い</th></tr></thead>
+      <tbody>
+        <tr><td><strong>社会的証明</strong></td><td>✅ 場の力①（そのまま）</td></tr>
+        <tr><td><strong>好意</strong></td><td>✅ ドライバー1「ラポール」の中核要素として吸収</td></tr>
+        <tr><td><strong>権威</strong></td><td>✅ ドライバー1「ラポール」の補強要素として吸収</td></tr>
+        <tr><td><strong>返報性</strong></td><td>✅ ドライバー1「ラポール」の形成メカニズムとして吸収</td></tr>
+        <tr><td><strong>コミットメントと一貫性</strong></td><td>✅ ドライバー4「決断」の補強 / ブレーキの慣性に効く要素として吸収</td></tr>
+        <tr><td><strong>希少性</strong></td><td>✅ ドライバー6「合図」の強化素材として吸収</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.82rem;color:var(--text-2);margin-top:12px;">
+    場の力の4つは「<strong>集団が生み出す特有の力</strong>」に絞る。個人ドライバー要素として既に別箇所で扱っているものは重複させない。4つに絞る方がパワフル。
+  </p>
+</section>
+
+<!-- ══════════ PART C: 実装プロセス ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-c">Part C</span>
+  <span class="part-name">実装プロセス &mdash; 公式を現実に落とし込む</span>
+</div>
+
+<!-- SEC 08 -->
+<section class="sec" id="sec08">
+  <div class="section-label section-label-green">Section 08</div>
+  <h2 class="section-title">5段階プロセス &mdash; 理論から実装まで</h2>
+  <p class="section-subtitle">公式を作っただけでは現場で使えません。ペルソナ適用 → ジャーニー分解 → ボトルネック特定 → KPIとデータ設計の5段階を順に踏みます。</p>
+
+  <div class="roadmap-timeline">
+    <div class="roadmap-phase">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">STEP 1</div>
+      <div class="roadmap-title">ファネル設計の構成要素・考え方の合意</div>
+      <div class="roadmap-desc">本ガイドの思想・用語（接続ルート / ステップ / ドライバー / トリガー / タッチポイント）・公式（ドライバー &minus; ブレーキ &times; 場の力）・KGI / KPI / KAI 階層を CXO・コーチ責任者と合意する。共通言語を固める段階。</div>
+    </div>
+    <div class="roadmap-phase rp-2">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">STEP 2</div>
+      <div class="roadmap-title">プロダクト価値定義 ＋ ファネル仮説言語化</div>
+      <div class="roadmap-desc">
+        2つのアウトプットを並行して作る：
+        <ul style="margin:8px 0 0 18px;padding:0;">
+          <li><strong>各プロダクトの価値定義</strong> &mdash; どんな人の、どんな課題を解決するプロダクトかを1ページで言語化（キャリスピ／リブースト／セルフコア／JCC／ポテンシャル／自己理解コース）</li>
+          <li><strong>各ファネル設計の仮説言語化</strong> &mdash; 各接続ルートのバリア／ドライバー／トリガーの仮説とファクト（直近2週間の生エピソード）を、コーチ責任者が言語化</li>
+        </ul>
+      </div>
+    </div>
+    <div class="roadmap-phase rp-3">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">STEP 3</div>
+      <div class="roadmap-title">ジャーニー × （バリア / ドライバー / トリガー）の整理</div>
+      <div class="roadmap-desc">各接続ルートを時系列ステップに分解し、<strong>各ステップで顧客が抱えるバリア／作るべきドライバー状態／踏むべきトリガー</strong>を整理する。空欄セルは「意図的に踏まない」と明示。</div>
+    </div>
+    <div class="roadmap-phase rp-4">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">STEP 4</div>
+      <div class="roadmap-title">ボトルネック特定 と KPI / KAI 仮説抽出</div>
+      <div class="roadmap-desc">全方位でなく、最大のボトルネック3つに介入を集中。仮説検証の中から<strong>「やっぱそうやん」となった成功エッセンス＝KPI候補と それを動かすKAI</strong>を見極める。次セクションのヒアリング設計と並行する。</div>
+    </div>
+    <div class="roadmap-phase rp-5">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-time">STEP 5</div>
+      <div class="roadmap-title">CRM × データ × アクション連携設計</div>
+      <div class="roadmap-desc">ここで初めて「KAIをCRMに項目として乗せる」「定量化」「データ取得方法」「自動化（Slack通知等の補助オペレーション）」を設計する。<strong>順序を守る</strong>のがポイント — KPI / KAI が見える前にCRMを設計しない。</div>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>STEP 5 の位置づけ：</strong>
+    スコアリング基準・データ取得ロジック・CRM項目設計は、<strong>STEP 5 の議論として明示的に分離</strong>。概念→ジャーニー→OPS→データの順序性を死守するため、STEP 1〜4 ではこれらを扱わず、顧客の理想状態とジャーニー設計に集中する。<strong>最終的には必ず落とし込む観点を全員が持つ</strong>こと。
+  </div>
+</section>
+
+<!-- SEC 08b: 成功エッセンス抽出ヒアリング -->
+<section class="sec" id="sec08b">
+  <div class="section-label section-label-green">Section 08.5</div>
+  <h2 class="section-title">成功エッセンス抽出ヒアリング &mdash; 体感覚から型を引き出す</h2>
+  <p class="section-subtitle">KPI / KAI の仮説を立てるための最重要プロセス。<strong>変換率の高いコーチの体感覚を、型にハメすぎず引き出す</strong>。型を固めすぎると質問が方通り化し、ヒアリング相手も方通り回答になって肝心の暗黙知が抜け落ちる。</p>
+
+  <div class="sub-h">最低限の3項目だけ揃える</div>
+  <div class="three-col">
+    <div class="card card-green">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--green-bg);color:var(--green);font-size:20px;">1</div>
+        <h4>アプローチ前の状態</h4>
+      </div>
+      <p>そのクロスセル成立の前に、顧客がどんな状態だったか。心理・認知・発話・行動レベルで具体に。</p>
+      <p style="font-size:0.78rem;color:var(--text-2);margin-top:6px;"><strong>引き出す問い：</strong>「そのとき、顧客はどんな状態でしたか？最近の発言や様子で印象的なものは？」</p>
+    </div>
+    <div class="card card-green">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--green-bg);color:var(--green);font-size:20px;">2</div>
+        <h4>アプローチ方法</h4>
+      </div>
+      <p>その状態に対して何をしたか。<strong>5W1H</strong>（いつ・どこで・誰が・何を・どのように・なぜ）で具体に。</p>
+      <p style="font-size:0.78rem;color:var(--text-2);margin-top:6px;"><strong>引き出す問い：</strong>「そのとき、具体的にどう関わりましたか？問いかけた言葉や、場の作り方の細部まで」</p>
+    </div>
+    <div class="card card-green">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--green-bg);color:var(--green);font-size:20px;">3</div>
+        <h4>アプローチ結果</h4>
+      </div>
+      <p>顧客がどう変わったか。発話・態度・行動レベルでのビフォーアフター。</p>
+      <p style="font-size:0.78rem;color:var(--text-2);margin-top:6px;"><strong>引き出す問い：</strong>「そのあと、顧客はどう変わりましたか？口から出た言葉や、その後の行動は？」</p>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <strong>ヒアリングの禁じ手：</strong>
+    項目を10個も20個も用意して埋めてもらう。<strong>型通り質問すると、相手も型通りに答えようとして大事なことが抜け落ちる</strong>。「なんかいいよって感覚で具体に話してみて」と促す方が、暗黙知が出る。整理は後でいくらでもできる。
+  </div>
+
+  <div class="sub-h">抽象度の整え方 &mdash; 体感覚 &rarr; 構造</div>
+  <ul class="action-list">
+    <li>
+      <div class="action-num">A</div>
+      <div><strong>まず体感覚で話してもらう</strong>（流動を整えなくていい）</div>
+    </li>
+    <li>
+      <div class="action-num">B</div>
+      <div><strong>具体の発言・タイミング・関わりを書き起こす</strong>（一次情報をそのまま残す）</div>
+    </li>
+    <li>
+      <div class="action-num">C</div>
+      <div><strong>後段で公式の要素にマッピング</strong>（ドライバーのどれを上げた／ブレーキのどれを抜いた／場の力を使った）</div>
+    </li>
+    <li>
+      <div class="action-num">D</div>
+      <div><strong>複数事例で共通項を抽出</strong>（"あ、ここ触ったらいけるね" のパターンが見える）</div>
+    </li>
+    <li>
+      <div class="action-num">E</div>
+      <div><strong>パターンを KPI 候補 と KAI 案 として言語化</strong>（5W1H で書ければKAIとして使える）</div>
+    </li>
+  </ul>
+
+  <div class="sub-h">「やっぱそうやん」が KPI のシグナル</div>
+  <div class="callout callout-cyan">
+    <strong>具体例（キャリスピ→セルフコア 成功事例）：</strong><br>
+    Day9 のグループSSで、顧客が「自分の中の◯◯」について発話する場を作った。その日のグループ内で他のメンバーが共鳴し、「自分も同じだ」というシェアが連鎖。終了後、複数名が懇親会で「セルフコア行く」と自発的に発話 &mdash; これが<strong>「やっぱそうやん」のサイン</strong>。<br><br>
+    &rarr; <strong>KPI仮説：</strong>Day9 グループSSでの "腹落ち発話 + 共鳴シェア" の発生件数<br>
+    &rarr; <strong>KAI：</strong>Day9 グループSSで、コーチが必ず「あなたの中の◯◯について教えて」の問いを全体に立てる（5W1H 化）<br>
+    &rarr; <strong>因果関係：</strong>KAIを踏む &rarr; 腹落ち発話が起きる（KPI動く）&rarr; セルフコア成立率が上がる（KGI動く）
+  </div>
+
+  <div class="sub-h">トリガーの定義を整理する</div>
+  <div class="callout">
+    <strong>トリガー＝顧客の心理状態を引き起こす介入。</strong>キックオフでの議論を整理すると、トリガーは「顧客の中にどんな状態を作りたいか」が起点。そのために<strong>こういう問いかけが効く</strong>＝KAI、結果<strong>こういう発話が起きる</strong>＝KPI、結果<strong>成立する</strong>＝KGI。トリガー＝KAIの中身、と覚えるとブレない。
+  </div>
+</section>
+
+<!-- SEC 09 -->
+<section class="sec" id="sec09">
+  <div class="section-label section-label-green">Section 09</div>
+  <h2 class="section-title">ペルソナ × ジャーニー &mdash; 一律対応からの脱却</h2>
+  <p class="section-subtitle">同じ接続ルートでも、顧客のペルソナ／セグメントによって、公式内の "どれが効くか" が違います。「全員に同じ介入」ではなく、「タイプ別に重点を変える」設計が必要です。</p>
+
+  <div class="sub-h">考え方 &mdash; セグメントで重要ポイントは変わる</div>
+  <div class="two-col">
+    <div class="card card-purple">
+      <div class="card-header">
+        <div class="card-icon card-icon-purple">&#x1F3AF;</div>
+        <h4>ドライバーの重みはセグメントで変わる</h4>
+      </div>
+      <p>あるセグメントでは「決断」が一番効くが、別セグメントでは「確信」が決定打になる、ということが頻繁に起こる。全員に同じ問いかけをするより、セグメント別に強化するドライバーを変える方が、通過率が大きく上がる。</p>
+    </div>
+    <div class="card card-purple">
+      <div class="card-header">
+        <div class="card-icon card-icon-purple">&#x1F6AB;</div>
+        <h4>ブレーキの種類もセグメントで変わる</h4>
+      </div>
+      <p>家族の反対が強いセグメントもあれば、金銭ブロックが支配的なセグメントもある。「慣性」が最大ブレーキのセグメントでは、そこを小さな一歩で崩す介入が要る。ブレーキの種類を見誤ると介入が的外れになる。</p>
+    </div>
+  </div>
+
+  <div class="sub-h">グラデーションを作る観点（事業部で言語化すべき）</div>
+  <div class="compare-box compare-box-purple">
+    <table>
+      <thead><tr><th>観点</th><th>変わりうる要素</th></tr></thead>
+      <tbody>
+        <tr><td><strong>年代</strong></td><td>未来像の描き方（短期 vs 長期）/ 金銭ブロック強度 / 家族ブロックの中身（親 vs 配偶者 vs 子）</td></tr>
+        <tr><td><strong>性別</strong></td><td>仲間の絆への感応度 / 決断の仕方（熟考型 vs 衝動型）/ 推奨・波及への内面的ブロック</td></tr>
+        <tr><td><strong>職種・職位</strong></td><td>希少性（合図）への反応 / 権威要素の重み / 時間ブロックの強さ</td></tr>
+        <tr><td><strong>悩み系統</strong></td><td>バーニングニーズ化の難易度 / 確信を作るのに必要な情報量 / 場の力の効き方（個別 vs 集団）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-purple">
+    <strong>事業部に整理してほしいのは：</strong>
+    「ミズカラの顧客を3〜5タイプに分け、それぞれどのドライバー／ブレーキ／場の力が重要か」を言語化すること。具体的なタイプ分けは事業部の現場感覚と卒業生の実データが要る領域なので、本ガイドでは<strong>考え方のフレームのみ</strong>を提示します。
+  </div>
+
+  <div class="sub-h">ジャーニー × 公式マトリクス（キャリスピ→リブースト）</div>
+  <div class="compare-box compare-box-green">
+    <table>
+      <thead>
+        <tr>
+          <th>ステップ</th><th>ラポール</th><th>バーニングニーズ化</th><th>未来への期待</th><th>決断</th><th>確信</th><th>合図</th><th>場の力</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Day0 ラポール</td><td>★★★</td><td>○</td><td></td><td></td><td></td><td></td><td>仲間の絆 着手</td></tr>
+        <tr><td>Day1-2 本講義</td><td>○</td><td>★★★</td><td></td><td>★</td><td></td><td></td><td>非日常 発動</td></tr>
+        <tr><td>Day3-5 合宿</td><td>○</td><td>★★</td><td>★</td><td>★★★</td><td>★</td><td></td><td>★全場の力発動</td></tr>
+        <tr><td>Day7 中間</td><td>○</td><td>○</td><td>★★★</td><td>★</td><td>★</td><td></td><td>集合的効力感</td></tr>
+        <tr><td>Day9 メカニクス講義</td><td></td><td></td><td></td><td></td><td>★★★</td><td></td><td></td></tr>
+        <tr><td>Day10 SS</td><td></td><td></td><td>★</td><td>★</td><td>★★</td><td>★</td><td></td></tr>
+        <tr><td>Day11 ゴール更新</td><td></td><td></td><td></td><td>★★</td><td></td><td>★★★</td><td>社会的証明</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.82rem;color:var(--text-2);margin-top:8px;">★の数 = このステップの主ミッション。<strong>空欄 = 「ここでは踏まない」</strong>を明示することで、コーチの焦点がハッキリする。</p>
+</section>
+
+<!-- SEC 10 -->
+<section class="sec" id="sec10">
+  <div class="section-label section-label-green">Section 10</div>
+  <h2 class="section-title">ボトルネック診断 &mdash; 1点集中のレバレッジ戦略</h2>
+  <p class="section-subtitle">全方位で底上げしようとすると効率が悪い。掛け算モデルなので「最も弱いドライバー」がボトルネック。ここに介入を集中します。</p>
+
+  <div class="sub-h">診断フロー（5ステップ）</div>
+  <ul class="action-list">
+    <li>
+      <div class="action-num">1</div>
+      <div><strong>各ドライバー要素を過去3ヶ月の通過率で評価</strong>（0-10スコア）</div>
+    </li>
+    <li>
+      <div class="action-num">2</div>
+      <div><strong>最低スコアの要素 = ボトルネック</strong>として特定</div>
+    </li>
+    <li>
+      <div class="action-num">3</div>
+      <div><strong>そのスコアが現状推定値 × 2 になったら、ルート通過率はどう変わる？</strong>をシミュレートする</div>
+    </li>
+    <li>
+      <div class="action-num">4</div>
+      <div><strong>最もレバレッジが効くボトルネック3つを特定</strong>（通過率の伸び幅で優先順位付け）</div>
+    </li>
+    <li>
+      <div class="action-num">5</div>
+      <div><strong>3つに介入集中</strong> / 他は現状維持</div>
+    </li>
+  </ul>
+
+  <div class="callout callout-green">
+    <strong>リアル実例 &mdash; キャリスピ→リブースト 直近観測 5事例：</strong>
+    5事例中 4件遷移、1件未遷移。未遷移の1件は<strong>家族ブロック（不安ブレーキ）</strong>。→ <strong>不安ブレーキの除去メカニズム</strong> がレバレッジポイント。家族説明テンプレ → コスト・時間メリット提示 → 不安解消オンラインコンテンツ が優先介入となる。
+  </div>
+</section>
+
+<!-- ══════════ PART D: ゴールと実行 ══════════ -->
+<div class="part-divider">
+  <span class="part-badge part-badge-d">Part D</span>
+  <span class="part-name">ゴールと実行 &mdash; 最終的に何が完成しているか</span>
+</div>
+
+<!-- SEC 11 -->
+<section class="sec" id="sec11">
+  <div class="section-label section-label-purple">Section 11</div>
+  <h2 class="section-title">最終ゴール像 &mdash; LTV診断ダッシュボード</h2>
+  <p class="section-subtitle">本期の「型完成」＝ 顧客1人1人に対して、公式要素をリアルタイム診断し、AIが最適介入を提案できる状態。以下はその完成イメージです。</p>
+
+  <div class="dashboard-mock">
+    <h5>顧客診断画面 : Yさん（キャリスピ→リブースト ルート）</h5>
+
+    <div class="dash-section">
+      <span class="dash-label">ドライバー駆動スコア</span>
+      <div class="score-row"><span style="min-width:130px;">ラポール</span><span class="score-bar score-ok">████████  9</span></div>
+      <div class="score-row"><span style="min-width:130px;">バーニングニーズ化</span><span class="score-bar">████      4</span><span class="score-warn">⚠</span></div>
+      <div class="score-row"><span style="min-width:130px;">未来への期待</span><span class="score-bar">█████     5</span></div>
+      <div class="score-row"><span style="min-width:130px;">決断</span><span class="score-bar">██████    6</span></div>
+      <div class="score-row"><span style="min-width:130px;">確信</span><span class="score-bar">███       3</span><span class="score-warn">⚠</span></div>
+      <div class="score-row"><span style="min-width:130px;">合図</span><span class="score-bar">○         0</span><span class="score-warn">⚠ 最弱</span></div>
+    </div>
+
+    <div class="dash-divider"></div>
+
+    <div class="dash-section">
+      <span class="dash-label">ブレーキ抑制スコア</span><br>
+      <span class="score-bar">不安 5</span> | <span class="score-bar">慣性 2</span> | <span class="score-bar">摩擦 0</span>
+    </div>
+
+    <div class="dash-section">
+      <span class="dash-label">場の力スコア</span><br>
+      <span class="score-bar">仲間の絆 8 / 社会的証明 6 / 集合的効力感 7 / 非日常没入 9</span>
+    </div>
+
+    <div class="dash-section">
+      <span class="dash-label">ペルソナ推定</span> 30代女性・自己変革志向<br>
+      <span class="dash-label">→ 仲間の絆と決断に感応するタイプ</span>
+    </div>
+
+    <div class="dash-divider"></div>
+
+    <div class="dash-section">
+      <span style="color:var(--accent-light);font-family:var(--font-jp);font-weight:700;">AI による推奨介入（優先順位付き）</span>
+      <div style="margin-top:10px;">
+        <div>🎯 <strong>優先1 :</strong> Day11 ゴール更新SS で具体申込日程を提示</div>
+        <div style="margin-left:22px;color:rgba(240,236,230,0.5);">(合図 0→9 見込み / ルート通過率 +35% 推定)</div>
+        <div style="margin-top:8px;">🎯 <strong>優先2 :</strong> Day9 講義で「リブーストの無意識介入」を15分追加</div>
+        <div style="margin-left:22px;color:rgba(240,236,230,0.5);">(確信 3→7 見込み / ルート通過率 +15% 推定)</div>
+        <div style="margin-top:8px;">🎯 <strong>優先3 :</strong> Day10 Group SS で 示唆質問セット実施</div>
+        <div style="margin-left:22px;color:rgba(240,236,230,0.5);">(バーニングニーズ化 4→7 見込み / ルート通過率 +10% 推定)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-h">この最終像を支える3つのAIエンジン</div>
+  <div class="three-col">
+    <div class="card card-purple">
+      <div class="card-header">
+        <div class="card-icon card-icon-purple">&#x1F4CA;</div>
+        <h4>A. リアルタイム診断エンジン</h4>
+      </div>
+      <p>発話・行動・アンケートから顧客スコアを毎日更新。スコア低下を自動アラート。</p>
+      <p style="font-size:0.74rem;color:var(--text-3);margin-top:6px;">Whisper + LLM + BigQuery</p>
+    </div>
+    <div class="card card-purple">
+      <div class="card-header">
+        <div class="card-icon card-icon-purple">&#x1F3AF;</div>
+        <h4>B. 介入シナリオ提案エンジン</h4>
+      </div>
+      <p>過去の成功事例から最適介入を選択。「この状況なら示唆質問」と具体的に提案。</p>
+      <p style="font-size:0.74rem;color:var(--text-3);margin-top:6px;">RAG + 成功パターン学習</p>
+    </div>
+    <div class="card card-purple">
+      <div class="card-header">
+        <div class="card-icon card-icon-purple">&#x1F52C;</div>
+        <h4>C. A/Bテスト自動化</h4>
+      </div>
+      <p>同じボトルネック顧客群に異なるトリガーを試行。勝率の高い介入を自動採用。</p>
+      <p style="font-size:0.74rem;color:var(--text-3);margin-top:6px;">Causal Inference + Bandit</p>
+    </div>
+  </div>
+</section>
+
+<!-- SEC 12 -->
+<section class="sec" id="sec12">
+  <div class="section-label section-label-purple">Section 12</div>
+  <h2 class="section-title">整理の優先順位 &mdash; どの順に着手するか</h2>
+  <p class="section-subtitle">全部同時は不可能。「<strong>ビジネスサイド要件定義 &rarr; システム要件定義</strong>」の順序を守る。前者の言語化が固まってから、後者の実装に踏み込む。仮説検証で確からしさが見えたものから順に再現性化していく。</p>
+
+  <ul class="action-list">
+    <li>
+      <div class="action-num">1</div>
+      <div><strong>売上インパクト最大ルート（キャリスピ &rarr; セルフコア）の成功エッセンス抽出</strong> <span class="tag tag-accent">最優先</span><br>
+      アウトプット：変換率高いコーチへの体感覚ヒアリング集／公式要素にマッピングした事例集／KPI候補とKAI仮説</div>
+    </li>
+    <li>
+      <div class="action-num">2</div>
+      <div><strong>各プロダクトの価値定義 + 各ファネルの仮説言語化</strong> <span class="tag tag-cyan">STEP 2</span><br>
+      アウトプット：プロダクト価値定義シート ／ 接続ルートごとのバリア・ドライバー・トリガーの仮説とファクト</div>
+    </li>
+    <li>
+      <div class="action-num">3</div>
+      <div><strong>「やっぱそうやん」が出るボトルネック1つの特定とKPI仮説</strong><br>
+      アウトプット：最大ボトルネックを1つに絞ったKPI仮説書（計測方法の難易度評価まで）</div>
+    </li>
+    <li>
+      <div class="action-num">4</div>
+      <div><strong>KPIにヒットするKAI（5W1H）の設計</strong><br>
+      アウトプット：いつ・どこで・誰が・何を・どのように・なぜ — を満たすコーチアクション仕様書／成功事例の問いブック</div>
+    </li>
+    <li>
+      <div class="action-num">5</div>
+      <div><strong>KAIをCRMに乗せる項目設計 + 補助オペレーション</strong> <span class="tag tag-purple">STEP 5</span><br>
+      アウトプット：KAI項目を絞ったCRMシート設計 ／ Slack通知などの補助オペレーション ／ BQスケジュールクエリ・AI統合の要件定義</div>
+    </li>
+  </ul>
+
+  <div class="callout">
+    <strong>ポイント：</strong>
+    レバレッジ効くポイントは何か／ボトルネックは何か、を常に事業部に問いながら進める。全方位で整えるのではなく、「<strong>1点集中の優先順位付け</strong>」こそが事業部の本当の整理ポイント。一気に CRM を作るのではなく、再現性が見えた KAI から順次CRMに乗せる。
+  </div>
+
+  <div class="callout callout-green">
+    <strong>並行進行のヒント：</strong>
+    ビジネスサイド要件定義の完成を待たずに、エッセンスが言語化された瞬間にシステム要件定義側も動き出せる。「やっぱそうだよね」と確信が持てたタイミングで、レジ側はその仮説を成り立たせるシステム実装に踏み込む。仮説検証フェーズと並行で先回りしておくのが本来の動き方。
+  </div>
+
+  <div class="sub-h">最終的に完成している世界</div>
+  <div class="impact-grid">
+    <div class="impact-item">
+      <div class="impact-number">2+</div>
+      <div class="impact-label">接続ルートの型完成<br>(キャリスピ &rarr; セルフコア / JCC優先 &rarr; リファラル等は後段)</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number">5</div>
+      <div class="impact-label">ペルソナ別 CRM戦略が稼働</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number">リアルタイム</div>
+      <div class="impact-label">ボトルネック診断とAI介入提案</div>
+    </div>
+    <div class="impact-item">
+      <div class="impact-number">LTV</div>
+      <div class="impact-label">最大化の再現性ある運用体制</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+
+<!-- ═══════════════ Footer ═══════════════ -->
+<footer class="closing">
+  <p class="closing-msg">「問いに答える」ことで、結果として整理が成立する。</p>
+  <p class="closing-sub" style="margin-bottom:12px">LTV推進室 &mdash; 顧客の理想状態を、再現可能な型にする</p>
+  <p class="closing-sub">ミズカラ &times; LTV最大化 &mdash; ファネル設計ガイド v1.1</p>
+  <p class="closing-sub" style="margin-top: 8px;">Confidential</p>
+</footer>
+
+<script>
+(function() {
+  /* ─── Particles ─── */
+  var pc = document.getElementById('particles');
+  for (var i = 0; i < 45; i++) {
+    var p = document.createElement('div');
+    var isAmber = Math.random() > 0.4;
+    p.className = 'particle ' + (isAmber ? 'particle-amber' : 'particle-white');
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-10px';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (5 + Math.random() * 7) + 's';
+    var size = 1.5 + Math.random() * 2.5;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    pc.appendChild(p);
+  }
+
+  /* ─── TOC Sidebar: IntersectionObserver ─── */
+  var tocLinks = document.querySelectorAll('.toc-link');
+  var sections = [];
+  tocLinks.forEach(function(a) {
+    var target = document.querySelector(a.getAttribute('href'));
+    if (target) sections.push({ el: target, link: a });
+  });
+
+  if (sections.length) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          tocLinks.forEach(function(l) { l.classList.remove('active'); });
+          var match = sections.find(function(s) { return s.el === e.target; });
+          if (match) match.link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+
+    sections.forEach(function(s) { io.observe(s.el); });
+  }
+
+  /* ─── Mobile Nav: show/hide ─── */
+  var gnav = document.getElementById('gnav');
+  var hero = document.querySelector('.hero');
+  var gnavLinks = gnav ? gnav.querySelectorAll('.gnav-link') : [];
+  var allSections = document.querySelectorAll('.sec[id]');
+
+  function updateMobileNav() {
+    if (!gnav || window.innerWidth > 960) return;
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    gnav.classList.toggle('visible', heroBottom < 60);
+
+    var currentId = '';
+    allSections.forEach(function(s) {
+      if (s.getBoundingClientRect().top < 100) currentId = s.id;
+    });
+    gnavLinks.forEach(function(a) {
+      var href = a.getAttribute('href').replace('#', '');
+      a.classList.toggle('active', href === currentId);
+    });
+  }
+
+  window.addEventListener('scroll', updateMobileNav, { passive: true });
+  window.addEventListener('resize', updateMobileNav, { passive: true });
+  updateMobileNav();
+})();
+</script>
+</body>
+</html>
