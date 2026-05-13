@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編集業務プロセス × AI活用マトリクス — 5/13 ヒアリング事前資料</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #08080d;
+  --bg-surface: #101018;
+  --bg-raised: #181824;
+  --bg-top: #222234;
+  --border: rgba(255,255,255,0.08);
+  --border-focus: rgba(255,255,255,0.18);
+  --text: #eaeaf2;
+  --text-dim: #9898ae;
+  --text-muted: #58586e;
+  --accent: #f97316;
+  --accent-light: #fb923c;
+  --accent-dark: #c2410c;
+  --accent-bg: rgba(249,115,22,0.10);
+  --accent-border: rgba(249,115,22,0.35);
+  --human: #a78bfa;
+  --human-bg: rgba(167,139,250,0.10);
+  --human-border: rgba(167,139,250,0.35);
+  --hybrid: #22d3ee;
+  --hybrid-bg: rgba(34,211,238,0.10);
+  --hybrid-border: rgba(34,211,238,0.35);
+  --ai-led: #fb923c;
+  --ai-led-bg: rgba(251,146,60,0.10);
+  --ai-led-border: rgba(251,146,60,0.35);
+  --ai-only: #34d399;
+  --ai-only-bg: rgba(52,211,153,0.10);
+  --ai-only-border: rgba(52,211,153,0.35);
+  --grad-accent: linear-gradient(135deg, #c2410c 0%, #f97316 100%);
+  --font-sans: 'Noto Sans JP', -apple-system, sans-serif;
+  --font-display: 'Sora', 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--font-sans); color: var(--text); background: var(--bg-base); line-height: 1.75; font-size: 14px; padding: 40px 20px 80px; }
+.container { max-width: 1180px; margin: 0 auto; }
+
+/* Header */
+.doc-header { padding-bottom: 24px; border-bottom: 2px solid var(--accent); margin-bottom: 36px; }
+.doc-eyebrow { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 8px; }
+.doc-title { font-size: 28px; font-weight: 900; color: var(--text); line-height: 1.3; }
+.doc-title .accent { color: var(--accent); }
+.doc-meta { margin-top: 10px; font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+.intro { background: var(--bg-surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 6px; padding: 18px 24px; margin: 0 0 36px; font-size: 13.5px; color: var(--text-dim); line-height: 1.85; }
+.intro strong { color: var(--text); }
+.intro .so { color: var(--accent-light); font-weight: 700; margin-right: 6px; }
+
+/* Section */
+.section-title { font-size: 18px; font-weight: 800; color: var(--text); margin: 40px 0 14px; padding-left: 14px; border-left: 3px solid var(--accent); }
+.section-sub { font-size: 12px; color: var(--text-dim); margin: -8px 0 16px 14px; }
+
+/* Legend */
+.legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0 8px; }
+@media(max-width:900px){.legend{grid-template-columns:repeat(2,1fr)}}
+.legend-item { padding: 12px 14px; border-radius: 8px; border: 1px solid; font-size: 12px; }
+.legend-item .lvl { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.legend-item .lbl { font-weight: 700; color: var(--text); font-size: 13px; }
+.legend-item .desc { color: var(--text-dim); margin-top: 2px; font-size: 11.5px; }
+.legend-item.l1 { background: var(--human-bg); border-color: var(--human-border); }
+.legend-item.l1 .lvl { color: var(--human); }
+.legend-item.l2 { background: var(--hybrid-bg); border-color: var(--hybrid-border); }
+.legend-item.l2 .lvl { color: var(--hybrid); }
+.legend-item.l3 { background: var(--ai-led-bg); border-color: var(--ai-led-border); }
+.legend-item.l3 .lvl { color: var(--ai-led); }
+.legend-item.l4 { background: var(--ai-only-bg); border-color: var(--ai-only-border); }
+.legend-item.l4 .lvl { color: var(--ai-only); }
+
+/* Phase divider */
+.phase { margin: 36px 0 12px; }
+.phase-tag { display: inline-block; font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 2px; padding: 4px 10px; border: 1px solid var(--accent-border); border-radius: 4px; }
+.phase-name { display: inline-block; font-size: 16px; font-weight: 800; color: var(--text); margin-left: 10px; }
+
+/* Process card */
+.process-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.process { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; }
+.process .ph { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.process .pnum { font-family: var(--font-display); font-weight: 800; font-size: 22px; background: var(--grad-accent); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; min-width: 32px; }
+.process .pname { font-size: 17px; font-weight: 800; color: var(--text); }
+.process .lvl-badge { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-left: auto; }
+.process .lvl-badge.l1 { background: var(--human-bg); color: var(--human); border: 1px solid var(--human-border); }
+.process .lvl-badge.l2 { background: var(--hybrid-bg); color: var(--hybrid); border: 1px solid var(--hybrid-border); }
+.process .lvl-badge.l3 { background: var(--ai-led-bg); color: var(--ai-led); border: 1px solid var(--ai-led-border); }
+.process .lvl-badge.l4 { background: var(--ai-only-bg); color: var(--ai-only); border: 1px solid var(--ai-only-border); }
+.process .grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:768px){.process .grid4{grid-template-columns:1fr}}
+.process .field { background: var(--bg-raised); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); }
+.process .field .hd { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.process .field .hd.human { color: var(--human); }
+.process .field .hd.ai { color: var(--ai-led); }
+.process .field ul { list-style: none; padding: 0; margin: 0; }
+.process .field li { font-size: 12.5px; color: var(--text-dim); padding: 3px 0 3px 14px; position: relative; line-height: 1.65; }
+.process .field li::before { content: "•"; position: absolute; left: 0; top: 1px; color: var(--accent); font-weight: 700; }
+.process .field.human li::before { color: var(--human); }
+.process .field.ai li::before { color: var(--ai-led); }
+
+.process .footrow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media(max-width:768px){.process .footrow{grid-template-columns:1fr}}
+.process .survey-quote { background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 4px; padding: 10px 14px; }
+.process .survey-quote .who { font-family: var(--font-mono); font-size: 11px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+.process .survey-quote .txt { font-size: 12px; color: var(--text-dim); line-height: 1.65; }
+.process .ex { background: var(--bg-raised); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+.process .ex .hd { font-family: var(--font-display); font-size: 10px; font-weight: 700; color: var(--accent-light); margin-bottom: 4px; letter-spacing: 0.1em; }
+.process .ex .txt { font-size: 12px; color: var(--text-dim); line-height: 1.65; }
+
+/* Footer */
+.footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); text-align: center; }
+.footer .brand { font-family: var(--font-display); font-weight: 700; color: var(--text); }
+.footer .brand span { color: var(--accent); }
+
+/* Use-at-hearing card */
+.use { background: linear-gradient(135deg, rgba(249,115,22,0.08) 0%, rgba(167,139,250,0.06) 100%); border: 1px solid var(--accent-border); border-radius: 12px; padding: 22px 28px; margin: 24px 0 8px; }
+.use h3 { font-size: 15px; font-weight: 800; color: var(--accent-light); margin-bottom: 10px; }
+.use p { font-size: 13px; color: var(--text-dim); line-height: 1.85; }
+.use p + p { margin-top: 8px; }
+.use strong { color: var(--text); }
+
+/* Ref links */
+.refs { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; margin: 20px 0; font-size: 12px; }
+.refs h4 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; letter-spacing: 0.1em; }
+.refs ul { list-style: none; padding: 0; }
+.refs li { padding: 3px 0 3px 14px; position: relative; color: var(--text-dim); }
+.refs li::before { content: "↗"; position: absolute; left: 0; color: var(--accent); }
+.refs a { color: var(--text-dim); text-decoration: none; }
+.refs a:hover { color: var(--accent-light); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="doc-header">
+    <div class="doc-eyebrow">PRE-READ FOR 5/13 HEARING</div>
+    <h1 class="doc-title">編集業務プロセス × <span class="accent">AI活用</span>マトリクス</h1>
+    <div class="doc-meta">2026.05.13 ヒアリング前事前整理 / 大和書房 × オモシク 西川</div>
+  </div>
+
+  <div class="intro">
+    <p>編集部の皆様には<strong>すでに何度かAI活用アンケートにお答え</strong>いただいています。同じ質問の繰り返しを避けるため、編集業務を<strong>13のプロセスに分解</strong>し、「ここは人が担うべき／ここはAIに頼ってもいい」の<strong>温度感を可視化</strong>しました。</p>
+    <p><span class="so">SO WHAT</span>5/13は、各プロセスの判定が<strong>3名の中で揃っているか／業界の見方と比べてどう違うか</strong>を議論する場にしたいです。一個一個「使ってますか？」を聞くのではなく、<strong>「この線引き、どう思います？」</strong>の対話が起点になります。</p>
+  </div>
+
+  <h2 class="section-title">凡例：4段階の温度感</h2>
+  <div class="section-sub">プロセスごとの「人 vs AI」の役割分担を4段階で評価</div>
+  <div class="legend">
+    <div class="legend-item l1"><div class="lvl">LEVEL 1</div><div class="lbl">完全人</div><div class="desc">AIに触らせない。クリエイティブの核</div></div>
+    <div class="legend-item l2"><div class="lvl">LEVEL 2</div><div class="lbl">人主導 ＋ AI補助</div><div class="desc">人が主、AIが壁打ち・検索の補助</div></div>
+    <div class="legend-item l3"><div class="lvl">LEVEL 3</div><div class="lbl">AI主導 ＋ 人レビュー</div><div class="desc">AIがドラフト、人が判断・修正</div></div>
+    <div class="legend-item l4"><div class="lvl">LEVEL 4</div><div class="lbl">ほぼ完全AI</div><div class="desc">人の介在は最終承認のみ</div></div>
+  </div>
+
+  <!-- ============ Phase A: 企画 ============ -->
+  <div class="phase">
+    <span class="phase-tag">PHASE A</span><span class="phase-name">企画フェーズ</span>
+  </div>
+  <div class="process-grid">
+
+    <div class="process">
+      <div class="ph"><div class="pnum">1</div><div class="pname">企画立案・テーマ探索</div><div class="lvl-badge l2">LEVEL 2</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>市場トレンド情報</li><li>読者ニーズの感触</li><li>競合書籍リスト</li><li>編集者の問題意識</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★問題意識・独自切り口</li><li>文化的・社会的判断</li><li>「面白い」の感性</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>市場・競合書のリサーチ要約</li><li>類書比較・ジャンル分析</li><li>読者ペルソナの仮置き</li><li>「企画に活かすなら」視点の壁打ち</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>ChatGPT / Claude（壁打ち）</li><li>Perplexity（リサーチ）</li><li>Claude Code（自作ニュース配信）</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#5 アンケート</div><div class="txt">Claude Codeで毎朝のニュースをリサーチしてメール配信するサービスを自作。「企画に生かすなら」視点を加えて、ブレストの短縮に。</div></div>
+        <div class="survey-quote"><div class="who">#6 アンケート</div><div class="txt">企画立案時から、構想やねらいなどを打ち込んで、リアクションをもらいながら考えを整理。</div></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">2</div><div class="pname">企画書作成・章立て構成</div><div class="lvl-badge l3">LEVEL 3</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>企画コンセプト</li><li>想定読者プロファイル</li><li>主要主張・差別化点</li><li>競合の目次</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>企画の核となる主張</li><li>章の順序の意図</li><li>最終構成判断</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>★章立てのたたき台複数案</li><li>目次案ジェネレート</li><li>構成パターン提示</li><li>抜け論点の指摘</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>ChatGPT / Claude（長文構成）</li><li>NotebookLM（資料統合）</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#9 アンケート</div><div class="txt">企画書に添付する章立て（構成案）作りに毎回苦しんでいるので、AIを使ってみたい。皆さんどんなプロンプトで指示を出しているのだろう！？</div></div>
+        <div class="ex"><div class="hd">類似業務での活用例</div><div class="txt">コンサル業界では「提案書の章立て叩き」をAIで作る→人が論点を磨くワークフローが定着。マーケでは「ホワイトペーパー目次案」を10案出させ、選定後に肉付け。<strong style="color:var(--text)">「目次案を10個、各テーマ別に視点を変えて」</strong>と指示すると幅が広がる。</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ Phase B: 著者 ============ -->
+  <div class="phase">
+    <span class="phase-tag">PHASE B</span><span class="phase-name">著者対応フェーズ</span>
+  </div>
+  <div class="process-grid">
+
+    <div class="process">
+      <div class="ph"><div class="pnum">3</div><div class="pname">著者選定・依頼</div><div class="lvl-badge l2">LEVEL 2</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>テーマ・カテゴリ</li><li>候補者の専門領域</li><li>過去著作・実績</li><li>SNS発信内容</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★著者との関係構築</li><li>相性判断</li><li>依頼の説得</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>著者プロフィール要約</li><li>過去著作の論点抽出</li><li>依頼文ドラフト</li><li>テーマ別の候補発見</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>ChatGPT / Claude</li><li>Perplexity（候補者リサーチ）</li></ul></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">4</div><div class="pname">取材・インタビュー記録</div><div class="lvl-badge l3">LEVEL 3</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>音声ファイル</li><li>取材ノート</li><li>事前リサーチ資料</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★取材設計</li><li>その場での質問判断</li><li>言葉の場の空気</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>★テープ起こし・ケバ取り</li><li>要約・章別整理</li><li>論点抽出</li><li>引用候補の選定</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>Whisper（OpenAI）</li><li>Notta / Otter.ai</li><li>ChatGPT/Claudeで整形</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#9 アンケート</div><div class="txt">取材テープ起こしのケバ取りで使用中。</div></div>
+        <div class="ex"><div class="hd">類似業務での活用例</div><div class="txt"><strong style="color:var(--text)">UXリサーチ業界</strong>：1時間のユーザーインタビュー音声をWhisperで文字起こし→Claudeで「<strong style="color:var(--text)">本音／表面の発言／示唆</strong>」に3分類整理する2ステップが標準。<strong style="color:var(--text)">ジャーナリズム</strong>でも同じ手法。1時間が15分に短縮。</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ Phase C: 原稿 ============ -->
+  <div class="phase">
+    <span class="phase-tag">PHASE C</span><span class="phase-name">原稿フェーズ</span>
+  </div>
+  <div class="process-grid">
+
+    <div class="process">
+      <div class="ph"><div class="pnum">5</div><div class="pname">原稿作成支援（壁打ち）</div><div class="lvl-badge l2">LEVEL 2</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>著者からの原稿</li><li>相談内容</li><li>構成案</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★著者の意図くみ取り</li><li>原稿の質的判断</li><li>編集者としての提案</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>壁打ち相手</li><li>別視点の提示</li><li>論点整理（要約）</li><li>反論シミュレーション</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>ChatGPT / Claude</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#8 アンケート</div><div class="txt">アイデアの壁打ちで使用。調べものは主に原稿整理段階で、本格的な校正の一歩前のイメージ。</div></div>
+        <div class="ex"><div class="hd">類似業務での活用例</div><div class="txt"><strong style="color:var(--text)">コンサル業界の「悪魔の代弁者」活用</strong>：仮説を立てたら「反論の余地はないか／読者はどこで引っかかるか」とAIに投げかけて視点を補強。<strong style="color:var(--text)">起業家のピッチ準備</strong>でも「投資家が突っ込みそうな弱点を5つ」と聞くのが定番。</div></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">6</div><div class="pname">原稿整理・第一稿生成</div><div class="lvl-badge l3">LEVEL 3</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>著者の音声/ポッドキャスト</li><li>過去著作</li><li>著者メモ</li><li>事前の合意した構成</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★著者の意図保持・最終判断</li><li>★著作権者の合意確認</li><li>文体の指針指示</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>★第一稿の生成</li><li>章別の構成・整形</li><li>不足論点の指摘</li><li>用語の統一</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>Claude（長文得意）</li><li>NotebookLM（資料統合）</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#5 アンケート</div><div class="txt">今期出す本で、原稿の第一稿をAIに書かせる予定（情報源は著者のポッドキャスト数百回分の文字起こし、オリジナリティは担保）。作業時間短縮と質的向上が両立すれば成功事例として周知したい。</div></div>
+        <div class="survey-quote"><div class="who">#8 自由意見</div><div class="txt">著者（著作権者）に確認の上で、文字起こしや原稿整理など編集実務作業でAIをフル活用できるようにしていただけると幸いです。</div></div>
+      </div>
+      <div class="footrow">
+        <div class="ex" style="grid-column:1/-1;"><div class="hd">類似業務での活用例</div><div class="txt"><strong style="color:var(--text)">米国のライティング業界</strong>：BloombergやHBRでは、インタビュー音声→AIで第一稿→ライターが文体調整→公開、というワークフローが定着。<strong style="color:var(--text)">ゴーストライター業界</strong>では、著者の過去著作・ポッドキャスト・ブログを学習素材にして第一稿を生成し、著者の承認を取って磨き込むハイブリッド方式が主流。<strong style="color:var(--accent-light)">著者の合意フローを契約段階で組み込む</strong>のが成功条件。</div></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">7</div><div class="pname">校正・校閲（事実確認・誤字脱字）</div><div class="lvl-badge l3">LEVEL 3</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>原稿（テキスト/Word）</li><li>校正記号・社内基準</li><li>参考資料</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>著者の文体保持判断</li><li>最終ニュアンス確認</li><li>誤指摘の取捨</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>★誤字脱字・表記揺れ検出</li><li>★事実関係の下調べ</li><li>用語・固有名詞確認</li><li>文法・日本語表現</li><li>整合性チェック</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>Shodo（編集者向け校正クラウド）</li><li>AI editor（10000字を3秒で表記揺れ検出）</li><li>ChatGPT / Claude（事実確認）</li><li>文賢</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">13名中9名 アンケート</div><div class="txt">「事実関係の確認・下調べ」が用途トップ。全体の69%が利用中。</div></div>
+        <div class="ex"><div class="hd">類似業務での活用例</div><div class="txt"><strong style="color:var(--text)">法務業界</strong>：契約書チェックをAIが一次レビュー→弁護士が最終判断する2層構造が一般化。<strong style="color:var(--text)">マニュアル管理</strong>：1万字の表記揺れチェックがAI editorで3秒。<strong style="color:var(--text)">医薬品業界</strong>：薬機法・薬事に関わる用語チェックでLLMが一次フィルタリング。<strong style="color:var(--accent-light)">「AI一次レビュー→人が最終判断」</strong>の2段ゲートが鉄板。</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ Phase D: 装丁・販促 ============ -->
+  <div class="phase">
+    <span class="phase-tag">PHASE D</span><span class="phase-name">装丁・販促フェーズ</span>
+  </div>
+  <div class="process-grid">
+
+    <div class="process">
+      <div class="ph"><div class="pnum">8</div><div class="pname">タイトル・コピー検討</div><div class="lvl-badge l2">LEVEL 2</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>原稿（要約版）</li><li>コンセプト</li><li>競合タイトル一覧</li><li>ターゲット読者</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★タイトルの最終判断</li><li>編集者・営業の合議</li><li>商標・既存類似のチェック判断</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>タイトル案を10〜100件量産</li><li>キャッチコピーのバリエーション</li><li>帯文ドラフト</li><li>類似タイトル検出</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>ChatGPT / Claude</li><li>Catchy（コピー特化）</li></ul></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">9</div><div class="pname">カバー・装丁・図版</div><div class="lvl-badge l1">LEVEL 1</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>コンセプト</li><li>ターゲット読者像</li><li>参考デザイン</li><li>原稿の核心</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★★クリエイティブ判断</li><li>★★デザイナーとの対話</li><li>★★著作者の最終承認</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>図版ラフ・サムネ生成</li><li>イラスト依頼用のラフ</li><li>参考イメージ収集</li><li>Word/PowerPointへの出力</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>Midjourney / DALL-E（ラフ）</li><li>Adobe Firefly</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#4 アンケート</div><div class="txt">文章をもとにした図版ラフの作成／Word・PowerPointなどのオフィスソフトでの出力。</div></div>
+        <div class="survey-quote"><div class="who">#11 アンケート</div><div class="txt">イラスト依頼をする際のラフ作成。</div></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote" style="grid-column:1/-1; background:rgba(167,139,250,0.10); border-color:var(--human-border); border-left:3px solid var(--human);"><div class="who" style="color:var(--human);">#8 線引き哲学</div><div class="txt">著者やイラストレーター、デザイナーなどの<strong style="color:var(--text)">クリエイティビティやオリジナリティにかかわる部分には触れさせるべきではない</strong>。最終アウトプットは人が作る。AIはラフ・参考イメージ生成までに留めるべき。</div></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">10</div><div class="pname">販促資料・PR資料作成</div><div class="lvl-badge l3">LEVEL 3</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>原稿（または要約版）</li><li>書影</li><li>著者プロフィール</li><li>ターゲット読者</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>メッセージング戦略</li><li>PR戦略の全体設計</li><li>最終文言判断</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>★Amazon A+ コンテンツ案</li><li>★パネル文案</li><li>プレスリリース・たたき台</li><li>書評からの抜粋・要約</li><li>SNS投稿文</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>ChatGPT / Claude</li><li>Catchy（販促コピー）</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#2 アンケート</div><div class="txt">パネルやA+の作成にも役立てられるとありがたい。</div></div>
+        <div class="survey-quote"><div class="who">#8 アンケート</div><div class="txt">原稿を読み込ませて校正の精度向上、ウェブの抜粋記事・プレスリリース・PR会議資料のたたき台などの作成も容易に。</div></div>
+      </div>
+      <div class="footrow">
+        <div class="ex" style="grid-column:1/-1;"><div class="hd">類似業務での活用例</div><div class="txt"><strong style="color:var(--text)">SaaS業界のLP作成</strong>：原稿（≒製品仕様）→ AIで「ベネフィット型コピー」「機能型コピー」「ストーリー型コピー」の3パターン生成→マーケが選定。<strong style="color:var(--text)">PR業界</strong>：プレスリリースの構造（リード／背景／詳細／引用／会社情報）が型化されており、AIに型を渡せば1分でドラフト完成。Amazon A+ は<strong style="color:var(--text)">「画像5枚＋見出し」のフレームに従う</strong>のが鉄則。</div></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">11</div><div class="pname">書店営業ツール（注文書・類書比較）</div><div class="lvl-badge l3">LEVEL 3</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>書誌情報</li><li>書店プロファイル</li><li>過去販売実績（POS）</li><li>類書情報</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★営業の説得力</li><li>★関係性での提案</li><li>最終判断</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>類書リサーチ</li><li>書店別ターゲティング資料</li><li>配本提案の根拠データ</li><li>営業トーク叩き</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>ChatGPT / Claude</li><li>内製ダッシュボード（POS連携）</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#5 アンケート</div><div class="txt">類書リサーチをやってくれたら助かる。</div></div>
+        <div class="ex"><div class="hd">類似業務での活用例</div><div class="txt"><strong style="color:var(--text)">BtoB営業</strong>：「この顧客にはこのケーススタディが響く」をAIで自動マッチング。<strong style="color:var(--text)">不動産業界</strong>：物件×顧客プロファイルで提案資料を自動生成。書店営業でも<strong style="color:var(--text)">「ジャンル×書店プロファイル×過去販売実績」</strong>で類書をマッチングする発想は転用可能。</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ Phase E: 管理 ============ -->
+  <div class="phase">
+    <span class="phase-tag">PHASE E</span><span class="phase-name">管理・事務フェーズ</span>
+  </div>
+  <div class="process-grid">
+
+    <div class="process">
+      <div class="ph"><div class="pnum">12</div><div class="pname">進捗管理・社内コミュニケーション</div><div class="lvl-badge l4">LEVEL 4</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>各PJの進捗データ</li><li>会議録音/メモ</li><li>メール</li><li>SharePoint資料</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>判断・意思決定</li><li>関係者間調整</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>★議事録生成</li><li>★会議リマインダー</li><li>メール返信ドラフト</li><li>進捗サマリ</li><li>★SharePoint資料からの類書実績検索</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>Notion AI</li><li>Otolio（旧スマート書記）</li><li>Kintoneカスタマイズ</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#12 アンケート</div><div class="txt">煩雑な事務作業（企画会議リスト、AIによる会議シートのリマインダー）。SharePoint内に蓄積されている資料から会議の場で似た本の実績を持ってきてくれたり、分析してくれたり。</div></div>
+        <div class="ex"><div class="hd">類似業務での活用例</div><div class="txt"><strong style="color:var(--text)">コンサル業界</strong>：会議録音→Otter/スマート書記で自動議事録→Claudeで「論点／合意事項／TODO」3分類。<strong style="color:var(--text)">PMの実例</strong>：Notion AIで進捗サマリ自動生成。<strong style="color:var(--text)">SharePoint資料からのRAG検索</strong>はMicrosoft Copilotで実装可能、社内ナレッジを横串検索する仕組み。</div></div>
+      </div>
+    </div>
+
+    <div class="process">
+      <div class="ph"><div class="pnum">13</div><div class="pname">事務処理（支払・契約）</div><div class="lvl-badge l4">LEVEL 4</div></div>
+      <div class="grid4">
+        <div class="field"><div class="hd">📥 入力フォーマット</div><ul><li>著者・取引先リスト</li><li>支払金額</li><li>契約情報</li></ul></div>
+        <div class="field human"><div class="hd human">🟪 人が担う</div><ul><li>★法務判断</li><li>★最終承認</li></ul></div>
+        <div class="field ai"><div class="hd ai">🟧 AIが担える</div><ul><li>★支払依頼書＋メール文面の自動生成</li><li>契約書のたたき台レビュー</li><li>請求書チェック</li></ul></div>
+        <div class="field"><div class="hd">⚙️ 推奨ツール</div><ul><li>Kintone（契約書管理）</li><li>ChatGPT / Claude</li></ul></div>
+      </div>
+      <div class="footrow">
+        <div class="survey-quote"><div class="who">#5 アンケート</div><div class="txt">「誰にいくら払うか」を一括で記入すると同時に支払い依頼書＋メール文面が自動で生成されたらすごく助かります。</div></div>
+        <div class="ex"><div class="hd">関連プロジェクト ＋ 類似業務</div><div class="txt">4/28 窪田様MTGで合意した「<strong style="color:var(--text)">Kintone 第1弾 = 契約書管理アプリ</strong>」と直接接続。<strong style="color:var(--text)">弁護士業界のリーガルテック</strong>：契約書のAIレビュー（LegalForce等）で初稿チェックを自動化、人は最終判断のみ。<strong style="color:var(--text)">経理業務</strong>：請求書OCR＋AI仕訳が標準化済。</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ 5/13 での使い方 ============ -->
+  <h2 class="section-title">5/13 当日の使い方</h2>
+  <div class="section-sub">この資料を 3名（中山・林・出口）と どう議論するか</div>
+  <div class="use">
+    <h3>① 開幕で「線引き哲学」をすり合わせる</h3>
+    <p>個別の「使ってますか？」を聞くより、<strong>「クリエイティブの核（プロセス8/9）は人」「事実確認・事務（7/12/13）は AI 多めでOK」</strong>という大枠を3名で確認。林さん（#8）の自由意見が既にこの線引き哲学を持っているので、その確認から入る。</p>
+    <h3 style="margin-top:14px;">② 温度感が割れそうな領域を深掘り</h3>
+    <p>特に <strong>原稿整理・第一稿生成（プロセス6）</strong>、<strong>校正・校閲（プロセス7）</strong>、<strong>タイトル検討（プロセス8）</strong>は3名・編集部内で意見が割れやすい。「ここは皆さん本当にどう思います？」が当日の核心議論になる。</p>
+    <h3 style="margin-top:14px;">③ 「やってみたい」を1つずつ拾う</h3>
+    <p>13プロセスの中で<strong>「自分の業務で明日からでも試したい」</strong>と思うものを各人1つずつ挙げてもらう。実装難易度の低いものから推進担当（#5・#6・#8）で着手→他10名に展開、というロードマップになる。</p>
+  </div>
+
+  <!-- ============ ベストプラクティス ============ -->
+  <h2 class="section-title">不安への答え：ベストプラクティス</h2>
+  <div class="section-sub">アンケートで挙がった「正確性が不安」「どこまで使ってよいか判断難」「著作権」への業界の標準解</div>
+
+  <div class="phase">
+    <span class="phase-tag">BEST PRACTICE A</span><span class="phase-name">ハルシネーション対策</span>
+  </div>
+  <div class="process">
+    <div class="ph"><div class="pname">「もっともらしい嘘」を防ぐ5つの基本</div></div>
+    <div class="grid4">
+      <div class="field"><div class="hd">① 「わからない」を許可する</div><ul><li>「確実でない情報には『わかりません』『情報不足』と答えてください」を必ずプロンプトに入れる</li><li>AIに <strong style="color:var(--text)">嘘をつかない選択肢</strong> を与える</li></ul></div>
+      <div class="field"><div class="hd">② 役割と目的を明示</div><ul><li>「あなたは○○の専門家です。○○の目的でこの仕事をしています」</li><li>参照すべき知識範囲が <strong style="color:var(--text)">絞り込まれる</strong></li></ul></div>
+      <div class="field"><div class="hd">③ ソース付き出力を強制</div><ul><li>「主張ごとに出典URLを併記。見つからない場合は『未確認』と書く」</li><li>これだけで <strong style="color:var(--text)">捏造文献</strong> が激減</li></ul></div>
+      <div class="field"><div class="hd">④ 検証フロー2層ゲート</div><ul><li>AI出力 → 一次資料確認 → 編集判断</li><li>法務・医療業界で <strong style="color:var(--text)">標準化済の2段ゲート</strong> 構造</li></ul></div>
+      <div class="field"><div class="hd">⑤ 検索連携ツール</div><ul><li>Perplexity（ソース付き回答）</li><li>ChatGPT 検索モード</li><li>Genspark（複数AI回答比較）</li></ul></div>
+      <div class="field"><div class="hd">⑥ 多層防御（RAG等）</div><ul><li>マルチホップRAG／ハイブリッドインデックス</li><li>社内ナレッジを学習させる代わりに <strong style="color:var(--text)">検索ベースで参照</strong></li></ul></div>
+    </div>
+    <div class="footrow">
+      <div class="ex" style="grid-column:1/-1; background:rgba(167,139,250,0.08); border-color:var(--human-border);"><div class="hd" style="color:var(--human);">💡 #5 出口さんの提案にも合致</div><div class="txt">アンケートで「<strong style="color:var(--text)">AIの回答の正確性が担保されるようなプロンプトがあれば共有したい</strong>」「よいプロンプトが共有されるチャネルがあるとよい」と提起済み。<strong style="color:var(--accent-light)">推進担当3名で共有プロンプトテンプレ集を作る</strong>のが第一歩。</div></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <span class="phase-tag">BEST PRACTICE B</span><span class="phase-name">商用利用の境界</span>
+  </div>
+  <div class="process">
+    <div class="ph"><div class="pname">ChatGPT・Claude の商用利用ルール（2026年5月時点）</div></div>
+    <div class="grid4">
+      <div class="field"><div class="hd">ChatGPT 商用利用</div><ul><li>出力の <strong style="color:var(--text)">著作権はユーザー帰属</strong>、商用利用OK</li><li>ただし既存著作物との類似が侵害リスク</li><li>類似著作物チェックを併用</li></ul></div>
+      <div class="field"><div class="hd">Claude 商用利用</div><ul><li>同じく出力はユーザー帰属、商用OK</li><li><strong style="color:var(--text)">Team/Enterprise/API は Anthropic が法的防御・補償</strong>を提供（重要）</li><li>個人 Pro/Free 版は補償なし</li></ul></div>
+      <div class="field"><div class="hd">日本の公式ガイド</div><ul><li>文化庁「AIと著作権に関する考え方」</li><li>学習段階／生成段階／公表段階で適用が異なる</li><li>「思想又は感情の創作的表現」のコピーかが判断軸</li></ul></div>
+      <div class="field"><div class="hd">出版界の現状</div><ul><li>「AI関与」明示は議論中、業界統一ルールなし</li><li>著者契約に「AI使用範囲」を明記する出版社が増加</li><li>剽窃チェックツール（Copyscape等）の併用が定着</li></ul></div>
+    </div>
+    <div class="footrow">
+      <div class="ex" style="grid-column:1/-1; background:rgba(34,211,238,0.08); border-color:var(--hybrid-border);"><div class="hd" style="color:var(--hybrid);">💡 大和書房さま向け推奨</div><div class="txt"><strong style="color:var(--text)">企業利用なら Claude Team / Enterprise を契約</strong>すれば法的補償付き。<strong style="color:var(--text)">著者との契約書に「AI使用範囲の合意」条項</strong>を加えれば #8 が懸念する「著者の権利」「使う側の判断難」両方をカバー。</div></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <span class="phase-tag">BEST PRACTICE C</span><span class="phase-name">機密情報・著者原稿の取り扱い</span>
+  </div>
+  <div class="process">
+    <div class="ph"><div class="pname">「入れていい情報」「入れてはいけない情報」の線引き</div></div>
+    <div class="grid4">
+      <div class="field"><div class="hd">必須設定</div><ul><li><strong style="color:var(--text)">学習データ無効化設定</strong>（ChatGPT/Claude/Gemini それぞれ可能）</li><li>「Memory」「Chat History」をOFF</li><li>API利用なら標準で学習に使われない</li></ul></div>
+      <div class="field"><div class="hd">入れていい</div><ul><li>公開済の書誌情報</li><li>世に出ているプレスリリース・SNS発信</li><li>編集者の作業メモ（個人特定なし）</li><li>用語・表記揺れ確認の<strong style="color:var(--text)">該当箇所のみ</strong>（#8の運用）</li></ul></div>
+      <div class="field"><div class="hd">入れる前に確認</div><ul><li>著者の原稿全文 → <strong style="color:var(--accent-light)">著者合意が前提</strong></li><li>未公開の企画情報</li><li>社員・著者の個人情報</li><li>契約金額・印税情報</li></ul></div>
+      <div class="field"><div class="hd">絶対NG</div><ul><li>取引先の機密情報</li><li>個人が特定できる読者データ</li><li>法務上の係争情報</li><li>パスワード・APIキー</li></ul></div>
+    </div>
+    <div class="footrow">
+      <div class="ex" style="grid-column:1/-1;"><div class="hd">類似業務での実装例</div><div class="txt"><strong style="color:var(--text)">コンサル業界</strong>：クライアント情報は基本「マスキング後」入力、または社内専用Claude/ChatGPT Enterprise契約。<strong style="color:var(--text)">医療業界</strong>：患者情報は外部AIに絶対送らず、社内RAGで完結。<strong style="color:var(--text)">法律事務所</strong>：契約書は固有名詞をマスキングしてAIに投げる「匿名化フロー」が標準。</div></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <span class="phase-tag">BEST PRACTICE D</span><span class="phase-name">「AIっぽさ」の管理 — ハイブリッド方式</span>
+  </div>
+  <div class="process">
+    <div class="ph"><div class="pname">AI下書き × 編集者上書き = 「AIっぽくない」アウトプット</div></div>
+    <div class="grid4">
+      <div class="field"><div class="hd">標準ワークフロー</div><ul><li><strong style="color:var(--text)">AIが80%下書き</strong> → 編集者が20%上書き</li><li>編集者の文体DNAを保持</li><li>A/Bテストで「読者にAI感が伝わるか」検証</li></ul></div>
+      <div class="field"><div class="hd">AI特有の癖を除く</div><ul><li>「〜と言えるでしょう」「重要です」連発</li><li>箇条書き多用 → 流れる文章に書き換え</li><li>抽象語多用 → 具体語に置き換え</li></ul></div>
+      <div class="field"><div class="hd">人間味を加える</div><ul><li>具体的なエピソード（編集者の体験）</li><li>主観表現（「私は」「思った」）</li><li>業界の固有名詞・空気感</li></ul></div>
+      <div class="field"><div class="hd">事例</div><ul><li>米Bloomberg：AI下書き→記者推敲</li><li>ライティング業界：「AIネイティブ」校正サービス（AI特有の癖除去）が登場</li><li>編集者の<strong style="color:var(--text)">文体テンプレ</strong>をAIに学習させる手法も</li></ul></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">参考情報源</h2>
+  <div class="refs">
+    <h4>事例・ベストプラクティスの出典</h4>
+    <ul>
+      <li><a href="https://www.bit2byte.co.jp/blog/1442" target="_blank">出版業界のAI活用事例8選 - bit2byte</a></li>
+      <li><a href="https://www.tmj.jp/column/column_26936/" target="_blank">校正・校閲×生成AI 省力化事例 - TMJ</a></li>
+      <li><a href="https://www.ai-editor.jp/" target="_blank">AI editor（10000字3秒検出）</a></li>
+      <li><a href="https://shodo.ink/" target="_blank">Shodo（編集者向け校正クラウド）</a></li>
+      <li><a href="https://ai-keiei.shift-ai.co.jp/generative-ai-hallucination-prevention-prompt/" target="_blank">ハルシネーション対策プロンプト集 - AI経営総合研究所</a></li>
+      <li><a href="https://ai-keiei.shift-ai.co.jp/chatgpt-hallucination-countermeasures/" target="_blank">ChatGPTハルシネーション対策 2025年版</a></li>
+      <li><a href="https://blue-r.co.jp/blog-claude-commercial-use/" target="_blank">Claude商用利用ガイド 2025年12月版</a></li>
+      <li><a href="https://www.ai-souken.com/article/commercial-use-of-chatgpt" target="_blank">ChatGPT商用利用と著作権 - AI総合研究所</a></li>
+      <li><a href="https://cloudpack.jp/column/generative-ai/claude-business-guide.html" target="_blank">Claude商用利用ガイド - cloudpack</a></li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div>合同会社オモシク 西川 太雄 ／ nishikawa@omoshiku.jp</div>
+    <div style="margin-top:8px; opacity:0.6;">本ページは5/13ヒアリング事前資料です。<a href="https://tkonishikawa.github.io/demo-pages/d/editorial-ai-survey-20260513/summary.html" style="color:var(--accent-light); text-decoration:none;">アンケート全体サマリ</a> ／ <a href="https://tkonishikawa.github.io/demo-pages/d/editorial-ai-hearing-20260513/slides.html" style="color:var(--accent-light); text-decoration:none;">ヒアリング進行スライド</a></div>
+  </div>
+
+</div>
+</body>
+</html>
