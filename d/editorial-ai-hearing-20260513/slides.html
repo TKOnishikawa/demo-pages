@@ -276,6 +276,20 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
   }
   .nav-hint, .progress { display: none; }
 }
+
+/* === Today's Questions slide === */
+.questions-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; max-width: 1100px; margin: 0 0 28px; }
+.q-item { display: grid; grid-template-columns: 60px 1fr; gap: 18px; align-items: center; padding: 14px 22px; background: var(--bg-surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; }
+.q-item .q-num { font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 3.2vw, 40px); background: var(--grad-accent); -webkit-background-clip: text; background-clip: text; color: transparent; text-align: center; line-height: 1; }
+.q-item .q-text { font-size: clamp(15px, 1.6vw, 22px); font-weight: 700; color: var(--text); line-height: 1.5; }
+.q-item .q-text strong { color: var(--accent-light); }
+.q-item .q-text em { color: var(--accent); font-style: normal; }
+.protagonist-callout { background: linear-gradient(135deg, rgba(249,115,22,0.10) 0%, rgba(167,139,250,0.08) 100%); border: 1px solid var(--accent-border); border-radius: 10px; padding: 18px 26px; max-width: 1100px; text-align: center; }
+.protagonist-callout p { font-size: clamp(13px, 1.4vw, 18px); color: var(--text-dim); line-height: 1.85; margin: 0; }
+.protagonist-callout p + p { margin-top: 6px; }
+.protagonist-callout p strong { color: var(--accent-light); font-weight: 700; font-size: 1.05em; }
+.protagonist-callout .star { color: var(--accent); font-weight: 700; font-size: 1.1em; }
+
 </style>
 </head>
 <body>
@@ -290,7 +304,7 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
     <div class="title-main">編集部AI活用<br>ヒアリング</div>
     <div class="title-sub">皆さんの「今」と「これから」を聞かせてください</div>
     <div class="title-meta">大和書房 × オモシク</div>
-    <div class="counter">01 / 22</div>
+    <div class="counter">01 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る &nbsp; <kbd>F</kbd> フルスクリーン</div>
   </section>
 
@@ -309,7 +323,7 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       <div class="agenda-item"><span class="ag-time">14:56</span><span class="ag-name">E. 個人ゴール</span><span class="ag-mins">3分</span></div>
       <div class="agenda-item"><span class="ag-time">14:59</span><span class="ag-name">クロージング</span><span class="ag-mins">1分</span></div>
     </div>
-    <div class="counter">02 / 22</div>
+    <div class="counter">02 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
@@ -328,11 +342,49 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       意見が違ってOK。ガイドラインや会社のルールを決める場ではありません。<br>
       <strong>思ったままを話してください。</strong>
     </div>
-    <div class="counter">03 / 22</div>
+    <div class="counter">03 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 4: Survey summary (PRE-READ) -->
+  <!-- 4: Today's Questions -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">TODAY'S QUESTIONS</div>
+    <div style="font-size: clamp(22px, 2.8vw, 36px); font-weight: 900; color: var(--text); text-align: center; margin-bottom: 24px; line-height: 1.3;">
+      今、私たちが向き合っている <em style="color:var(--accent);font-style:normal;">5つの問い</em>
+    </div>
+    <div class="questions-grid">
+      <div class="q-item">
+        <div class="q-num">1</div>
+        <div class="q-text">編集業務における AI 活用の <strong>理想</strong> は何か？</div>
+      </div>
+      <div class="q-item">
+        <div class="q-num">2</div>
+        <div class="q-text">どの業務で／どんな <strong>効果</strong> が出るのか？</div>
+      </div>
+      <div class="q-item">
+        <div class="q-num">3</div>
+        <div class="q-text">どの <strong>ツール</strong> が最適なのか？</div>
+      </div>
+      <div class="q-item">
+        <div class="q-num">4</div>
+        <div class="q-text">成功事例を作るために、<strong>何から始める</strong> か？</div>
+      </div>
+      <div class="q-item">
+        <div class="q-num">5</div>
+        <div class="q-text">どう社内に <strong>浸透</strong> させていくか？</div>
+      </div>
+    </div>
+    <div class="protagonist-callout">
+      <p>会社が勝手にツールを決めたり、上から押し付けても、本当の意味で浸透していかないと思うんです。</p>
+      <p style="margin-top:10px;"><span class="star">★</span> <strong>皆さんが主人公です。</strong></p>
+      <p>私は技術的なサポートや壁打ちで、<strong>一緒に進めるサポーター</strong>として、この時間をいただいています。</p>
+    </div>
+    <div class="counter">04 / 23</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 5: Survey summary (PRE-READ) -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">PRE-READ</div>
@@ -369,11 +421,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       📊 アンケート全体サマリ: <span style="color:var(--accent-light);">/d/editorial-ai-survey-20260513/summary.html</span><br>
       🗺️ 業務プロセス × AI活用マップ: <span style="color:var(--accent-light);">/d/editorial-ai-process-map-20260513/</span>
     </div>
-    <div class="counter">04 / 22</div>
+    <div class="counter">05 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 5: Icebreak -->
+  <!-- 6: Icebreak -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">アイスブレイク<span class="time">5分</span></div>
@@ -384,22 +436,22 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       AI体験を教えてください
     </div>
     <div class="q-sub">うまくいった話／失敗話、どちらでもOK</div>
-    <div class="counter">05 / 22</div>
+    <div class="counter">06 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 6: Block A intro -->
+  <!-- 7: Block A intro -->
   <section class="slide section">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">BLOCK A<span class="time">15分</span></div>
     <div class="section-num">A</div>
     <div class="section-title">業務実態と<br>現在のAI活用</div>
     <div class="section-sub">普段の1冊を担当する流れの中で、<br>どこにAIが入っているか／入りそうか<br><br><span style="color:var(--accent-light); font-size:0.85em;">📊 アンケートでは「事実確認・下調べ」が69%。<strong>当日は深い使い込み</strong>を掘ります</span></div>
-    <div class="counter">06 / 22</div>
+    <div class="counter">07 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 7: A-1 -->
+  <!-- 8: A-1 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">A-1<span class="time">業務実態</span></div>
@@ -409,11 +461,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       <em>「AIで楽になった」</em>or<br>
       <em>「楽にしたい」</em>工程は？
     </div>
-    <div class="counter">07 / 22</div>
+    <div class="counter">08 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 8: A-1 with examples (optional companion) -->
+  <!-- 9: A-1 with examples (optional companion) -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">A-1<span class="time">工程例</span></div>
@@ -431,11 +483,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
         <li>取材テープ起こし</li>
       </ul>
     </div>
-    <div class="counter">08 / 22</div>
+    <div class="counter">09 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 9: A-2 -->
+  <!-- 10: A-2 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">A-2<span class="time">ツール選好</span></div>
@@ -450,11 +502,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
         <li>「最近この子に乗り換えた」みたいな話も</li>
       </ul>
     </div>
-    <div class="counter">09 / 22</div>
+    <div class="counter">10 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 10: A-3 -->
+  <!-- 11: A-3 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">A-3<span class="time">失敗事例</span></div>
@@ -464,11 +516,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       失敗例はありますか？
     </div>
     <div class="q-sub">諦めた理由まで含めて聞かせてください</div>
-    <div class="counter">10 / 22</div>
+    <div class="counter">11 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 11: A-4 -->
+  <!-- 12: A-4 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">A-4<span class="time">運用ノウハウ</span></div>
@@ -484,22 +536,22 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
         <li>「裏でこんな工夫してる」の小ネタ</li>
       </ul>
     </div>
-    <div class="counter">11 / 22</div>
+    <div class="counter">12 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 12: Block B intro -->
+  <!-- 13: Block B intro -->
   <section class="slide section">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">BLOCK B<span class="time">15分</span></div>
     <div class="section-num">B</div>
     <div class="section-title">編集業務固有の<br>ユースケース</div>
     <div class="section-sub">事実確認や誤字脱字以外で、<br>編集者だからこそ <strong>「AIで革命」</strong> になる場面<br><br><span style="color:var(--accent-light); font-size:0.85em;">📊 アンケートで具体ニーズ多数：原稿読込／章立て／支払依頼書／SharePoint連携 等</span></div>
-    <div class="counter">12 / 22</div>
+    <div class="counter">13 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 13: B-1 -->
+  <!-- 14: B-1 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">B-1<span class="time">深い活用</span></div>
@@ -517,22 +569,22 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
         <li>突拍子もないアイデアでも構いません</li>
       </ul>
     </div>
-    <div class="counter">13 / 22</div>
+    <div class="counter">14 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 14: Block C intro -->
+  <!-- 15: Block C intro -->
   <section class="slide section">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">BLOCK C<span class="time">10分</span></div>
     <div class="section-num">C</div>
     <div class="section-title">ブロッカー要素の<br>解像</div>
     <div class="section-sub">浸透時に出てくる「ブレーキ」を<br>リアルに引き出します<br><br><span style="color:var(--accent-light); font-size:0.85em;">📊 アンケートで4類型を把握済（心理／業務・著者／ガバナンス／仕組み）</span></div>
-    <div class="counter">14 / 22</div>
+    <div class="counter">15 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 15: C-1 -->
+  <!-- 16: C-1 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">C-1<span class="time">ブロッカー</span></div>
@@ -549,22 +601,22 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
         <li>仕組み（ツール固定化／支援不足）</li>
       </ul>
     </div>
-    <div class="counter">15 / 22</div>
+    <div class="counter">16 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 16: Block D intro -->
+  <!-- 17: Block D intro -->
   <section class="slide section">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">BLOCK D<span class="time">6分</span></div>
     <div class="section-num">D</div>
     <div class="section-title">推進役のあり方の<br>ご相談</div>
     <div class="section-sub">役職としての「推進担当」ではなく、<br>現場で本気でAI活用を進めたい人同士の <strong>フラットな仲間関係</strong> を作っていけたら、<br>と思っています</div>
-    <div class="counter">16 / 22</div>
+    <div class="counter">17 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 17: D-1 -->
+  <!-- 18: D-1 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">D-1<span class="time">サポート要件</span></div>
@@ -574,11 +626,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       どんなサポートがあれば<br>
       動きやすいですか？
     </div>
-    <div class="counter">17 / 22</div>
+    <div class="counter">18 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 18: D-2 -->
+  <!-- 19: D-2 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">D-2<span class="time">禁忌</span></div>
@@ -588,22 +640,22 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       って何ですか？
     </div>
     <div class="q-sub">過剰な仕組み化／押し付け／縛られたくないこと — 遠慮なく</div>
-    <div class="counter">18 / 22</div>
+    <div class="counter">19 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 19: Block E intro -->
+  <!-- 20: Block E intro -->
   <section class="slide section">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">BLOCK E<span class="time">3分</span></div>
     <div class="section-num">E</div>
     <div class="section-title">個人ゴール</div>
     <div class="section-sub">最後に、会社や部のためではなく ——<br><strong>あなた自身が</strong> AIで達成したいことを聞かせてください</div>
-    <div class="counter">19 / 22</div>
+    <div class="counter">20 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 20: E-1 -->
+  <!-- 21: E-1 -->
   <section class="slide">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">E<span class="time">1分 × 3名</span></div>
@@ -613,11 +665,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       <em>AIで達成できたら嬉しいこと</em>は？
     </div>
     <div class="q-sub">お一人 1分ずつ。<br>会社や部のためではなく、ご自身のための話で。</div>
-    <div class="counter">20 / 22</div>
+    <div class="counter">21 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 21: Closing -->
+  <!-- 22: Closing -->
   <section class="slide closing">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">CLOSING</div>
@@ -631,11 +683,11 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       「1年後どうなってたら成功か」を、<br>
       皆さんと一緒に決める場にさせてください。
     </div>
-    <div class="counter">21 / 22</div>
+    <div class="counter">22 / 23</div>
     <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
   </section>
 
-  <!-- 22: Thanks -->
+  <!-- 23: Thanks -->
   <section class="slide thanks">
     <div class="brand">omoshi<span>ku</span></div>
     <div class="block-label">THANK YOU</div>
@@ -643,7 +695,7 @@ body { font-family: var(--font-sans); color: var(--text); background: var(--bg-b
       ありがとう<br>ございました
     </div>
     <div class="thanks-sub">追加で気になることがあれば、メールでも遠慮なくどうぞ</div>
-    <div class="counter">22 / 22</div>
+    <div class="counter">23 / 23</div>
     <div class="nav-hint"><kbd>←</kbd> 戻る</div>
   </section>
 
