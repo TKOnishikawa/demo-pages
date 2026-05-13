@@ -93,6 +93,18 @@ p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-h
 .bullet li::before { content: "▸"; position: absolute; left: 0; top: 4px; color: var(--accent); font-weight: 700; }
 .bullet li strong { color: var(--navy); }
 
+/* Question card (for 5 questions section) */
+.q-card { background: var(--bg-card); border: 1px solid var(--accent-border); border-left: 4px solid var(--accent); border-radius: 8px; padding: 16px 20px; margin: 10px 0; }
+.q-card .q-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-light); }
+.q-card .q-num { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 22px; color: var(--accent); line-height: 1; flex-shrink: 0; }
+.q-card .q-text { font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.4; }
+.q-card .q-block { margin-top: 8px; font-size: 12.5px; line-height: 1.85; color: var(--text-2); }
+.q-card .q-block .lbl { display: inline-block; font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-dark); margin-right: 6px; padding: 1px 8px; background: var(--accent-bg); border-radius: 3px; text-transform: uppercase; }
+.q-card .q-block strong { color: var(--navy); }
+.q-card .q-block ul { list-style: none; padding: 4px 0 4px 0; margin: 4px 0 0; }
+.q-card .q-block li { padding: 2px 0 2px 18px; position: relative; }
+.q-card .q-block li::before { content: "・"; position: absolute; left: 0; color: var(--accent); }
+
 /* Footer */
 .footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--border-light); font-size: 11px; color: var(--text-3); text-align: center; }
 .footer .brand { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--navy); }
@@ -123,28 +135,119 @@ p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-h
   </div>
 
   <div class="lead">
-    <p>5/13(水) 14:00〜の編集部AI活用ヒアリングについて、ご報告申し上げます。<strong>中山課長・林様・出口様の3名</strong>と60分の対話を持ち、各人の実装事例の共有から、3名共通の論点整理、初期スコープの方向性、次回MTG(5/27)までの宿題までを確認できました。本書はその全体記録です。</p>
-    <p>特筆すべきは、3名がこれまで <strong>一度も推進担当として話したことがなかった</strong>状態でのスタートでありながら、結果として <strong>「会社が決めて押し付けない」「義務化しない」</strong> という窪田様の問題意識と一致する設計思想が、3名から自然に出てきた点です。</p>
+    <p>5/13(水) 14:00〜の編集部AI活用ヒアリングについて、ご報告申し上げます。中山課長・林様・出口様の3名と60分の対話を持ち、<strong>「編集部AI活用における5つの問い」</strong> に沿った議論を行いました。各人の実装事例の共有、推進方向性の合意形成、そして次回MTG(5/27)までの宿題を確認できました。</p>
+    <p>結論として、3名から自然に出てきた共通哲学は「<strong>個々人の柔軟性は担保しつつ、みんなで使える共通部分は仕組みとして整える</strong>」というもので、窪田様が当初お話しくださっていた「押し付けないアプローチ」の方針と一致する形で進められそうです。</p>
   </div>
 
   <div class="toc">
     <div class="toc-title">目次</div>
     <ul class="toc-list">
-      <li>1. エグゼクティブサマリー</li>
-      <li>2. 当日の場の状況</li>
-      <li>3. 各人の実装事例ハイライト</li>
-      <li>4. 3名共通の論点</li>
-      <li>5. 仮置きされた方向性</li>
-      <li>6. 決定事項(7件)</li>
-      <li>7. 残論点(10件)</li>
-      <li>8. ネクストアクション</li>
-      <li>9. 西川所感</li>
-      <li>10. 関連資料</li>
+      <li>1. 5つの問いに対する議論結果</li>
+      <li>2. エグゼクティブサマリー</li>
+      <li>3. 当日の場の状況</li>
+      <li>4. 各人の実装事例ハイライト</li>
+      <li>5. 3名共通の論点</li>
+      <li>6. 仮置きされた方向性</li>
+      <li>7. 決定事項(7件)</li>
+      <li>8. 残論点(10件)</li>
+      <li>9. ネクストアクション</li>
+      <li>10. 西川所感</li>
+      <li>11. 関連資料</li>
     </ul>
   </div>
 
-  <!-- ============ 1. エグゼクティブサマリー ============ -->
-  <h2 class="section">1. エグゼクティブサマリー</h2>
+  <!-- ============ 1. 5つの問いに対する議論結果 ============ -->
+  <h2 class="section">1. 5つの問いに対する議論結果</h2>
+  <p class="body-text">当日は「編集部AI活用における5つの問い」を冒頭で提示し、各問いに沿って3名の意見・実装事例・方向性を引き出しました。以下、問いごとの議論内容と当日合意したアクションをまとめます。</p>
+
+  <!-- Q1 -->
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num">1</div>
+      <div class="q-text">編集業務における AI 活用の <strong style="color:var(--accent-dark)">理想</strong> は何か？</div>
+    </div>
+    <div class="q-block">
+      <span class="lbl">議論</span>
+      「数値KPIを置きにくい」が3名共通の認識。中山課長から「AIを使ったから売上が上がった、という因果は測定困難」、林様から「むしろみんなが抱えるもやもや・面倒くさい感じが楽になった、を目指すべき」、出口様から「役に立ったか役に立たなかったかで残すものを判断する評価方法でいい」との発言。
+    </div>
+    <div class="q-block">
+      <span class="lbl">方向性</span>
+      <strong>3ヶ月で、推進3名が「これめっちゃいい」と感動できる事例を3つ作る → それを編集部に展開して、活用されている状態を作る</strong> を仮ゴールに置く。厳密な数値KPIは設定せず、定性的フィードバックで方向修正していく。
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num">2</div>
+      <div class="q-text">どの業務で／どのように活用するのが <strong style="color:var(--accent-dark)">インパクト</strong> が出そうか？</div>
+    </div>
+    <div class="q-block">
+      <span class="lbl">議論</span>
+      3名から既存の活用事例が出てきました。
+      <ul>
+        <li><strong>出口様</strong>：Claude Codeで業界ニュース配信サービスを自作（停止中）／他社書籍の<strong>類書データベース</strong>をパブライン経由で構築試行中</li>
+        <li><strong>林様</strong>：HTMLで企画進捗ダッシュボードを自作・島ミーティング前の更新サイクルで実運用中／日々のルーティン業務（発注書・事務）の効率化を重視</li>
+        <li><strong>中山課長</strong>：NotebookLMを企画ごとに1ノートブックで運用、蓄積データから PR用テキスト・新聞原稿の叩きを一発生成</li>
+      </ul>
+      西川より提示した「業務プロセス×AI活用マップ」（13プロセス）に対し、3名から「<strong>企画リサーチ系</strong>」と「<strong>事務処理系</strong>」が共通して効きそう、という意見集約。
+    </div>
+    <div class="q-block">
+      <span class="lbl">方向性</span>
+      この2軸を初期スコープとして握る方向（詳細は §6 「仮置きされた方向性」参照）。
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num">3</div>
+      <div class="q-text">どの <strong style="color:var(--accent-dark)">ツール</strong> が最適なのか？</div>
+    </div>
+    <div class="q-block">
+      <span class="lbl">議論</span>
+      ツール選定の議論では「<strong>個々人で柔軟にやりたい部分・人によってバラバラの部分まで全部強要されたら、かえって動きづらくなる</strong>」という共通認識が出てきました。一方で「みんなで使える共通の仕組みは欲しい」という意見も一致。中山課長より「<strong>自分がChatGPTを使ってるかChatGPTがいい、ってことにはならない。別にそれはそれで個人で使ってる、ってなるんじゃないかな</strong>」との発言。林様からも「個人の柔軟性は残しつつ、汎用的に社内で共有して効率化につながるものは会社として実装していく、という使い分け」との意見。
+    </div>
+    <div class="q-block">
+      <span class="lbl">方向性</span>
+      <strong>「個々人の柔軟性は担保しつつ、共通で使える事務系・企画素材データ整備などは仕組みとして整え、『使える人は使ってね』という環境を作る」</strong> 方向で握れた。3名とも Claude への親和性が高い（出口様：Claude Code・林様：Claude中心・中山課長：NotebookLM=Gemini系）ため、Claude Team/Enterprise 契約検討を西川×窪田様で別途進める。
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num">4</div>
+      <div class="q-text">成功事例を作るために、<strong style="color:var(--accent-dark)">何から始める</strong> か？</div>
+    </div>
+    <div class="q-block">
+      <span class="lbl">議論</span>
+      中山課長から「<strong>出口様の自作事例（情報収集／類書DB）のやり方を、まず我々が共有してもらってやってみる、というのができそう</strong>」という提案。これに3名で合意。次回までに「やりたいことリスト」を西川がフォーマット用意し、3名で事前記入→当日優先順位付けする流れも合意。
+    </div>
+    <div class="q-block">
+      <span class="lbl">方向性</span>
+      <strong>第一歩：出口様の自作事例を3名で共有・真似してみる</strong>。出口様が技術的に詰まっている部分（Claudeクレジット切れ・スケジューラのエラー等）を西川が技術サポートし、まずは出口様主体で動き出せる状態にする。
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num">5</div>
+      <div class="q-text">どう社内に <strong style="color:var(--accent-dark)">浸透</strong> させていくか？</div>
+    </div>
+    <div class="q-block">
+      <span class="lbl">議論</span>
+      中山課長より「<strong>仕組みを作った時にそれをしなきゃいけない、絶対しなきゃいけない、ってなると現場は難しい。本当に使える人、こういう風なのを作ったので、使いたい人は使ってね、っていう仕組みにすべき</strong>」との発言。3名全員で同意。西川より「適用課題（気持ち・マインド面）と技術課題（やり方が分からない）の2軸で整理し、まず技術課題をクリアにする」アプローチを提案。
+    </div>
+    <div class="q-block">
+      <span class="lbl">方向性</span>
+      まずは推進3名がしっかり成功事例を作って <strong>3名自身が「これめっちゃいい」と価値を感じる状態</strong>を作る。その上で、編集部全体への展開を別途設計（島ミーティング活用・月次シェア・Slack/Kintone等の共有チャネル）。展開手段は今後の検討事項として残置。
+    </div>
+  </div>
+
+  <!-- ============ 2. エグゼクティブサマリー ============ -->
+  <h2 class="section">2. エグゼクティブサマリー</h2>
 
   <div class="kpi-row">
     <div class="kpi-box">
@@ -166,40 +269,36 @@ p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-h
 
   <h3 class="subsection">重要発見 3点</h3>
   <ul class="bullet">
-    <li><strong>3名はこれまで一度も話していなかった</strong> ── 推進担当として集まったのは本日が初。共通基盤はゼロベースからの組成となりますが、当日の対話で方向性を握れました。</li>
-    <li><strong>3名とも想定以上に「実装フェーズ」に到達</strong> ── Claude Codeで自作サービス／HTMLで自作ダッシュボード／NotebookLMをフル活用、と各人が独自のAI活用を実践中でした。</li>
-    <li><strong>原稿の扱いが最大論点</strong> ── 現状、3名とも学習無効化設定オンで原稿を個別に読ませている運用。会社としてのガイドライン整備が想定以上に急務です。</li>
+    <li><strong>3名とも想定以上に「実装フェーズ」に到達</strong> ── Claude Codeで自作サービス／HTMLで自作ダッシュボード／NotebookLMをフル活用、と各人が独自のAI活用を実践中でした。中でも出口様の類書データベース試作は、企画段階のリサーチ業務に対して有用なインフラになる可能性が高いです。</li>
+    <li><strong>「個々人の柔軟性 × 共通仕組み」の二層構造で合意</strong> ── 個人の使い方は強要せず、みんなで使える共通部分（事務・企画素材データ）だけ会社として整える方向で3名と握れました。窪田様が当初お話しくださっていた「押し付けないアプローチ」と一致しています。</li>
+    <li><strong>ルール整備（OK/NG の線引き）は推進の前提条件</strong> ── 何をOKとして何をNGとするか、というルール整備が、編集部全体にとって使いやすい環境を作る土台になります。その中には原稿の取り扱いも含まれており、個人アカウントから会社アカウントへの移行検討が次のステップです。</li>
   </ul>
 
   <h3 class="subsection">次のステップ</h3>
-  <p class="body-text">次回MTG <strong>5/27(火) 14:00〜 1時間</strong> までに、西川より「やりたいことリスト」フォーマットを作成、窪田様経由で3名へ展開・事前記入をお願いします。次回はそれをもとに、優先順位とゴールを確定します。</p>
+  <p class="body-text">次回MTG <strong>5/27(火) 14:00〜 1時間</strong> までに、西川より「やりたいことリスト」フォーマットを作成、窪田様経由で3名へ展開・事前記入をお願いします。次回はそれをもとに優先順位とゴールを確定します。</p>
 
-  <!-- ============ 2. 当日の場の状況 ============ -->
-  <h2 class="section">2. 当日の場の状況</h2>
+  <!-- ============ 3. 当日の場の状況 ============ -->
+  <h2 class="section">3. 当日の場の状況</h2>
   <table class="tbl">
     <tr><th style="width:130px">項目</th><th>内容</th></tr>
     <tr><td>日時</td><td>2026年5月13日(水) 14:00〜15:00</td></tr>
     <tr><td>形式</td><td>Google Meet</td></tr>
     <tr><td>参加者</td><td>中山 淳也(編集部 課長/アンケート#6) / 林 陽一(編集部/#8) / 出口 翔(編集部/#5) / 西川太雄(オモシク・進行) / 窪田様(冒頭5分同席→退出)</td></tr>
-    <tr><td>進行</td><td>窪田様による趣旨紹介→西川オープニング→現在地ヒアリング→各人事例共有→共通論点議論→プロセスマップ提示→ゴール議論→次回設定</td></tr>
+    <tr><td>進行</td><td>窪田様による趣旨紹介→西川オープニング→5つの問いの提示→各人の現在地と実装事例共有→共通論点議論→プロセスマップ提示→ゴール議論→次回設定</td></tr>
   </table>
 
-  <div class="highlight">
-    <strong>場の開始時に判明した重要事実：</strong>「3名は本日まで一度も話したことがなく、推進担当として何かを共有していたわけでもない」(中山課長)。アンケート結果から個別指名されただけで、推進チームとしての活動は事実上 <strong>未開始</strong>でした。当日が事実上の <strong>3名顔合わせ</strong>を兼ねる形となり、自己紹介を兼ねた各人の活用事例共有から場が展開しました。
-  </div>
-
-  <!-- ============ 3. 各人の実装事例ハイライト ============ -->
-  <h2 class="section">3. 各人の実装事例ハイライト</h2>
-  <p class="body-text">3名はそれぞれ独立にAIを活用しており、用途と深さに個性があります。以下、当日の発言から実装の解像度を整理します。</p>
+  <!-- ============ 4. 各人の実装事例ハイライト ============ -->
+  <h2 class="section">4. 各人の実装事例ハイライト</h2>
+  <p class="body-text">3名はそれぞれ独立にAIを活用しており、用途と深さに個性があります。当日共有された実装の解像度を整理します。</p>
 
   <div class="person-card">
     <div class="name">出口 翔 様 (アンケート #5)</div>
-    <div class="role">第1エヴァンジェリスト候補 / 技術自走型</div>
+    <div class="role">企画リサーチ系の最有力推進者 / 技術自走型</div>
     <div class="points">
       <strong>① 業界ニュース配信サービス自作(Claude Code)</strong><br>
-      出版業界＋他業界のニュース30本を毎朝7時にメール配信、企画切り口を加える設計まで実装。<span style="color:var(--text-3);">※5日目で停止中。原因はスケジューラ系のエラー</span><br><br>
+      出版業界＋他業界のニュース30本を毎朝7時にメール配信、企画切り口を加える設計まで実装。<span style="color:var(--text-3);">※5日目で停止中。スケジューラ系のエラーで再開未着手</span><br><br>
       <strong>② 類書データベース構築(進行中・停止中)</strong><br>
-      他社5社の公式HPから書籍一覧をスクレイピング → ISBNを取得 → <strong>パブライン(紀伊國屋POS)</strong> に自動入力 → 売上累計を取得する仕組みを試作。Chrome のコンソールでJSを叩く方式。<span style="color:var(--text-3);">※Claudeのクレジット切れ＋自腹コストで停止中</span><br><br>
+      他社5社の公式HPから書籍一覧をスクレイピング → ISBN取得 → <strong>パブライン(紀伊國屋POS)</strong> に自動入力 → 売上累計を取得する仕組みを試作。Chromeのコンソールで JS を叩く方式。<span style="color:var(--text-3);">※Claudeのクレジット切れ＋自腹コストで停止中。会社で導入してグレードを上げられれば継続可能</span><br><br>
       <strong>③ 期待する自動化</strong>：支払依頼書＋メール文面の自動生成 / 類書リサーチ<br>
       <strong>④ 提言</strong>：「良いプロンプトが共有されるチャネルが欲しい」
     </div>
@@ -207,12 +306,12 @@ p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-h
 
   <div class="person-card">
     <div class="name">林 陽一 様 (アンケート #8)</div>
-    <div class="role">第2エヴァンジェリスト・現場代弁者 / 効率化指向</div>
+    <div class="role">事務処理系の効率化指向 / 運用ルール完成形</div>
     <div class="points">
       <strong>① 企画進捗ダッシュボード(HTML自作・実運用中)</strong><br>
       何本も走らせている企画の進捗をHTMLで可視化。各企画のステータス・メモ・ネクストアクション・校正日程を管理。テキスト出力でチーム内共有しやすい形に整形済み。<strong>島ミーティング(2週間に1回)の前に更新→共有</strong>のサイクルで実運用中。<br><br>
       <strong>② 用途方針</strong>：日々のルーティン業務(発注書・事務仕事)の効率化を重視。クリエイティブ部分(壁打ち等)も使うが、現状のAI精度は限定的という認識。<br><br>
-      <strong>③ ツール運用</strong>：Claude中心、Gemini・ChatGPTも併用。<strong>学習無効化設定</strong>＋<strong>該当箇所のみ読ませる</strong>運用ルールが完成形。<br><br>
+      <strong>③ ツール運用</strong>：Claude中心、Gemini・ChatGPTも併用。柔軟性を残しつつ、汎用的に共有可能なものは会社として実装していくスタンス。<br><br>
       <strong>④ 限界の認識</strong>：「ツール自体は共有できても、蓄積データはローカルなので限界がある」
     </div>
   </div>
@@ -222,106 +321,110 @@ p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-h
     <div class="role">組織パイプ・後ろ盾役 / NotebookLM 高度活用</div>
     <div class="points">
       <strong>① NotebookLM を企画ごとに1ノートブックで運用</strong><br>
-      頭の中の段階から打ち込み → 企画書 → 著者候補情報 → 原稿(社外との会話で言及) → と蓄積。AIの提案精度が企画ごとに上がっていく設計。<br><br>
-      <strong>② 一発生成の事例</strong>：蓄積データから <strong>PR用テキスト・新聞原稿の叩き</strong>を一発生成。字数指定＋他原稿サンプル提示で「ほぼ一発で使える」レベルに到達。<br><br>
+      頭の中の段階から打ち込み → 企画書 → 著者候補情報 → と蓄積する設計。AIの提案精度が企画ごとに上がっていく仕組み。<br><br>
+      <strong>② 一発生成の事例</strong>：蓄積データから <strong>PR用テキスト・新聞原稿の叩き</strong> を一発生成。字数指定＋他原稿サンプル提示で「ほぼ一発で使える」レベルに到達。<br><br>
       <strong>③ 編集部全体の把握</strong>：「20-30代の同僚に聞くと、ほぼ何かしら使ってはいる。だいたい企画段階で壁打ち・原稿要点抽出など、クリエイティブを作るところで活用」<br><br>
-      <strong>④ Copilot 試用の所感</strong>：「Word/Excelで勝手に出てくるが、どう使っていいか分からない」「いちいち『お手伝いしましょうか』と出るのが煩わしい」
+      <strong>④ Copilot 試用の所感</strong>：「Word/Excelで勝手に出てくるが、どう使っていいか分からない。編集は途中まで一人でやるので、全部連動されると鬱陶しい」
     </div>
   </div>
 
-  <!-- ============ 4. 3名共通の論点 ============ -->
-  <h2 class="section">4. 3名共通の論点</h2>
+  <!-- ============ 5. 3名共通の論点 ============ -->
+  <h2 class="section">5. 3名共通の論点</h2>
 
-  <h3 class="subsection">4-1. ツール選定の二層構造で合意</h3>
-  <p class="body-text">3名とも、「会社統一ツールへの固定化」には強い抵抗感を示しました。一方で「みんなで使える仕組みは欲しい」という意見も一致。議論の結果、以下の二層構造で握れました。</p>
+  <h3 class="subsection">5-1. 「個々人の柔軟性 × 共通仕組み」の二層構造で合意</h3>
+  <p class="body-text">3名の議論を通じて、AI活用の進め方について以下の二層構造で合意できました。これは「会社統一ツールを強要する」のではなく、「<strong>強要されたら動きづらい部分は個人の柔軟性として残し、共通で使えそうな部分だけ仕組みとして整える</strong>」という発想です。</p>
   <table class="tbl">
-    <tr><th style="width:140px">層</th><th>方針</th></tr>
-    <tr><td class="cell-strong">個人ツール層</td><td>各人が普段使うClaude/ChatGPT/Gemini/NotebookLM等は <strong>そのまま個人で継続</strong>。会社で一本化はしない</td></tr>
-    <tr><td class="cell-strong">会社仕組み層</td><td>「みんなが同じ目的で使える仕組み」(データベース・テンプレ・共通インフラ)は <strong>会社として整備</strong></td></tr>
+    <tr><th style="width:160px">層</th><th>方針</th></tr>
+    <tr><td class="cell-strong">個々人の柔軟性層</td><td>各人が普段使うClaude/ChatGPT/Gemini/NotebookLM等は<strong>そのまま個人で継続</strong>。やり方は人によってバラバラで構わず、ここに会社のルールは入れない</td></tr>
+    <tr><td class="cell-strong">共通仕組み層</td><td>みんなが同じ目的で使える部分（<strong>事務処理の効率化テンプレ・企画リサーチで参照するデータベース</strong>等）は会社として仕組みを整え、「<strong>使える人は使ってね</strong>」という環境にする</td></tr>
   </table>
-  <div class="quote">
-    自分がChatGPTを使ってるかChatGPTがいい、ってことにはならない。別にそれはそれで使ってる、ってなるんじゃないかな。
-    <span class="who">— 中山課長</span>
-  </div>
+  <p class="body-text">この二層構造で握れたことで、ツール選定の議論が「会社が一本化を強要する／しない」の対立構図ではなく、「<strong>どこを共通化するか・どこを個人に任せるか</strong>」の建設的な議論として進められる土台ができました。</p>
 
-  <h3 class="subsection">4-2. 原稿の扱いが最大論点</h3>
-  <div class="warn">
-    <strong>現状認識</strong>：3名とも <strong>学習無効化設定オン</strong>で原稿を読ませている運用が暗黙に成立しています。グレーゾーンを個人判断で運用している状態です。
+  <h3 class="subsection">5-2. ルール整備（OK/NG の線引き）の必要性</h3>
+  <p class="body-text">「何をOKとして何をNGとするか」のルール整備が、編集部全体が安心して使える環境を作るための共通合意事項として認識されました。その中の一つに「<strong>原稿の取り扱い</strong>」も含まれます。</p>
+  <div class="insight">
+    <strong>原稿の取り扱いについての論点整理</strong>：<br>
+    個人のAIアカウントで原稿を読ませること自体は、各ツール側で <strong>学習無効化設定をオンにすれば情報流出の観点ではリスクヘッジ可能</strong>です。一方で、個人アカウントにこういったデータが残るリスクは残存します（退職時のデータ持ち出し・アカウント漏洩等）。<br><br>
+    → <strong>会社契約のチーム/Enterpriseアカウント上での利用</strong>に移行することが望ましく、その前提でガイドラインを整備していく方向が、3名で共有された認識です。
   </div>
-  <div class="quote">
-    論点で一番大きいのって原稿だと思う。実際、大なり小なり読ませてるケースは私もあるし、あると思う。<strong>それを会社としてどう決めるかが一番大きい</strong>。
-    <span class="who">— 林様</span>
-  </div>
-  <p class="body-text">→ <strong>原稿読み込みガイドラインの整備が想定以上に急務</strong>。著者契約への「AI使用範囲」明記とセットで設計が必要です。</p>
+  <p class="body-text">著者契約への「AI使用範囲」の明記についても、中長期で検討すべき論点として残置します。</p>
 
-  <h3 class="subsection">4-3. 「義務化しない」設計思想</h3>
-  <p class="body-text">これは窪田様が当初お話しくださった「現場との齟齬を防ぎたい」「押し付けないアプローチ」という問題意識と完全に一致するものでした。</p>
+  <h3 class="subsection">5-3. 「義務化しない」設計思想</h3>
   <div class="quote">
-    仕組みを作った時にそれをしなきゃいけない、絶対しなきゃいけない、ってなると難しい。現場なんで。本当に使える人、こういう風なのを作ったので、<strong>使いたい人は使ってね、っていう仕組み</strong>にすべき。
+    仕組みを作った時に「絶対にしなきゃいけない」となると、現場では難しい。本当に使える人、「こういう風なのを作ったので、<strong>使いたい人は使ってね</strong>」っていう仕組みにすべき。
     <span class="who">— 中山課長</span>
   </div>
   <div class="insight">
-    <strong>窪田様の問題意識との一致</strong>：当初窪田様がおっしゃっていた「会社で勝手にツールを決めて押し付けても良くない」というアプローチが、3名の現場感覚と <strong>完全に一致</strong>しました。この一致は、推進設計の核として今後ぶれない軸になります。
+    <strong>窪田様の問題意識との一致</strong>：当初窪田様がおっしゃっていた「会社で勝手にツールを決めて押し付けても良くない」というアプローチが、3名の現場感覚と完全に一致しました。この一致は、推進設計の核として今後ぶれない軸になります。
   </div>
 
-  <!-- ============ 5. 仮置きされた方向性 ============ -->
-  <h2 class="section">5. 仮置きされた方向性</h2>
+  <!-- ============ 6. 仮置きされた方向性 ============ -->
+  <h2 class="section">6. 仮置きされた方向性</h2>
 
-  <h3 class="subsection">5-1. 初期スコープ(2軸)</h3>
+  <h3 class="subsection">6-1. 初期スコープ(2軸)</h3>
   <table class="tbl">
-    <tr><th style="width:160px">軸</th><th>具体例</th><th style="width:140px">出元</th></tr>
-    <tr><td class="cell-strong">企画リサーチ系</td><td>業界ニュース配信 / 類書データベース(他社書籍×売上) / 企画立案時の壁打ち材料</td><td>出口様(自作中)</td></tr>
-    <tr><td class="cell-strong">事務処理系</td><td>発注書作成 / PR資料叩き / 進捗管理 / 新聞原稿叩き</td><td>林様・中山課長</td></tr>
+    <tr><th style="width:160px">軸</th><th>具体例</th><th style="width:200px">推進体制</th></tr>
+    <tr>
+      <td class="cell-strong">企画リサーチ系<br>（オープンサーチ系）</td>
+      <td>業界ニュース配信 / <strong>類書データベース(他社書籍×売上)</strong> / 企画立案時の壁打ち材料</td>
+      <td>出口様が既に推進中。西川が技術サポート（Claudeクレジット・スケジューラ等の解消）。出口様主体で進めつつ、編集部内へ浸透</td>
+    </tr>
+    <tr>
+      <td class="cell-strong">事務処理系</td>
+      <td><strong>発注書作成</strong> / PR資料叩き / 進捗管理 / 新聞原稿叩き</td>
+      <td>発注書作成は <strong>Kintone PJ とアラインしながら要件整理</strong>。林様・中山課長から日々のニーズが出てくる領域</td>
+    </tr>
   </table>
-  <p class="body-text">「個人カスタマイズ部分」と「全員共通部分」を仕分けることで、後者を会社の仕組みとして整備していく方向です。</p>
+  <p class="body-text">「個人カスタマイズで完結できる部分」と「全員共通の仕組みとして整備すべき部分」を仕分けながら、後者を中心に会社の仕組みとして整備していきます。</p>
 
-  <h3 class="subsection">5-2. ゴール仮置き</h3>
+  <h3 class="subsection">6-2. ゴール仮置き</h3>
   <div class="highlight">
-    <strong>仮ゴール：3ヶ月で、3名が「これめっちゃいい」と感動できる事例を3つ作る。それを編集部に展開して、活用されている状態を作る。</strong>
+    <strong>仮ゴール：3ヶ月で、推進3名が「これめっちゃいい」と感動できる事例を3つ作る。それを編集部に展開して、活用されている状態を作る。</strong>
   </div>
   <p class="body-text">厳密な数値KPIは置きません。出口様の「<strong>役に立ったか役に立たなかったかで残すものを判断する</strong>」というアプローチに沿って、定性的なフィードバックで方向修正する設計です。</p>
 
-  <!-- ============ 6. 決定事項 ============ -->
-  <h2 class="section">6. 決定事項 (7件)</h2>
+  <!-- ============ 7. 決定事項 ============ -->
+  <h2 class="section">7. 決定事項 (7件)</h2>
   <table class="tbl">
     <tr><th style="width:50px">#</th><th>決定事項</th><th style="width:240px">詳細</th></tr>
     <tr><td class="cell-id">D1</td><td><strong>次回MTG: 5/27(火) 14:00〜 1時間</strong></td><td>Google Meet。3名+西川</td></tr>
-    <tr><td class="cell-id">D2</td><td>プロジェクト第一歩：<strong>出口様の自作事例(情報収集/類書DB)を3名で共有・真似してみる</strong></td><td>中山課長提案。技術ハードルを3名で乗り越える</td></tr>
+    <tr><td class="cell-id">D2</td><td>プロジェクト第一歩：<strong>出口様の自作事例(情報収集/類書DB)を3名で共有・真似してみる</strong></td><td>中山課長提案。西川が技術ハードルをサポート</td></tr>
     <tr><td class="cell-id">D3</td><td><strong>「やりたいことリスト」フォーマット</strong>を西川が作成 → 窪田様経由で3名展開 → 事前記入</td><td>スプレッドシート想定</td></tr>
     <tr><td class="cell-id">D4</td><td>次回アジェンダ：①出口様の実装シェア ②やりたいこと優先順位付け ③直近2-3ヶ月のスコープ&ゴール設定 ④ツール選定の方向感共有</td><td>—</td></tr>
-    <tr><td class="cell-id">D5</td><td><strong>ツール選定</strong>は西川×窪田様で別途話を進める</td><td>次回MTG時に方向感提示できる状態にする</td></tr>
-    <tr><td class="cell-id">D6</td><td>初期スコープ：<strong>企画リサーチ系＋事務処理系</strong>の2軸</td><td>個人カスタマイズと全員共通部分を仕分け</td></tr>
+    <tr><td class="cell-id">D5</td><td><strong>ツール選定</strong>は西川×窪田様で別途話を進める</td><td>次回MTG時に方向感提示</td></tr>
+    <tr><td class="cell-id">D6</td><td>初期スコープ：<strong>企画リサーチ系（オープンサーチ）＋事務処理系</strong>の2軸</td><td>事務処理系はKintone PJとアラインしながら要件整理</td></tr>
     <tr><td class="cell-id">D7</td><td>ゴール仮置き：3ヶ月で「めっちゃいい」事例を3つ → 部内展開</td><td>数値KPIは設定せず、定性的フィードバック</td></tr>
   </table>
 
-  <!-- ============ 7. 残論点 ============ -->
-  <h2 class="section">7. 残論点 (10件)</h2>
+  <!-- ============ 8. 残論点 ============ -->
+  <h2 class="section">8. 残論点 (10件)</h2>
   <table class="tbl">
     <tr><th style="width:50px">#</th><th>残論点</th><th style="width:200px">担当・期限イメージ</th></tr>
-    <tr><td class="cell-id">R1</td><td><strong>原稿読み込みガイドライン v1.0</strong> の整備</td><td>窪田様×西川主導／6-7月</td></tr>
-    <tr><td class="cell-id">R2</td><td><strong>著者契約へのAI使用範囲明記</strong></td><td>窪田様×経営層／中長期</td></tr>
-    <tr><td class="cell-id">R3</td><td><strong>ツール選定の正式決定</strong>(Claude Team/Enterprise 等)</td><td>西川×窪田様／5/27までに方向感</td></tr>
-    <tr><td class="cell-id">R4</td><td>学習無効化設定を3名で再確認・統一</td><td>3名／次回MTGまでに</td></tr>
-    <tr><td class="cell-id">R5</td><td>個人プラン→チーム/Enterpriseプランへの移行設計</td><td>西川×窪田様／5月末-6月</td></tr>
-    <tr><td class="cell-id">R6</td><td>「やりたいこと」優先順位の確定(インパクト×実装難易度)</td><td>3名+西川／次回MTG</td></tr>
-    <tr><td class="cell-id">R7</td><td>直近2-3ヶ月の具体ゴール3つ確定</td><td>3名+西川／次回MTG</td></tr>
-    <tr><td class="cell-id">R8</td><td>編集部全体への浸透設計(島ミーティング活用等)</td><td>中山課長×西川／中期</td></tr>
-    <tr><td class="cell-id">R9</td><td>POS×類書データベース統合の検討(営業PJと接続)</td><td>西川主導／6月以降</td></tr>
-    <tr><td class="cell-id">R10</td><td>共有チャネル(Slack/Teams/Kintone等)の置き場所</td><td>3名+窪田様／次回MTG</td></tr>
+    <tr><td class="cell-id">R1</td><td>編集部AI活用の <strong>ルール整備 v1.0</strong>（OK/NGの線引き、原稿取り扱いを含む）</td><td>窪田様×西川主導／6-7月</td></tr>
+    <tr><td class="cell-id">R2</td><td>著者契約への AI 使用範囲明記の検討</td><td>窪田様×経営層／中長期</td></tr>
+    <tr><td class="cell-id">R3</td><td>ツール選定の正式決定（Claude Team/Enterprise 等）</td><td>西川×窪田様／5/27までに方向感</td></tr>
+    <tr><td class="cell-id">R4</td><td>個人アカウント → 会社契約チーム/Enterprise アカウントへの移行設計</td><td>西川×窪田様／5月末-6月</td></tr>
+    <tr><td class="cell-id">R5</td><td>「やりたいこと」優先順位の確定（インパクト×実装難易度）</td><td>3名+西川／次回MTG</td></tr>
+    <tr><td class="cell-id">R6</td><td>直近2-3ヶ月の具体ゴール3つ確定</td><td>3名+西川／次回MTG</td></tr>
+    <tr><td class="cell-id">R7</td><td>類書データベースの技術ハードル解消（Claudeクレジット・スケジューラ等）</td><td>西川 → 出口様サポート／5月末</td></tr>
+    <tr><td class="cell-id">R8</td><td>編集部全体への浸透設計（島ミーティング活用等）</td><td>中山課長×西川／中期</td></tr>
+    <tr><td class="cell-id">R9</td><td>POS×類書データベース統合の検討（営業PJと接続）</td><td>西川主導／6月以降</td></tr>
+    <tr><td class="cell-id">R10</td><td>共有チャネル（Slack/Teams/Kintone等）の置き場所</td><td>3名+窪田様／次回MTG</td></tr>
   </table>
 
-  <!-- ============ 8. ネクストアクション ============ -->
-  <h2 class="section">8. ネクストアクション</h2>
+  <!-- ============ 9. ネクストアクション ============ -->
+  <h2 class="section">9. ネクストアクション</h2>
 
   <h3 class="subsection">西川(オモシク)</h3>
   <table class="tbl">
     <tr><th style="width:50px">#</th><th>アクション</th><th style="width:120px">期限</th></tr>
-    <tr><td>1</td><td>議事録 → 窪田様へ報告レポート作成・送付 (本書)</td><td>5/14</td></tr>
-    <tr><td>2</td><td>やりたいことリスト記入フォーマット作成(スプシ)</td><td>5/14-15</td></tr>
+    <tr><td>1</td><td>議事録 → 窪田様へ報告レポート作成・送付（本書）</td><td>5/14</td></tr>
+    <tr><td>2</td><td>やりたいことリスト記入フォーマット作成（スプシ）</td><td>5/14-15</td></tr>
     <tr><td>3</td><td>窪田様とのツール選定方針すり合わせMTG設定</td><td>5/16-22</td></tr>
-    <tr><td>4</td><td>3名へのURL等共有(プロセスマップ/ロードマップ等)</td><td>5/15-16 (窪田様経由)</td></tr>
-    <tr><td>5</td><td>関連プロジェクト(POS×類書)の接続検討</td><td>5月中</td></tr>
-    <tr><td>6</td><td>5/27次回MTGの準備(事前リストアップ集約・進行設計)</td><td>5/26まで</td></tr>
+    <tr><td>4</td><td>3名へのURL等共有（プロセスマップ/ロードマップ等）</td><td>5/15-16 (窪田様経由)</td></tr>
+    <tr><td>5</td><td>出口様の類書DB試作の技術サポート着手</td><td>5月中</td></tr>
+    <tr><td>6</td><td>Kintone PJ と発注書効率化のアライン検討</td><td>5月中</td></tr>
+    <tr><td>7</td><td>5/27次回MTGの準備（事前リストアップ集約・進行設計）</td><td>5/26まで</td></tr>
   </table>
 
   <h3 class="subsection">推進3名(中山課長・林様・出口様)</h3>
@@ -329,7 +432,7 @@ p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-h
     <tr><th style="width:50px">#</th><th>アクション</th><th style="width:120px">期限</th></tr>
     <tr><td>1</td><td>やりたいことリスト 事前記入</td><td>5/26まで</td></tr>
     <tr><td>2</td><td>出口様の実装手法を共有・試行(中山課長提案)</td><td>5/27に向けて任意</td></tr>
-    <tr><td>3</td><td>個人活用でのAI利用継続(学習無効化設定確認)</td><td>継続</td></tr>
+    <tr><td>3</td><td>個人活用でのAI利用継続</td><td>継続</td></tr>
   </table>
 
   <h3 class="subsection">窪田 美穂 様(大和書房 総務部)</h3>
@@ -341,34 +444,34 @@ p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-h
     <tr><td>4</td><td>必要に応じて社長・編集統括への共有</td><td>適宜</td></tr>
   </table>
 
-  <!-- ============ 9. 西川所感 ============ -->
-  <h2 class="section">9. 西川所感</h2>
+  <!-- ============ 10. 西川所感 ============ -->
+  <h2 class="section">10. 西川所感</h2>
 
-  <h3 class="subsection">想定通り(良かった点)</h3>
+  <h3 class="subsection">良かった点</h3>
   <ul class="bullet">
-    <li>3名とも会話に積極的で、それぞれの実装事例を率直に共有してくれた</li>
-    <li>林様がHTMLダッシュボードを即座に画面共有してくれるなど、心理的安全性が想定通り高い</li>
-    <li>「やらなきゃならない仕組みにしない」哲学が3名共通で出てきたのは大きな収穫。窪田様の問題意識と完全一致</li>
-    <li>「個人ツールは残し、会社は別レイヤで仕組み整備」の二層構造を3名で合意できた</li>
+    <li>3名とも会話に積極的で、それぞれの実装事例を率直に共有してくれた。心理的安全性が想定通り高い場でした</li>
+    <li>林様がHTMLダッシュボードを即座に画面共有してくれるなど、各人の実装解像度が高く、議論が具体性を持って進められた</li>
+    <li>「義務化しない」哲学が3名共通で出てきたのは大きな収穫。窪田様の問題意識と完全に一致しており、推進設計の核として共有できた</li>
+    <li>「個々人の柔軟性 × 共通仕組み」の二層構造を3名で握れたことで、ツール選定の議論が建設的に進められる土台ができた</li>
   </ul>
 
-  <h3 class="subsection">想定外(発見)</h3>
+  <h3 class="subsection">想定外（発見）</h3>
   <ul class="bullet">
-    <li><strong>3名がこれまで一度も話していなかった</strong>ことが冒頭で発覚。事前仮説で「すでに会話あり」と読んでいたが、ゼロベース</li>
-    <li>中山課長の <strong>NotebookLM 活用度が極めて高度</strong>。アンケートからは「壁打ち中心」と読んでいたが、企画ごとのナレッジ蓄積→PR資料一発生成まで到達</li>
-    <li>林様の <strong>HTMLダッシュボード自作</strong>はアンケートに出ていなかった隠れスキル。島ミーティングと接続している実運用</li>
-    <li>原稿読み込みが <strong>現状、暗黙の了解で全員実施中</strong>(学習無効化済)。ガイドライン整備の必要性が想定以上に明確</li>
+    <li><strong>3名とも想定以上に実装フェーズに到達</strong>。中山課長のNotebookLM活用（企画ごとのナレッジ蓄積→PR資料一発生成）、林様のHTMLダッシュボード自作、出口様の類書DB試作はいずれもアンケート段階では見えていなかった解像度の高い実装でした</li>
+    <li><strong>類書データベース（出口様）と営業PJ（POS×書店プロファイル）の接続</strong>が、両方向のメリットを持つ可能性が高い。編集の企画段階インプットと、営業の提案根拠データの両方を強化できます</li>
+    <li>「<strong>ルール整備こそ使いやすさを担保する</strong>」という認識が3名共通で出てきたこと。これにより、ガイドライン整備の必要性が「縛り」ではなく「環境整備」として位置付けられる</li>
   </ul>
 
-  <h3 class="subsection">次に推奨するアクション(窪田様への提案)</h3>
+  <h3 class="subsection">次に推奨するアクション（窪田様への提案）</h3>
   <ul class="bullet">
-    <li><strong>ツール選定の方針すり合わせMTG</strong>を5/22までに設定させてください。Claude Team/Enterprise 契約検討を含めて議論したい論点があります。</li>
-    <li><strong>原稿読み込みガイドライン v1.0</strong>のドラフトを6月中に作成することを提案します。3名が現状暗黙運用している以上、明文化を急ぐ価値が高いです。</li>
-    <li>営業部のPOSプロジェクト(類書・売上データ)と <strong>編集部の類書DB</strong>を接続できると、両方の生産性が大きく上がる可能性があります。別途相談させてください。</li>
+    <li><strong>ツール選定の方針すり合わせMTG</strong>を5/22までに設定させてください。Claude Team/Enterprise契約検討を含めて議論したい論点があります</li>
+    <li><strong>編集部AI活用ルール v1.0</strong>のドラフトを6月中に作成することを提案します。3名から「ルール整備が使いやすさを担保する」という認識が出てきており、整備のタイミングとして良い機運です</li>
+    <li>営業部のPOSプロジェクト（類書・売上データ）と<strong>編集部の類書DB</strong>を接続する設計を別途相談させてください。両方の生産性が大きく上がる可能性があります</li>
+    <li>発注書作成の効率化は <strong>Kintone PJ とアラインしながら要件整理</strong>を進めます。これで Kintone 第1弾（契約書管理）の延長線上で、編集部にも価値が広がります</li>
   </ul>
 
-  <!-- ============ 10. 関連資料 ============ -->
-  <h2 class="section">10. 関連資料</h2>
+  <!-- ============ 11. 関連資料 ============ -->
+  <h2 class="section">11. 関連資料</h2>
   <ul class="bullet">
     <li><a href="https://tkonishikawa.github.io/demo-pages/d/editorial-ai-survey-20260513/summary.html" style="color:var(--accent-dark);text-decoration:none;">アンケート全体サマリ(13名分)</a></li>
     <li><a href="https://tkonishikawa.github.io/demo-pages/d/editorial-ai-process-map-20260513/" style="color:var(--accent-dark);text-decoration:none;">業務プロセス × AI活用マップ(13プロセス+ベストプラクティス)</a></li>
