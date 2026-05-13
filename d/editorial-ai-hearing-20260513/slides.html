@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編集部AI活用 ヒアリング 2026/5/13 — 大和書房様 | omoshiku</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  /* Dark theme palette (McKinsey系) */
+  --bg-base: #08080d;
+  --bg-surface: #101018;
+  --bg-raised: #181824;
+  --bg-top: #222234;
+  --border: rgba(255,255,255,0.08);
+  --border-focus: rgba(255,255,255,0.18);
+
+  --text: #eaeaf2;
+  --text-dim: #9898ae;
+  --text-muted: #58586e;
+
+  /* Accent: 暖色オレンジを保持 */
+  --accent: #f97316;
+  --accent-light: #fb923c;
+  --accent-dark: #c2410c;
+  --accent-bg: rgba(249,115,22,0.12);
+  --accent-border: rgba(249,115,22,0.35);
+
+  /* Secondary colors */
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --pink: #f472b6;
+
+  --shadow-md: 0 8px 28px rgba(0,0,0,0.6);
+  --grad-accent: linear-gradient(135deg, #c2410c 0%, #f97316 100%);
+  --grad-dark: linear-gradient(160deg, #181824 0%, #08080d 100%);
+
+  --font-sans: 'Noto Sans JP', -apple-system, sans-serif;
+  --font-display: 'Sora', 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+html, body { height: 100%; overflow: hidden; }
+body { font-family: var(--font-sans); color: var(--text); background: var(--bg-base); }
+
+/* Deck */
+.deck { position: fixed; inset: 0; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 5vh 6vw;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  background: var(--bg-base);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Brand (top-right) */
+.brand {
+  position: absolute; top: 24px; right: 32px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 14px; color: var(--text); letter-spacing: 0.02em;
+}
+.brand span { color: var(--accent); }
+
+/* Block label (top-left) */
+.block-label {
+  position: absolute; top: 24px; left: 32px;
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase;
+}
+.block-label .time { color: var(--text-muted); margin-left: 12px; font-weight: 500; }
+
+/* Counter (bottom-right) */
+.counter {
+  position: absolute; bottom: 22px; right: 32px;
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+}
+
+/* Nav hint (bottom-left) */
+.nav-hint {
+  position: absolute; bottom: 22px; left: 32px;
+  font-size: 11px; color: var(--text-muted);
+}
+.nav-hint kbd {
+  font-family: var(--font-mono); font-size: 10px; padding: 2px 7px;
+  border: 1px solid var(--border-focus); border-radius: 4px;
+  background: var(--bg-raised); color: var(--text-dim);
+}
+
+/* === Question slide (the "ドーン" main type) === */
+.q-eyebrow {
+  font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  color: var(--accent); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.q-main {
+  font-size: clamp(40px, 5.8vw, 86px);
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--text);
+  text-align: center;
+  max-width: 1300px;
+  letter-spacing: -0.01em;
+}
+.q-main em { color: var(--accent); font-style: normal; }
+.q-sub {
+  margin-top: 36px;
+  font-size: clamp(16px, 1.6vw, 22px);
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.7;
+  max-width: 900px;
+}
+.q-sub strong { color: var(--accent-light); font-weight: 700; }
+.q-sub.examples {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 22px 32px;
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  text-align: left;
+  font-size: clamp(13px, 1.2vw, 17px);
+}
+.q-sub.examples ul { list-style: none; }
+.q-sub.examples li { padding: 5px 0 5px 22px; position: relative; line-height: 1.6; color: var(--text-dim); }
+.q-sub.examples li::before {
+  content: "→"; position: absolute; left: 0; top: 5px;
+  color: var(--accent); font-weight: 700;
+}
+
+/* === Title slide === */
+.slide.title { background: var(--grad-dark); }
+.slide.title::before {
+  /* Subtle accent glow */
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(249,115,22,0.18) 0%, transparent 50%);
+  pointer-events: none;
+}
+.title-main {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(42px, 6vw, 90px);
+  line-height: 1.2; text-align: center; max-width: 1300px;
+  background: linear-gradient(135deg, #eaeaf2 0%, #fb923c 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  position: relative; z-index: 1;
+}
+.title-sub {
+  margin-top: 32px;
+  font-size: clamp(18px, 2vw, 26px); color: var(--text-dim);
+  text-align: center; position: relative; z-index: 1;
+}
+.title-meta {
+  margin-top: 80px;
+  font-size: clamp(14px, 1.3vw, 18px); color: var(--text-muted);
+  text-align: center; letter-spacing: 0.15em;
+  font-family: var(--font-mono);
+  position: relative; z-index: 1;
+}
+
+/* === Section slide (block intro) === */
+.slide.section { background: var(--bg-surface); }
+.slide.section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, var(--accent-bg) 0%, transparent 60%);
+  pointer-events: none;
+}
+.section-num {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(80px, 11vw, 180px);
+  background: var(--grad-accent);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  line-height: 1; margin-bottom: 24px;
+  position: relative; z-index: 1;
+}
+.section-title {
+  font-size: clamp(32px, 4.5vw, 64px);
+  font-weight: 900; color: var(--text);
+  text-align: center; max-width: 1200px;
+  line-height: 1.3;
+  position: relative; z-index: 1;
+}
+.section-sub {
+  margin-top: 28px;
+  font-size: clamp(15px, 1.5vw, 21px);
+  color: var(--text-dim);
+  text-align: center;
+  max-width: 850px;
+  line-height: 1.7;
+  position: relative; z-index: 1;
+}
+.section-sub strong { color: var(--accent-light); }
+
+/* === Agenda slide === */
+.agenda-grid {
+  display: grid; grid-template-columns: 1fr;
+  gap: 10px; width: 100%; max-width: 920px;
+}
+.agenda-item {
+  display: grid; grid-template-columns: 110px 1fr auto;
+  gap: 20px; align-items: center;
+  padding: 14px 22px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  border-left: 4px solid var(--accent);
+  font-size: clamp(14px, 1.3vw, 18px);
+}
+.agenda-item .ag-time { font-family: var(--font-mono); font-weight: 700; color: var(--accent); font-size: 0.95em; }
+.agenda-item .ag-name { font-weight: 700; color: var(--text); }
+.agenda-item .ag-mins { color: var(--text-muted); font-size: 0.85em; }
+.agenda-title { font-size: clamp(28px, 3.5vw, 50px); font-weight: 900; color: var(--text); margin-bottom: 40px; text-align: center; }
+
+/* === Closing slide === */
+.slide.closing { background: var(--grad-dark); }
+.slide.closing::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 80%, rgba(249,115,22,0.15) 0%, transparent 55%);
+  pointer-events: none;
+}
+.closing-main {
+  font-size: clamp(36px, 5vw, 74px);
+  font-weight: 900; text-align: center; max-width: 1200px;
+  line-height: 1.3; color: var(--text);
+  position: relative; z-index: 1;
+}
+.closing-main em { color: var(--accent); font-style: normal; }
+.closing-sub {
+  margin-top: 36px;
+  font-size: clamp(16px, 1.7vw, 23px);
+  text-align: center; max-width: 850px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  position: relative; z-index: 1;
+}
+
+/* === Thanks slide === */
+.slide.thanks { background: var(--bg-base); }
+.slide.thanks::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(249,115,22,0.10) 0%, transparent 65%);
+  pointer-events: none;
+}
+.thanks-main {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(56px, 8vw, 130px);
+  text-align: center; line-height: 1.1;
+  background: linear-gradient(135deg, #eaeaf2 0%, #f97316 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  position: relative; z-index: 1;
+}
+.thanks-sub {
+  margin-top: 28px;
+  font-size: clamp(18px, 1.8vw, 26px);
+  color: var(--text-dim); text-align: center;
+  position: relative; z-index: 1;
+}
+
+/* === Progress bar === */
+.progress {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(249,115,22,0.5);
+  transition: width 0.25s ease;
+  z-index: 100;
+}
+
+/* Print: one slide per page */
+@media print {
+  html, body { height: auto; overflow: visible; background: white; color: black; }
+  .deck { position: static; }
+  .slide {
+    position: relative; inset: auto;
+    opacity: 1; pointer-events: auto;
+    page-break-after: always;
+    height: 100vh; min-height: 600px;
+  }
+  .nav-hint, .progress { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1: Title -->
+  <section class="slide title active">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">2026.05.13 (WED) 14:00</div>
+    <div class="title-main">編集部AI活用<br>ヒアリング</div>
+    <div class="title-sub">皆さんの「今」と「これから」を聞かせてください</div>
+    <div class="title-meta">大和書房 × オモシク</div>
+    <div class="counter">01 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る &nbsp; <kbd>F</kbd> フルスクリーン</div>
+  </section>
+
+  <!-- 2: Agenda -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">AGENDA</div>
+    <div class="agenda-title">今日の60分の流れ</div>
+    <div class="agenda-grid">
+      <div class="agenda-item"><span class="ag-time">14:00</span><span class="ag-name">オープニング</span><span class="ag-mins">5分・窪田様同席</span></div>
+      <div class="agenda-item"><span class="ag-time">14:05</span><span class="ag-name">自己紹介・アイスブレイク</span><span class="ag-mins">5分</span></div>
+      <div class="agenda-item"><span class="ag-time">14:10</span><span class="ag-name">A. 業務実態と現在のAI活用</span><span class="ag-mins">15分</span></div>
+      <div class="agenda-item"><span class="ag-time">14:25</span><span class="ag-name">B. 編集業務固有のユースケース</span><span class="ag-mins">15分</span></div>
+      <div class="agenda-item"><span class="ag-time">14:40</span><span class="ag-name">C. ブロッカー要素の解像</span><span class="ag-mins">10分</span></div>
+      <div class="agenda-item"><span class="ag-time">14:50</span><span class="ag-name">D. 推進担当・共犯者化への打診</span><span class="ag-mins">6分</span></div>
+      <div class="agenda-item"><span class="ag-time">14:56</span><span class="ag-name">E. 個人ゴール</span><span class="ag-mins">3分</span></div>
+      <div class="agenda-item"><span class="ag-time">14:59</span><span class="ag-name">クロージング</span><span class="ag-mins">1分</span></div>
+    </div>
+    <div class="counter">02 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 3: Opening / Purpose -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">オープニング</div>
+    <div class="q-eyebrow">今日の目的</div>
+    <div class="q-main">
+      皆さんが普段、AIを<br>
+      <em>どう使ってるか・なぜ使わないか</em><br>
+      を教えていただく場です
+    </div>
+    <div class="q-sub">
+      「正しい答え」を持ってきていません。<br>
+      意見が違ってOK。ガイドラインや会社のルールを決める場ではありません。<br>
+      <strong>思ったままを話してください。</strong>
+    </div>
+    <div class="counter">03 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 4: Icebreak -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">アイスブレイク<span class="time">5分</span></div>
+    <div class="q-eyebrow">まずは自己紹介がてら</div>
+    <div class="q-main">
+      直近1ヶ月で<br>
+      <em>「これは面白かった」</em><br>
+      AI体験を教えてください
+    </div>
+    <div class="q-sub">うまくいった話／失敗話、どちらでもOK</div>
+    <div class="counter">04 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 5: Block A intro -->
+  <section class="slide section">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">BLOCK A<span class="time">15分</span></div>
+    <div class="section-num">A</div>
+    <div class="section-title">業務実態と<br>現在のAI活用</div>
+    <div class="section-sub">普段の1冊を担当する流れの中で、<br>どこにAIが入っているか／入りそうか</div>
+    <div class="counter">05 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 6: A-1 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">A-1<span class="time">業務実態</span></div>
+    <div class="q-main">
+      1冊の本を担当するとき、<br>
+      業務全体の中で<br>
+      <em>「AIで楽になった」</em>or<br>
+      <em>「楽にしたい」</em>工程は？
+    </div>
+    <div class="counter">06 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 7: A-2 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">A-2<span class="time">ツール選好</span></div>
+    <div class="q-main">
+      今使っているAIツールを、<br>
+      <em>どう使い分けて</em>いますか？
+    </div>
+    <div class="q-sub examples">
+      <ul>
+        <li>ChatGPT / Claude / Gemini / Copilot</li>
+        <li>用途別の使い分けの基準</li>
+        <li>「最近この子に乗り換えた」みたいな話も</li>
+      </ul>
+    </div>
+    <div class="counter">07 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 8: A-3 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">A-3<span class="time">失敗事例</span></div>
+    <div class="q-main">
+      「使えると思ってやってみたけど<br>
+      <em>合わなかった</em>」<br>
+      失敗例はありますか？
+    </div>
+    <div class="q-sub">諦めた理由まで含めて聞かせてください</div>
+    <div class="counter">08 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 9: A-4 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">A-4<span class="time">運用ノウハウ</span></div>
+    <div class="q-main">
+      プロンプトや使い方で<br>
+      <em>個別に工夫している</em><br>
+      運用ルールはありますか？
+    </div>
+    <div class="q-sub examples">
+      <ul>
+        <li>学習をオフにする / プライベートモード設定</li>
+        <li>使うシーン別のプロンプトテンプレ</li>
+        <li>「裏でこんな工夫してる」の小ネタ</li>
+      </ul>
+    </div>
+    <div class="counter">09 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 10: Block B intro -->
+  <section class="slide section">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">BLOCK B<span class="time">15分</span></div>
+    <div class="section-num">B</div>
+    <div class="section-title">編集業務固有の<br>ユースケース</div>
+    <div class="section-sub">事実確認や誤字脱字以外で、<br>編集者だからこそ <strong>「AIで革命」</strong> になる場面</div>
+    <div class="counter">10 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 11: B-1 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">B-1<span class="time">深い活用</span></div>
+    <div class="q-main">
+      事実確認や誤字脱字 <em>以外</em> で、<br>
+      編集業務にAIを<br>
+      <em>もっと深く</em>使えるとしたら<br>
+      どこだと思いますか？
+    </div>
+    <div class="q-sub examples">
+      <ul>
+        <li>原稿の校正 / 機密保持が解決されたら何をしたい？</li>
+        <li>企画段階の章立て・構成案づくり</li>
+        <li>販促・A+ページ / 著者対応 / タイトル検討</li>
+        <li>突拍子もないアイデアでも構いません</li>
+      </ul>
+    </div>
+    <div class="counter">11 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 12: Block C intro -->
+  <section class="slide section">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">BLOCK C<span class="time">10分</span></div>
+    <div class="section-num">C</div>
+    <div class="section-title">ブロッカー要素の<br>解像</div>
+    <div class="section-sub">浸透時に出てくる「ブレーキ」を<br>リアルに引き出します</div>
+    <div class="counter">12 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 13: C-1 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">C-1<span class="time">ブロッカー</span></div>
+    <div class="q-main">
+      編集部にAI活用を<br>広げようとしたとき、<br>
+      <em>ブレーキになりそうなもの</em>や<br>
+      <em>現場の人が嫌がりそうなこと</em>は？
+    </div>
+    <div class="q-sub examples">
+      <ul>
+        <li>心理的な壁（怖い／どこまでOKか分からない）</li>
+        <li>業務固有の制約（著者対応／原稿の機密性）</li>
+        <li>ガバナンス（著作権／剽窃リスク）</li>
+        <li>仕組み（ツール固定化／支援不足）</li>
+      </ul>
+    </div>
+    <div class="counter">13 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 14: Block D intro -->
+  <section class="slide section">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">BLOCK D<span class="time">6分</span></div>
+    <div class="section-num">D</div>
+    <div class="section-title">推進担当・<br>共犯者化への打診</div>
+    <div class="section-sub">「役職としての推進担当」ではなく、<br>現場で本気でAI活用を進めたい人同士の <strong>共犯関係</strong> を作りたい</div>
+    <div class="counter">14 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 15: D-1 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">D-1<span class="time">サポート要件</span></div>
+    <div class="q-main">
+      推進役を担うとして、<br>
+      <em>どんなサポート</em>があれば<br>
+      動きやすいですか？
+    </div>
+    <div class="counter">15 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 16: D-2 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">D-2<span class="time">禁忌</span></div>
+    <div class="q-main">
+      逆に、<br>
+      <em>こうなると動きづらい</em><br>
+      って何ですか？
+    </div>
+    <div class="q-sub">過剰な仕組み化／押し付け／縛られたくないこと — 遠慮なく</div>
+    <div class="counter">16 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 17: Block E intro -->
+  <section class="slide section">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">BLOCK E<span class="time">3分</span></div>
+    <div class="section-num">E</div>
+    <div class="section-title">個人ゴール</div>
+    <div class="section-sub">最後に、会社や部のためではなく ——<br><strong>あなた自身が</strong> AIで達成したいことを聞かせてください</div>
+    <div class="counter">17 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 18: E-1 -->
+  <section class="slide">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">E<span class="time">1分 × 3名</span></div>
+    <div class="q-eyebrow">個人として</div>
+    <div class="q-main">
+      ご自身の業務や働き方として、<br>
+      <em>AIで達成できたら嬉しいこと</em>は？
+    </div>
+    <div class="q-sub">お一人 1分ずつ。<br>会社や部のためではなく、ご自身のための話で。</div>
+    <div class="counter">18 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 19: Closing -->
+  <section class="slide closing">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">CLOSING</div>
+    <div class="closing-main">
+      5月末頃に<br>
+      <em>「進め方共同設計セッション」</em><br>
+      90分を設けたいです
+    </div>
+    <div class="closing-sub">
+      今日の延長で、「最初の3ヶ月で何をやるか」<br>
+      「1年後どうなってたら成功か」を、<br>
+      皆さんと一緒に決める場にさせてください。
+    </div>
+    <div class="counter">19 / 20</div>
+    <div class="nav-hint"><kbd>→</kbd> 次へ &nbsp; <kbd>←</kbd> 戻る</div>
+  </section>
+
+  <!-- 20: Thanks -->
+  <section class="slide thanks">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div class="block-label">THANK YOU</div>
+    <div class="thanks-main">
+      ありがとう<br>ございました
+    </div>
+    <div class="thanks-sub">追加で気になることがあれば、Slack / メールでも遠慮なくどうぞ</div>
+    <div class="counter">20 / 20</div>
+    <div class="nav-hint"><kbd>←</kbd> 戻る</div>
+  </section>
+
+</div>
+
+<script>
+(function() {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progress = document.getElementById('progress');
+  let idx = 0;
+
+  function show(i) {
+    idx = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, n) => s.classList.toggle('active', n === idx));
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + (idx + 1));
+  }
+
+  // Init from hash
+  const initIdx = parseInt(location.hash.replace('#', ''), 10);
+  if (!isNaN(initIdx) && initIdx >= 1 && initIdx <= slides.length) show(initIdx - 1);
+  else show(0);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault(); show(idx + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault(); show(idx - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault(); show(0);
+    } else if (e.key === 'End') {
+      e.preventDefault(); show(slides.length - 1);
+    } else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  // Click anywhere to advance (but not on links / kbd)
+  document.addEventListener('click', (e) => {
+    if (e.target.tagName === 'A' || e.target.tagName === 'KBD') return;
+    show(idx + 1);
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+  });
+})();
+</script>
+</body>
+</html>
