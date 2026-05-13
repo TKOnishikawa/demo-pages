@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編集部AI活用 仮説&ロードマップ — 5/13 ヒアリング事前資料</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-base: #08080d;
+  --bg-surface: #101018;
+  --bg-raised: #181824;
+  --bg-top: #222234;
+  --border: rgba(255,255,255,0.08);
+  --border-focus: rgba(255,255,255,0.18);
+  --text: #eaeaf2;
+  --text-dim: #9898ae;
+  --text-muted: #58586e;
+  --accent: #f97316;
+  --accent-light: #fb923c;
+  --accent-dark: #c2410c;
+  --accent-bg: rgba(249,115,22,0.10);
+  --accent-border: rgba(249,115,22,0.35);
+  --human: #a78bfa;
+  --human-bg: rgba(167,139,250,0.10);
+  --human-border: rgba(167,139,250,0.35);
+  --hybrid: #22d3ee;
+  --hybrid-bg: rgba(34,211,238,0.10);
+  --hybrid-border: rgba(34,211,238,0.35);
+  --ai-led: #fb923c;
+  --ai-led-bg: rgba(251,146,60,0.10);
+  --ai-led-border: rgba(251,146,60,0.35);
+  --ai-only: #34d399;
+  --ai-only-bg: rgba(52,211,153,0.10);
+  --ai-only-border: rgba(52,211,153,0.35);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,0.08);
+  --red-border: rgba(239,68,68,0.35);
+  --grad-accent: linear-gradient(135deg, #c2410c 0%, #f97316 100%);
+  --font-sans: 'Noto Sans JP', -apple-system, sans-serif;
+  --font-display: 'Sora', 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--font-sans); color: var(--text); background: var(--bg-base); line-height: 1.75; font-size: 14px; padding: 40px 20px 80px; }
+.container { max-width: 1180px; margin: 0 auto; }
+
+/* Header */
+.doc-header { padding-bottom: 24px; border-bottom: 2px solid var(--accent); margin-bottom: 36px; }
+.doc-eyebrow { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 8px; }
+.doc-title { font-size: 28px; font-weight: 900; color: var(--text); line-height: 1.3; }
+.doc-title .accent { color: var(--accent); }
+.doc-meta { margin-top: 10px; font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+.intro { background: var(--bg-surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 6px; padding: 18px 24px; margin: 0 0 32px; font-size: 13.5px; color: var(--text-dim); line-height: 1.85; }
+.intro strong { color: var(--text); }
+.intro .so { color: var(--accent-light); font-weight: 700; margin-right: 6px; }
+
+/* Section */
+.section-title { font-size: 20px; font-weight: 800; color: var(--text); margin: 44px 0 14px; padding-left: 14px; border-left: 3px solid var(--accent); }
+.section-sub { font-size: 12.5px; color: var(--text-dim); margin: -8px 0 18px 14px; }
+
+/* Hypothesis tag */
+.hypo-tag { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.15em; padding: 3px 10px; background: var(--accent-bg); border: 1px solid var(--accent-border); border-radius: 4px; color: var(--accent-light); margin-bottom: 8px; }
+
+/* Impact Matrix (2x2) */
+.matrix-wrap { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 16px 0; }
+.matrix-labels-top { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 8px; }
+.matrix-labels-top .top-empty {}
+.matrix-labels-top .top-l, .matrix-labels-top .top-r { text-align: center; font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.1em; }
+.matrix-grid { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 8px; }
+.matrix-side { display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.1em; writing-mode: vertical-rl; }
+.matrix-cell { padding: 18px 20px; border-radius: 8px; min-height: 200px; border: 1px solid var(--border); }
+.matrix-cell.q1 { background: var(--ai-only-bg); border-color: var(--ai-only-border); }
+.matrix-cell.q2 { background: var(--accent-bg); border-color: var(--accent-border); }
+.matrix-cell.q3 { background: var(--bg-raised); }
+.matrix-cell.q4 { background: var(--red-bg); border-color: var(--red-border); }
+.matrix-cell h4 { font-family: var(--font-display); font-size: 12px; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 10px; }
+.matrix-cell.q1 h4 { color: var(--ai-only); }
+.matrix-cell.q2 h4 { color: var(--accent-light); }
+.matrix-cell.q3 h4 { color: var(--text-muted); }
+.matrix-cell.q4 h4 { color: var(--red); }
+.matrix-cell ul { list-style: none; padding: 0; margin: 0; }
+.matrix-cell li { font-size: 12.5px; color: var(--text-dim); padding: 4px 0 4px 22px; position: relative; line-height: 1.55; }
+.matrix-cell li::before { content: "■"; position: absolute; left: 0; top: 4px; font-size: 8px; color: var(--text-muted); }
+.matrix-cell.q1 li::before { color: var(--ai-only); }
+.matrix-cell.q2 li::before { color: var(--accent); }
+.matrix-cell.q4 li::before { color: var(--red); }
+@media(max-width:768px){.matrix-grid{grid-template-columns:1fr}.matrix-side{writing-mode:horizontal-tb;height:auto}.matrix-labels-top{display:none}}
+
+/* Line table */
+.line-tbl { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; background: var(--bg-surface); border-radius: 10px; overflow: hidden; }
+.line-tbl th, .line-tbl td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.line-tbl th { background: var(--bg-raised); color: var(--text); font-weight: 700; text-align: left; font-size: 12px; letter-spacing: 0.05em; }
+.line-tbl td { color: var(--text-dim); line-height: 1.7; }
+.line-tbl tr:last-child td { border-bottom: none; }
+.line-tbl .pid { font-family: var(--font-mono); color: var(--accent); font-weight: 700; }
+.line-tbl .ratio { font-family: var(--font-display); color: var(--accent-light); font-weight: 700; }
+
+/* Phase card */
+.phase-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin: 14px 0; }
+.phase-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; position: relative; }
+.phase-card.p0 { border-left: 4px solid var(--human); }
+.phase-card.p1 { border-left: 4px solid var(--ai-only); }
+.phase-card.p2 { border-left: 4px solid var(--accent); }
+.phase-card.p3 { border-left: 4px solid var(--hybrid); }
+.phase-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+.phase-num { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 1; }
+.phase-card.p0 .phase-num { color: var(--human); }
+.phase-card.p1 .phase-num { color: var(--ai-only); }
+.phase-card.p2 .phase-num { color: var(--accent); }
+.phase-card.p3 .phase-num { color: var(--hybrid); }
+.phase-name { font-size: 18px; font-weight: 800; color: var(--text); }
+.phase-period { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-left: auto; padding: 4px 10px; background: var(--bg-raised); border-radius: 4px; }
+.phase-goal { font-size: 13px; color: var(--accent-light); font-weight: 700; margin-bottom: 12px; line-height: 1.7; }
+.phase-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:768px){.phase-fields{grid-template-columns:1fr}}
+.phase-fields .pf { background: var(--bg-raised); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); }
+.phase-fields .pf .hd { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.phase-fields .pf ul { list-style: none; padding: 0; margin: 0; }
+.phase-fields .pf li { font-size: 12.5px; color: var(--text-dim); padding: 3px 0 3px 14px; position: relative; line-height: 1.6; }
+.phase-fields .pf li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
+.phase-fields .pf li strong { color: var(--text); }
+.phase-fields .pf.kpi .hd { color: var(--ai-only); }
+.phase-fields .pf.kpi li::before { color: var(--ai-only); }
+.phase-fields .pf.deliver { background: var(--bg-raised); }
+.phase-fields .pf.deliver .hd { color: var(--accent-light); }
+
+/* Roadmap timeline */
+.timeline { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 16px 0; }
+.timeline-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; margin-bottom: 12px; }
+.tb-cell { padding: 14px 12px; text-align: center; border-radius: 6px; font-family: var(--font-display); font-weight: 700; font-size: 13px; color: white; }
+.tb-cell.p0 { background: var(--human); }
+.tb-cell.p1 { background: var(--ai-only); }
+.tb-cell.p2 { background: var(--accent); }
+.tb-cell.p3 { background: var(--hybrid); }
+.tb-cell .tb-month { font-size: 10px; opacity: 0.85; font-weight: 500; margin-top: 4px; }
+
+/* Discussion section */
+.discuss { background: linear-gradient(135deg, rgba(249,115,22,0.08) 0%, rgba(167,139,250,0.06) 100%); border: 1px solid var(--accent-border); border-radius: 12px; padding: 22px 28px; margin: 24px 0; }
+.discuss h3 { font-size: 16px; font-weight: 800; color: var(--accent-light); margin-bottom: 12px; }
+.discuss p { font-size: 13.5px; color: var(--text-dim); line-height: 1.85; }
+.discuss p + p { margin-top: 8px; }
+.discuss strong { color: var(--text); }
+.discuss ul { list-style: none; margin-top: 8px; }
+.discuss li { font-size: 13px; color: var(--text-dim); padding: 4px 0 4px 22px; position: relative; line-height: 1.7; }
+.discuss li::before { content: "Q."; position: absolute; left: 0; color: var(--accent); font-family: var(--font-display); font-weight: 700; }
+
+/* Risk callout */
+.risk { background: var(--red-bg); border: 1px solid var(--red-border); border-left: 4px solid var(--red); border-radius: 8px; padding: 16px 22px; margin: 12px 0; }
+.risk h4 { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 6px; }
+.risk p { font-size: 12.5px; color: var(--text-dim); line-height: 1.75; }
+.risk p + p { margin-top: 4px; }
+
+/* Footer */
+.footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); text-align: center; }
+.footer .brand { font-family: var(--font-display); font-weight: 700; color: var(--text); }
+.footer .brand span { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="doc-header">
+    <div class="doc-eyebrow">HYPOTHESIS & ROADMAP — 5/13 PRE-READ</div>
+    <h1 class="doc-title">編集部AI活用 <span class="accent">仮説 & ロードマップ</span></h1>
+    <div class="doc-meta">2026.05.13 ヒアリング事前資料 / 大和書房 × オモシク 西川</div>
+  </div>
+
+  <div class="intro">
+    <p>5/13ヒアリングは「素材集めと信頼形成」の場ですが、<strong>議論の叩き台がないと『で、結局何やる？』で終わってしまう</strong>恐れがあります。</p>
+    <p>そこで本資料では、<strong>「もし編集部にAI活用を本格的に組み込むなら、こう進めると効果が出るのでは？」</strong>という<strong>西川の仮説</strong>を、当日3名で叩いてもらう叩き台として整理しました。</p>
+    <p><span class="so">SO WHAT</span>当日は「この仮説、皆さんの感覚と合いますか？」「<strong>もっと効くプロセスや、やめるべき優先順位</strong>はないですか？」を議論する出発点として使えます。</p>
+  </div>
+
+  <!-- ============ 仮説① インパクトマトリクス ============ -->
+  <h2 class="section-title"><span class="hypo-tag">仮説①</span> どの業務でインパクトが出るか — 2軸マトリクス</h2>
+  <div class="section-sub">「インパクトの大きさ」× 「実装難易度」 で13プロセスを4象限に分類した西川の仮説</div>
+
+  <div class="matrix-wrap">
+    <div class="matrix-labels-top">
+      <div class="top-empty"></div>
+      <div class="top-l">実装難易度 低</div>
+      <div class="top-r">実装難易度 高</div>
+    </div>
+    <div class="matrix-grid">
+      <div class="matrix-side">インパクト 大 ↑</div>
+      <div class="matrix-cell q1">
+        <h4>★ クイックウィン（Phase 1で着手）</h4>
+        <ul>
+          <li><strong style="color:var(--text);">P2 章立て構成案</strong>：プロンプトテンプレ化で即実装。#9 が苦戦中</li>
+          <li><strong style="color:var(--text);">P4 取材テープ起こし</strong>：Whisper+ChatGPTで明確な時短。#9 が既に実装</li>
+          <li><strong style="color:var(--text);">P7 校正・校閲</strong>：13名中9名が既に着手。Shodo/AI editor導入で次の段階へ</li>
+          <li><strong style="color:var(--text);">P13 支払依頼書自動化</strong>：#5要望、Kintone第1弾と直接連動</li>
+        </ul>
+      </div>
+      <div class="matrix-cell q2">
+        <h4>◎ 本命（Phase 2-3 で挑戦）</h4>
+        <ul>
+          <li><strong style="color:var(--text);">P6 原稿第一稿生成</strong>：#5が実装中。成功すれば編集生産性が一段上がる</li>
+          <li><strong style="color:var(--text);">P12 SharePoint RAG検索</strong>：#12要望。社内ナレッジ横串検索</li>
+          <li><strong style="color:var(--text);">P11 類書リサーチ→営業</strong>：POS×ジャンル×書店プロファイルの統合分析</li>
+          <li><strong style="color:var(--text);">P10 Amazon A+/PR資料</strong>：複数編集者が手作業中、効率化余地大</li>
+        </ul>
+      </div>
+      <div class="matrix-side">インパクト 小 ↓</div>
+      <div class="matrix-cell q3">
+        <h4>後回し（やってもいいが優先低）</h4>
+        <ul>
+          <li><strong style="color:var(--text);">P1 企画立案壁打ち</strong>：#5/#6が既に個別で実装、組織展開の優先度は低い</li>
+          <li><strong style="color:var(--text);">P3 著者選定・依頼</strong>：人間関係が主、AIは補助に留まる</li>
+          <li><strong style="color:var(--text);">P5 原稿作成壁打ち</strong>：個別実装で十分、標準化必須ではない</li>
+          <li><strong style="color:var(--text);">P8 タイトル検討</strong>：判断主体は人。AIは案出しのみ</li>
+        </ul>
+      </div>
+      <div class="matrix-cell q4">
+        <h4>慎重 / やらない</h4>
+        <ul>
+          <li><strong style="color:var(--text);">P9 カバー・装丁・図版</strong>：#8 が明示する「クリエイティブ核は人」領域。ラフ生成のみOK</li>
+          <li><strong style="color:var(--text);">著者の意思に反する活用全般</strong>：#9 経験の「お怒り」事案を避ける</li>
+          <li><strong style="color:var(--text);">学習データに著者原稿を流す運用</strong>：著作権・契約リスク大</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 仮説② 人 vs AI の線引き ============ -->
+  <h2 class="section-title"><span class="hypo-tag">仮説②</span> 人 vs AI の線引き — プロセス別の役割分担</h2>
+  <div class="section-sub">「AIが下書き→人が仕上げ」の比率を、プロセス特性に応じて設計する</div>
+
+  <table class="line-tbl">
+    <thead>
+      <tr>
+        <th>プロセス</th>
+        <th style="width:120px">AI割合</th>
+        <th>人が担う「核」</th>
+        <th>AIに任せる範囲</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="pid">P2</span> 章立て構成</td><td><span class="ratio">AI 60%</span></td><td>章の順序の意図／企画の核</td><td>10案ジェネレート／抜け論点指摘</td></tr>
+      <tr><td><span class="pid">P4</span> 取材テープ起こし</td><td><span class="ratio">AI 90%</span></td><td>取材設計／引用判断</td><td>文字起こし／ケバ取り／構造化</td></tr>
+      <tr><td><span class="pid">P6</span> 原稿第一稿生成</td><td><span class="ratio">AI 80%</span></td><td>★著者意図保持／文体指針／合意確認</td><td>第一稿生成／構成整形／用語統一</td></tr>
+      <tr><td><span class="pid">P7</span> 校正・校閲</td><td><span class="ratio">AI 70%</span></td><td>文体保持判断／誤指摘の取捨</td><td>表記揺れ／事実確認／用語チェック</td></tr>
+      <tr><td><span class="pid">P10</span> 販促・PR資料</td><td><span class="ratio">AI 70%</span></td><td>メッセージング戦略／最終文言</td><td>A+案／パネル文案／プレリリ叩き</td></tr>
+      <tr><td><span class="pid">P11</span> 類書リサーチ</td><td><span class="ratio">AI 80%</span></td><td>営業提案の文脈・関係性</td><td>類書抽出／配本根拠データ</td></tr>
+      <tr><td><span class="pid">P12</span> 議事録・SharePoint検索</td><td><span class="ratio">AI 90%</span></td><td>判断・意思決定</td><td>議事録生成／RAG検索／サマリ</td></tr>
+      <tr><td><span class="pid">P13</span> 支払依頼書・契約</td><td><span class="ratio">AI 90%</span></td><td>★法務判断／最終承認</td><td>依頼書生成／メール文面／契約レビュー</td></tr>
+      <tr><td><span class="pid">P9</span> カバー・装丁・図版</td><td><span class="ratio">AI 10%</span></td><td>★★クリエイティブ判断 全部</td><td>ラフ生成のみ（参考程度）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="risk">
+    <h4>⚠️ 「人」の核を死守すべき理由</h4>
+    <p>#8 林さんの自由意見：「<strong>クリエイティビティやオリジナリティにかかわる部分には触れさせるべきではない</strong>」が、この線引きの哲学的支柱。</p>
+    <p>「AI割合を上げる＝人を減らす」ではなく、「<strong>AIが定型作業を引き受けることで、人は核業務に時間を割ける</strong>」が本来の狙い。</p>
+  </div>
+
+  <!-- ============ 仮説③ ロードマップ ============ -->
+  <h2 class="section-title"><span class="hypo-tag">仮説③</span> 4フェーズ・ロードマップ</h2>
+  <div class="section-sub">5月末〜2027年3月の約10ヶ月で「散発的な個人活用」→「編集部全体の標準運用」へ</div>
+
+  <div class="timeline">
+    <div class="timeline-bar">
+      <div class="tb-cell p0">Phase 0 共犯者形成<div class="tb-month">2026/5月末</div></div>
+      <div class="tb-cell p1">Phase 1 クイックウィン<div class="tb-month">2026/6-7月</div></div>
+      <div class="tb-cell p2">Phase 2 本命PoC<div class="tb-month">2026/8-10月</div></div>
+      <div class="tb-cell p3">Phase 3 全社浸透<div class="tb-month">2026/11月-</div></div>
+    </div>
+    <p style="font-size:12px;color:var(--text-muted);margin-top:4px;text-align:center;">→ 各Phaseは並行進行可。完了したら次へ、ではなく <strong style="color:var(--text);">重層的に積み上げる</strong> 設計。</p>
+  </div>
+
+  <div class="phase-grid">
+
+    <!-- Phase 0 -->
+    <div class="phase-card p0">
+      <div class="phase-head">
+        <div class="phase-num">0</div>
+        <div class="phase-name">共犯者形成・基盤整備</div>
+        <div class="phase-period">5月末（2-3週間）</div>
+      </div>
+      <div class="phase-goal">★ 推進担当3名で「進め方」を共同設計、ガバナンスの最小枠組みを置く</div>
+      <div class="phase-fields">
+        <div class="pf">
+          <div class="hd">主なアクション</div>
+          <ul>
+            <li>5月末「<strong>進め方共同設計セッション</strong>」90分（3名+西川+窪田）</li>
+            <li>Claude <strong>Team / Enterprise契約</strong>検討（補償付き利用）</li>
+            <li>プロンプト共有チャネル開設（Slack or Kintone）</li>
+            <li>著者契約条項のドラフト（AI使用範囲合意）</li>
+            <li>個人ゴール → 組織ゴールへの統合</li>
+          </ul>
+        </div>
+        <div class="pf kpi">
+          <div class="hd">完了の定義</div>
+          <ul>
+            <li>3名の役割分担合意（誰が何を担うか）</li>
+            <li>Phase 1 で着手する 3-4 プロセスを確定</li>
+            <li>シェア場所（Slack/Kintone）の確定</li>
+            <li>3ヶ月目標の文書化</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="phase-card p1">
+      <div class="phase-head">
+        <div class="phase-num">1</div>
+        <div class="phase-name">クイックウィン 4本（同時並行）</div>
+        <div class="phase-period">6-7月（2ヶ月）</div>
+      </div>
+      <div class="phase-goal">★ 「AIで楽になった」を編集部全員が体感する小さな成功事例を量産</div>
+      <div class="phase-fields">
+        <div class="pf">
+          <div class="hd">クイックウィン候補</div>
+          <ul>
+            <li><strong>P2 章立て構成プロンプト</strong>テンプレ（#9 救済）</li>
+            <li><strong>P4 取材テープ起こし</strong> Whisper+ChatGPTワークフロー標準化</li>
+            <li><strong>P7 校正ツール</strong>導入（Shodo or AI editor）— 13名中9名が即恩恵</li>
+            <li><strong>P13 支払依頼書</strong>Kintone+AI連携（Kintone第1弾と接続）</li>
+          </ul>
+        </div>
+        <div class="pf kpi">
+          <div class="hd">KPI / 効果仮説</div>
+          <ul>
+            <li>章立て1冊あたり <strong>2-3時間 → 30分</strong>（#9 報告）</li>
+            <li>テープ起こし1h → <strong>15分で構造化原稿</strong></li>
+            <li>校正の表記揺れ検出を <strong>3秒</strong>（AI editor実績）</li>
+            <li>支払依頼書1件あたり <strong>15分 → 2分</strong></li>
+            <li>月次シェア会で <strong>4本の事例</strong>を皆に展開</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase-fields" style="margin-top:12px;">
+        <div class="pf deliver" style="grid-column:1/-1;">
+          <div class="hd">この期間で生まれる成果物</div>
+          <ul>
+            <li>編集部向け<strong>プロンプトテンプレ集 v0.1</strong>（10-20本）</li>
+            <li>4プロセスの<strong>業務SOP（手順書）</strong></li>
+            <li>月次シェア会の運営パターン確立（第1回・第2回）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-card p2">
+      <div class="phase-head">
+        <div class="phase-num">2</div>
+        <div class="phase-name">本命PoC — 編集の根幹に AI</div>
+        <div class="phase-period">8-10月（3ヶ月）</div>
+      </div>
+      <div class="phase-goal">★ 「成功すれば編集部の生産性が一段上がる」本命2-3本に挑戦</div>
+      <div class="phase-fields">
+        <div class="pf">
+          <div class="hd">本命PoC候補</div>
+          <ul>
+            <li><strong>P6 原稿第一稿生成</strong>：#5の事例を編集部に展開、著者合意フロー試行</li>
+            <li><strong>P11 類書リサーチ→営業</strong>：POS×書店プロファイル統合（POSプロジェクトと接続）</li>
+            <li><strong>P10 Amazon A+ 量産</strong>：原稿→3パターン生成のワークフロー</li>
+            <li><strong>P12 SharePoint RAG</strong>：社内資料の横串検索（Microsoft Copilot連携検討）</li>
+          </ul>
+        </div>
+        <div class="pf kpi">
+          <div class="hd">KPI / 効果仮説</div>
+          <ul>
+            <li>第一稿生成：1冊の原稿作成 <strong>3ヶ月 → 1.5ヶ月</strong> を目標</li>
+            <li>著者合意フローを <strong>3冊以上</strong>で運用</li>
+            <li>類書リサーチ <strong>1書店あたり30分 → 5分</strong></li>
+            <li>A+ ページ作成 <strong>1冊1時間 → 15分</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase-fields" style="margin-top:12px;">
+        <div class="pf deliver" style="grid-column:1/-1;">
+          <div class="hd">この期間で生まれる成果物</div>
+          <ul>
+            <li>編集業務AI活用ガイドライン v1.0（著者合意・ツール選好・禁則事項）</li>
+            <li>営業ダッシュボード（POS×類書）プロトタイプ</li>
+            <li>第一稿AI生成の<strong>業務ワークフロー定義</strong>と事例集</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-card p3">
+      <div class="phase-head">
+        <div class="phase-num">3</div>
+        <div class="phase-name">編集部全体浸透 — 標準運用へ</div>
+        <div class="phase-period">11月-2027/3月（5ヶ月）</div>
+      </div>
+      <div class="phase-goal">★ 「散発的な個人活用」→「編集部全員が当然のように AI を使っている」状態へ</div>
+      <div class="phase-fields">
+        <div class="pf">
+          <div class="hd">主なアクション</div>
+          <ul>
+            <li>未着手層（#3/#9/#13 等）向けの<strong>入口ハンズオン</strong>開催</li>
+            <li>編集部全員向けの<strong>1日トレーニング</strong>（2回）</li>
+            <li>月次シェア会の<strong>ローテーション化</strong>（編集部主導）</li>
+            <li>経営層への<strong>中間報告会</strong>（Q4初）</li>
+            <li>他部門への横展開検討（営業・販促・総務）</li>
+          </ul>
+        </div>
+        <div class="pf kpi">
+          <div class="hd">KPI / 効果仮説</div>
+          <ul>
+            <li>編集部全員（13名）が<strong>週1回以上</strong>のAI利用</li>
+            <li>新刊1冊あたりの編集工数 <strong>20%削減</strong></li>
+            <li>全新刊で<strong>何らかのAI活用が標準</strong>（販促・校正・調査のいずれか）</li>
+            <li>編集者のAIアレルギー保有者 <strong>0人</strong>（少なくとも未試行はない状態）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase-fields" style="margin-top:12px;">
+        <div class="pf deliver" style="grid-column:1/-1;">
+          <div class="hd">この期間で生まれる成果物</div>
+          <ul>
+            <li>編集部AI活用ガイドライン v2.0（実運用フィードバック反映）</li>
+            <li>業務効率化の数値レポート（経営層共有用）</li>
+            <li>他部門展開のための<strong>テンプレ・ナレッジパッケージ</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ 推進体制の仮説 ============ -->
+  <h2 class="section-title"><span class="hypo-tag">仮説④</span> 推進体制の役割分担</h2>
+  <div class="section-sub">「推進担当 vs 西川」の関係を、3つの軸で明確化</div>
+
+  <table class="line-tbl">
+    <thead>
+      <tr>
+        <th style="width:90px">役割</th>
+        <th>推進担当3名が担う</th>
+        <th>西川（オモシク）が担う</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>主導</strong></td>
+        <td>「<strong style="color:var(--text);">何をやるか</strong>」「<strong style="color:var(--text);">どの順序か</strong>」の意思決定</td>
+        <td>選択肢の提示・トレードオフの整理・他社事例の継続インプット</td>
+      </tr>
+      <tr>
+        <td><strong>実装</strong></td>
+        <td>編集業務の<strong>解像度を持って要件を出す</strong>／業務SOPを書く</td>
+        <td>技術的に動かす（Kintone・プロンプト・API・統合基盤）／ハマりどころのフォロー</td>
+      </tr>
+      <tr>
+        <td><strong>展開</strong></td>
+        <td>編集部内への<strong>説明・巻き込み・シェア会の運営</strong></td>
+        <td>素材作成（資料・テンプレ）／効果測定の数値出し／経営報告の支援</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="risk">
+    <h4>⚠️ よくある失敗パターン</h4>
+    <p><strong>「コンサルがやってくれる、丸投げでいい」</strong>になると、推進担当が形だけになって浸透しない（4/28窪田様議事録の論点）。</p>
+    <p>逆に <strong>「推進担当が全部背負う」</strong>と続かない。<strong>双方が引き受ける範囲を最初に握る</strong>のが Phase 0 の最重要タスク。</p>
+  </div>
+
+  <!-- ============ 5/13 で議論したいこと ============ -->
+  <div class="discuss">
+    <h3>📣 5/13 当日、皆さんに叩いてほしい問い</h3>
+    <p>本資料は <strong>西川の仮説</strong> です。当日この資料を見ながら、以下を議論したいです。</p>
+    <ul>
+      <li>仮説①のクイックウィン候補4本、<strong>順番</strong>と<strong>誰が動かすか</strong>は適切ですか？</li>
+      <li>仮説②の人 vs AI 比率（特に P6 第一稿生成）は、編集部の現場感覚と合いますか？</li>
+      <li>仮説③のロードマップ、<strong>Phase 1 のスピード感（6-7月で4本）</strong>は無理なくいけますか？</li>
+      <li>仮説④の役割分担、<strong>推進担当が背負うところ／西川が背負うところ</strong>の線引きはどうしますか？</li>
+      <li>このマップに <strong>抜けているプロセス</strong>はありますか？（特に編集部固有の業務）</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title">関連資料</h2>
+  <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 24px; font-size: 12.5px; line-height: 1.85;">
+    <p style="color:var(--text-dim);">本資料と組み合わせて参照する事前資料</p>
+    <ul style="list-style:none;padding:0;margin-top:8px;">
+      <li style="padding:3px 0 3px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">↗</span><a href="https://tkonishikawa.github.io/demo-pages/d/editorial-ai-survey-20260513/summary.html" style="color:var(--text-dim);text-decoration:none;">アンケート全体サマリ（13名分の傾向）</a></li>
+      <li style="padding:3px 0 3px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">↗</span><a href="https://tkonishikawa.github.io/demo-pages/d/editorial-ai-process-map-20260513/" style="color:var(--text-dim);text-decoration:none;">業務プロセス×AI活用マップ（13プロセス詳細＋ベストプラクティス）</a></li>
+      <li style="padding:3px 0 3px 14px;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">↗</span><a href="https://tkonishikawa.github.io/demo-pages/d/editorial-ai-hearing-20260513/slides.html" style="color:var(--text-dim);text-decoration:none;">5/13 ヒアリング進行スライド</a></li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div>合同会社オモシク 西川 太雄 ／ nishikawa@omoshiku.jp</div>
+    <div style="margin-top:8px; opacity:0.6;">本資料は5/13ヒアリング前の「叩き台」です。当日3名+窪田様で叩いてください。</div>
+  </div>
+
+</div>
+</body>
+</html>
