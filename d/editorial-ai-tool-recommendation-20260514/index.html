@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編集部AI活用 ツール選定 推奨レポート — 大和書房様 | omoshiku</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --accent: #e8944a;
+  --accent-light: #f4a96b;
+  --accent-dark: #c97a3a;
+  --accent-bg: rgba(232,148,74,0.08);
+  --accent-border: rgba(232,148,74,0.2);
+  --navy: #0b0b12;
+  --navy-mid: #1a1a2e;
+  --bg-warm: #f6f3ee;
+  --bg-warm-2: #efe9e0;
+  --bg-card: #ffffff;
+  --text-1: #1a1a2e;
+  --text-2: #555566;
+  --text-3: #8a8a9a;
+  --border: #e4ddd4;
+  --border-light: #ede7df;
+  --success: #34d399;
+  --green: #059669;
+  --green-bg: rgba(5,150,105,0.08);
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  --red: #dc2626;
+  --amber: #b45309;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+}
+@page { size: A4; margin: 14mm 16mm; }
+body { font-family: 'Noto Sans JP', sans-serif; color: var(--text-1); background: var(--bg-warm); line-height: 1.85; font-size: 13.5px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { max-width: 920px; margin: 0 auto; background: var(--bg-card); padding: 44px 52px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+@media print { body { background: white; } .page { padding: 0; box-shadow: none; } }
+
+/* Header */
+.doc-header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 22px; border-bottom: 3px solid var(--accent); margin-bottom: 30px; }
+.doc-to { font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
+.doc-title { font-size: 22px; font-weight: 900; color: var(--navy); line-height: 1.4; }
+.doc-title span { color: var(--accent); }
+.header-right { text-align: right; }
+.brand-name { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 17px; color: var(--accent); }
+.brand-name span { color: var(--accent); }
+.brand-tagline { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+.doc-date { font-size: 11px; color: var(--text-3); margin-top: 8px; }
+
+/* Sections */
+h2.section { font-size: 17px; font-weight: 700; color: var(--navy); margin: 34px 0 14px; padding-left: 14px; border-left: 4px solid var(--accent); line-height: 1.4; }
+h3.subsection { font-size: 14px; font-weight: 700; color: var(--navy); margin: 22px 0 10px; }
+p.body-text { font-size: 13px; color: var(--text-2); margin-bottom: 10px; line-height: 1.9; }
+.lead { background: var(--accent-bg); border-left: 4px solid var(--accent); border-radius: 4px; padding: 16px 22px; margin-bottom: 22px; font-size: 13.5px; line-height: 1.9; color: var(--text-2); }
+.lead strong { color: var(--navy); }
+
+/* Tables */
+.tbl { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 12.5px; }
+.tbl th { background: var(--bg-warm); padding: 8px 12px; border: 1px solid var(--border-light); text-align: left; font-weight: 700; color: var(--text-2); font-size: 11.5px; }
+.tbl td { padding: 8px 12px; border: 1px solid var(--border-light); vertical-align: top; line-height: 1.75; }
+.tbl .cell-strong { font-weight: 700; color: var(--navy); }
+.tbl .cell-id { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.tbl .num-right { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Comparison matrix specific */
+.matrix th { text-align: center; }
+.matrix td.crit { font-weight: 600; color: var(--navy); }
+.matrix td.imp { text-align: center; color: var(--accent-dark); font-weight: 700; }
+.matrix td.score { text-align: center; font-size: 16px; font-weight: 700; line-height: 1.2; }
+.matrix td.note { font-size: 11px; color: var(--text-3); padding: 2px 8px 6px; line-height: 1.5; }
+.matrix .col-recommend { background: var(--accent-bg); border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+.matrix th.col-recommend { background: var(--accent); color: white; }
+.score-best { color: var(--green); }
+.score-good { color: var(--navy); }
+.score-fair { color: var(--amber); }
+.score-poor { color: var(--red); }
+
+/* KPI / Phase boxes */
+.kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+@media(max-width:600px){.kpi-row{grid-template-columns:1fr}}
+.kpi-box { background: var(--bg-warm); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 6px; }
+.kpi-box .label { font-size: 10.5px; color: var(--text-3); font-family: 'Sora', sans-serif; letter-spacing: 0.1em; text-transform: uppercase; }
+.kpi-box .num { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 22px; color: var(--accent-dark); line-height: 1.2; margin-top: 4px; }
+.kpi-box .desc { font-size: 12px; color: var(--text-2); margin-top: 4px; line-height: 1.6; }
+
+/* Phase timeline */
+.phase-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0 20px; }
+@media(max-width:600px){.phase-row{grid-template-columns:1fr}}
+.phase-box { background: var(--bg-card); border: 1px solid var(--border-light); border-top: 4px solid var(--accent); border-radius: 6px; padding: 14px 16px 12px; position: relative; }
+.phase-box .phase-num { font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.15em; }
+.phase-box .phase-when { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 14px; color: var(--navy); margin: 4px 0 6px; }
+.phase-box .phase-title { font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.5; }
+.phase-box .phase-cost { font-size: 11px; color: var(--accent-dark); font-weight: 700; margin-bottom: 8px; padding: 3px 8px; background: var(--accent-bg); border-radius: 4px; display: inline-block; }
+.phase-box ul { list-style: none; padding: 0; margin: 6px 0 0; }
+.phase-box li { font-size: 11.5px; line-height: 1.7; color: var(--text-2); padding: 2px 0 2px 16px; position: relative; }
+.phase-box li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+/* Highlight */
+.highlight { background: var(--accent-bg); border: 1px solid var(--accent-border); border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 12.5px; }
+.highlight strong { color: var(--accent-dark); }
+.insight { background: var(--green-bg); border: 1px solid rgba(5,150,105,0.18); border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 12.5px; }
+.insight strong { color: var(--green); }
+.warn { background: rgba(220,38,38,0.05); border: 1px solid rgba(220,38,38,0.18); border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 12.5px; }
+.warn strong { color: var(--red); }
+
+/* Conclusion box */
+.conclusion { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); color: white; padding: 22px 28px; border-radius: 10px; margin: 14px 0 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+.conclusion .label { font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.2em; }
+.conclusion .recommend-text { font-size: 17px; font-weight: 700; line-height: 1.7; margin: 8px 0 4px; }
+.conclusion .recommend-text strong { color: var(--accent); }
+.conclusion .recommend-sub { font-size: 12.5px; line-height: 1.8; color: rgba(255,255,255,0.85); margin-top: 8px; }
+
+/* 4 pillars grid */
+.pillar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0 20px; }
+@media(max-width:600px){.pillar-grid{grid-template-columns:1fr}}
+.pillar { background: var(--bg-card); border: 1px solid var(--border-light); border-left: 4px solid var(--accent); border-radius: 8px; padding: 14px 18px; }
+.pillar .p-num { font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.15em; }
+.pillar .p-title { font-size: 13.5px; font-weight: 700; color: var(--navy); margin: 4px 0 8px; line-height: 1.5; }
+.pillar .p-body { font-size: 12px; color: var(--text-2); line-height: 1.8; }
+.pillar .p-body strong { color: var(--navy); }
+
+/* Agenda timeline */
+.agenda-line { border-left: 3px solid var(--accent-border); padding-left: 18px; margin: 10px 0 20px; }
+.agenda-item { margin-bottom: 10px; padding-left: 0; position: relative; }
+.agenda-item::before { content: ""; width: 11px; height: 11px; background: var(--accent); border-radius: 50%; position: absolute; left: -25px; top: 6px; box-shadow: 0 0 0 3px var(--bg-card); }
+.agenda-time { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 11.5px; color: var(--accent); }
+.agenda-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-top: 2px; }
+.agenda-out { font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+
+/* Goal cards */
+.goal-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0 20px; }
+@media(max-width:600px){.goal-row{grid-template-columns:1fr}}
+.goal-card { background: var(--bg-warm); border: 1px solid var(--border-light); border-top: 3px solid var(--accent); border-radius: 6px; padding: 12px 14px; }
+.goal-card .g-id { font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.15em; }
+.goal-card .g-body { font-size: 12.5px; color: var(--navy); font-weight: 600; margin-top: 4px; line-height: 1.6; }
+
+/* List */
+.bullet { list-style: none; padding: 0; margin: 8px 0; }
+.bullet li { padding: 4px 0 4px 22px; position: relative; font-size: 13px; line-height: 1.85; color: var(--text-2); }
+.bullet li::before { content: "▸"; position: absolute; left: 0; top: 4px; color: var(--accent); font-weight: 700; }
+.bullet li strong { color: var(--navy); }
+
+/* Footer */
+.footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--border-light); font-size: 11px; color: var(--text-3); text-align: center; }
+.footer .brand { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--accent); }
+.footer .brand span { color: var(--accent); }
+
+/* TOC */
+.toc { background: var(--bg-warm); border-radius: 8px; padding: 14px 20px; margin: 18px 0 26px; font-size: 12px; border: 1px solid var(--border-light); }
+.toc-title { font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.15em; margin-bottom: 8px; }
+.toc-list { list-style: none; padding: 0; columns: 2; column-gap: 32px; }
+@media(max-width:600px){.toc-list{columns:1}}
+.toc-list li { padding: 2px 0; color: var(--text-2); }
+.toc-list li::before { content: "§"; color: var(--accent); margin-right: 6px; font-weight: 700; }
+
+/* Story box */
+.story-box { background: var(--bg-warm); border: 1px solid var(--border-light); border-radius: 8px; padding: 16px 22px; margin: 12px 0; font-size: 13px; line-height: 1.9; color: var(--text-2); font-style: italic; }
+.story-box strong { color: var(--navy); font-style: normal; }
+
+/* Q-card for confirmation items */
+.q-confirm { background: var(--bg-card); border: 1px solid var(--border-light); border-left: 3px solid var(--accent); border-radius: 6px; padding: 12px 16px; margin: 8px 0; }
+.q-confirm .q-id { font-family: 'Sora', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; }
+.q-confirm .q-question { font-size: 13px; font-weight: 700; color: var(--navy); margin: 2px 0 4px; }
+.q-confirm .q-why { font-size: 11.5px; color: var(--text-3); line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-header">
+    <div>
+      <div class="doc-to">大和書房 総務部 窪田 美穂 様 ／ すり合わせMTG 構成資料</div>
+      <div class="doc-title">編集部AI活用<br><span>ツール選定 推奨レポート</span></div>
+    </div>
+    <div class="header-right">
+      <div class="brand-name">omoshi<span>ku</span></div>
+      <div class="brand-tagline">「想い」と「仕組み」で「面白く」</div>
+      <div class="doc-date">2026年5月14日</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    <p>5/13(水) 編集部推進3名へのヒアリングを踏まえて、<strong>窪田様との30分すり合わせMTG</strong> のアジェンダ・論点・ゴール、および <strong>編集部に導入する生成AIツールの選定推奨</strong> を整理しました。Gemini／Claude／ChatGPT の3ツールを多角的に比較したうえで、編集業務の特性と推進3名の状況を踏まえた推奨案をご提示いたします。</p>
+    <p>結論として、<strong>「Claude Team を共通基盤に据え、ChatGPT／Gemini は個人裁量で併用OK」のハイブリッド型</strong> を推奨いたします。詳細は §4 以降をご覧ください。</p>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">目次</div>
+    <ul class="toc-list">
+      <li>1. MTGの位置づけとゴール</li>
+      <li>2. 30分アジェンダ</li>
+      <li>3. 論点（3本）</li>
+      <li>4. ツール選定の結論</li>
+      <li>5. 3ツール 多角比較マトリクス</li>
+      <li>6. Claudeを共通基盤に据える 4つの根拠</li>
+      <li>7. リスクと対応</li>
+      <li>8. 段階導入プラン</li>
+      <li>9. コスト試算とROI</li>
+      <li>10. 窪田様に確認したいこと</li>
+      <li>11. 上位層への報告ストーリー（叩き）</li>
+    </ul>
+  </div>
+
+  <!-- ============ 1. MTGの位置づけとゴール ============ -->
+  <h2 class="section">1. MTGの位置づけとゴール</h2>
+
+  <h3 class="subsection">位置づけ</h3>
+  <p class="body-text">5/27 編集部推進3名MTG の <strong>前段すり合わせ</strong> として、窪田様と西川で「ツール選定の方向感」「会社契約のスコープ・予算感」「上位層への報告ストーリー」を握る場と位置づけます。3名の場で出すべき議題と、窪田様-西川間で決め切る議題を切り分けます。</p>
+
+  <h3 class="subsection">30分後に持って帰る状態（3つのゴール）</h3>
+  <div class="goal-row">
+    <div class="goal-card">
+      <div class="g-id">GOAL 1</div>
+      <div class="g-body">ツール選定の方向性に方針合意（何を共通基盤にし、何を個人裁量に残すか）</div>
+    </div>
+    <div class="goal-card">
+      <div class="g-id">GOAL 2</div>
+      <div class="g-body">会社契約のスコープ・予算感に方向感（何名から始め、いくらの範囲なら社内で動かせるか）</div>
+    </div>
+    <div class="goal-card">
+      <div class="g-id">GOAL 3</div>
+      <div class="g-body">上位層（社長・編集統括）への共有タイミング・粒度の確定（5/27前か後か）</div>
+    </div>
+  </div>
+  <p class="body-text" style="font-size:12px;color:var(--text-3);">これらが固まれば、5/27は「3名のやりたいことの優先順位づけ」に集中できる構図になります。</p>
+
+  <!-- ============ 2. 30分アジェンダ ============ -->
+  <h2 class="section">2. 30分アジェンダ</h2>
+
+  <div class="agenda-line">
+    <div class="agenda-item">
+      <div class="agenda-time">0:00 – 0:05 ／ 5分</div>
+      <div class="agenda-title">5/13ヒアリング 重要発見3点の振り返り</div>
+      <div class="agenda-out">アウトプット：共通認識（個々人の柔軟性 × 共通仕組みの二層構造／ルール整備が前提条件／3名とも実装段階）</div>
+    </div>
+    <div class="agenda-item">
+      <div class="agenda-time">0:05 – 0:20 ／ 15分</div>
+      <div class="agenda-title">ツール選定の論点と推奨案の議論</div>
+      <div class="agenda-out">アウトプット：GOAL 1（方向性合意）。本書 §4-§7 を素材に議論。</div>
+    </div>
+    <div class="agenda-item">
+      <div class="agenda-time">0:20 – 0:25 ／ 5分</div>
+      <div class="agenda-title">会社契約のスコープ・予算感・段階導入プラン</div>
+      <div class="agenda-out">アウトプット：GOAL 2（予算感合意）。本書 §8-§9 を素材に議論。</div>
+    </div>
+    <div class="agenda-item">
+      <div class="agenda-time">0:25 – 0:30 ／ 5分</div>
+      <div class="agenda-title">5/27の進め方／上位層共有の段取り</div>
+      <div class="agenda-out">アウトプット：GOAL 3（報告ストーリー確定）。本書 §11 を素材に議論。</div>
+    </div>
+  </div>
+
+  <!-- ============ 3. 論点 ============ -->
+  <h2 class="section">3. 論点（3本）</h2>
+
+  <table class="tbl">
+    <tr>
+      <th style="width:40px">#</th>
+      <th style="width:180px">論点</th>
+      <th>サブ論点と西川の見立て</th>
+    </tr>
+    <tr>
+      <td class="cell-id">①</td>
+      <td class="cell-strong">ツール選定<br>― 共通基盤を何にするか</td>
+      <td>
+        「1ツール統一」か「ハイブリッド」かは、林様の <strong>「ツール固定化NG」</strong> の哲学を踏まえると <strong>ハイブリッド一択</strong>。ここは議論せず合意で抜けます。<br>
+        では <strong>共通基盤に何を据えるか</strong>＝ Claude／ChatGPT／Gemini のどれか。これが本MTGの核です。
+      </td>
+    </tr>
+    <tr>
+      <td class="cell-id">②</td>
+      <td class="cell-strong">段階導入のスピード感</td>
+      <td>
+        5月末から推進3名＋窪田様＋西川 = 5名で先行 → 6-7月の手応えを見て編集部13名へ拡大、と、最初から13名一気の2案。<br>
+        西川推奨：<strong>先行5名 → 拡大13名 の2段</strong>（リスク最小、3名がエヴァンジェリスト化する時間を確保できます）。
+      </td>
+    </tr>
+    <tr>
+      <td class="cell-id">③</td>
+      <td class="cell-strong">編集部以外への展開意図</td>
+      <td>
+        編集部だけで完結させるのか、営業部（POSダッシュボードPJ）・総務部（Kintone PJ）と接続させていくのか。<br>
+        既に出口様の類書DBが営業POSと接点を持つ可能性があります。<strong>「編集起点だが全社展開を視野」</strong>のスタンスを窪田様と合意しておきたい論点です。
+      </td>
+    </tr>
+  </table>
+
+  <!-- ============ 4. ツール選定の結論 ============ -->
+  <h2 class="section">4. ツール選定の結論</h2>
+
+  <div class="conclusion">
+    <div class="label">RECOMMENDATION</div>
+    <div class="recommend-text"><strong>Claude Team</strong> を編集部の共通基盤に据え、<br><strong>ChatGPT／Gemini は個人裁量で併用OK</strong> のハイブリッド型を推奨します。</div>
+    <div class="recommend-sub">
+      5月末から推進3名＋窪田様＋西川 = <strong>5名でClaude Team先行契約</strong>（月額 約 ¥19,000）。6-7月の運用検証を経て、8月に編集部13名へ拡大（月額 約 ¥49,000）。初年度投資 約 ¥58万に対し、控えめ試算で <strong>年間 約 ¥97万の作業時間削減効果（ROI 約170%）</strong> を見込みます。
+    </div>
+  </div>
+
+  <p class="body-text">「Claude／ChatGPT／Gemini いずれを選ぶか」ではなく、<strong>編集業務の核となる『原稿処理』に最適なツールを共通基盤に置き、それ以外の用途（リサーチ・Web検索）は個人の自由に委ねる</strong> という設計が、5/13ヒアリングで3名が自然に合意した「個々人の柔軟性 × 共通仕組み」の哲学と最も整合します。</p>
+
+  <!-- ============ 5. 比較マトリクス ============ -->
+  <h2 class="section">5. 3ツール 多角比較マトリクス</h2>
+
+  <p class="body-text">編集部の業務特性（原稿処理・著作権配慮）と推進3名の状況を踏まえた11の評価軸で、3ツールを多角比較しました。<strong>◎=最適 ／ ○=良好 ／ △=可 ／ ×=不利</strong>。</p>
+
+  <table class="tbl matrix">
+    <tr>
+      <th style="width:230px">評価軸</th>
+      <th style="width:55px">重要度</th>
+      <th class="col-recommend" style="width:110px">Claude<br>★推奨</th>
+      <th style="width:110px">ChatGPT</th>
+      <th style="width:110px">Gemini</th>
+    </tr>
+    <tr>
+      <td class="crit">長文・原稿1冊まるごとの処理</td>
+      <td class="imp">★★★</td>
+      <td class="score col-recommend score-best">◎</td>
+      <td class="score score-fair">△</td>
+      <td class="score score-best">◎</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">200K-1Mトークン</td>
+      <td class="note">128Kトークン</td>
+      <td class="note">2Mトークン（最長）</td>
+    </tr>
+    <tr>
+      <td class="crit">日本語の文体保持・文芸性</td>
+      <td class="imp">★★★</td>
+      <td class="score col-recommend score-best">◎</td>
+      <td class="score score-good">○</td>
+      <td class="score score-fair">△</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">文芸・編集系で支持</td>
+      <td class="note">汎用ベース</td>
+      <td class="note">事実情報重視</td>
+    </tr>
+    <tr>
+      <td class="crit">校正・表記ゆれ・誤字脱字</td>
+      <td class="imp">★★★</td>
+      <td class="score col-recommend score-good">○</td>
+      <td class="score score-good">○</td>
+      <td class="score score-good">○</td>
+    </tr>
+    <tr>
+      <td class="crit">企画リサーチ・Web検索</td>
+      <td class="imp">★★</td>
+      <td class="score col-recommend score-fair">△</td>
+      <td class="score score-best">◎</td>
+      <td class="score score-best">◎</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">Webアクセス弱め</td>
+      <td class="note">幅広い情報</td>
+      <td class="note">Google検索統合</td>
+    </tr>
+    <tr>
+      <td class="crit">データ保護・著作権配慮</td>
+      <td class="imp">★★★</td>
+      <td class="score col-recommend score-best">◎</td>
+      <td class="score score-good">○</td>
+      <td class="score score-good">○</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">Constitutional AI／学習なし契約</td>
+      <td class="note">NYT訴訟係争中</td>
+      <td class="note">Workspace内で完結</td>
+    </tr>
+    <tr>
+      <td class="crit">推進担当2名(#5,#8)との相性</td>
+      <td class="imp">★★★</td>
+      <td class="score col-recommend score-best">◎</td>
+      <td class="score score-fair">△</td>
+      <td class="score score-fair">△</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">両名がClaude派・Claude Code継続可</td>
+      <td class="note">中山課長は使用</td>
+      <td class="note">林様が併用</td>
+    </tr>
+    <tr>
+      <td class="crit">既存利用との連続性</td>
+      <td class="imp">★★</td>
+      <td class="score col-recommend score-fair">△</td>
+      <td class="score score-best">◎</td>
+      <td class="score score-good">○</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">13名中2名</td>
+      <td class="note">13名中10名（77%）</td>
+      <td class="note">13名中6名（46%）</td>
+    </tr>
+    <tr>
+      <td class="crit">ワークフロー統合</td>
+      <td class="imp">★★</td>
+      <td class="score col-recommend score-fair">△</td>
+      <td class="score score-good">○</td>
+      <td class="score score-best">◎</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">単体ツール</td>
+      <td class="note">GPTs等エコシステム</td>
+      <td class="note">Workspace前提で強い</td>
+    </tr>
+    <tr>
+      <td class="crit">ガバナンス・管理機能</td>
+      <td class="imp">★★</td>
+      <td class="score col-recommend score-good">○</td>
+      <td class="score score-good">○</td>
+      <td class="score score-best">◎</td>
+    </tr>
+    <tr>
+      <td class="crit">編集・出版業界での評判</td>
+      <td class="imp">★</td>
+      <td class="score col-recommend score-good">○</td>
+      <td class="score score-good">○</td>
+      <td class="score score-fair">△</td>
+    </tr>
+    <tr>
+      <td class="crit">コスト（13名想定／月額）</td>
+      <td class="imp">★★</td>
+      <td class="score col-recommend score-good">¥49K</td>
+      <td class="score score-good">¥49K</td>
+      <td class="score score-good">¥47K+</td>
+    </tr>
+    <tr>
+      <td class="note"></td><td class="note"></td>
+      <td class="note col-recommend">Team年契約 $25/seat</td>
+      <td class="note">Team年契約 $25/seat</td>
+      <td class="note">Workspace前提のAdd-on</td>
+    </tr>
+  </table>
+
+  <div class="highlight">
+    <strong>マトリクスの読み方：</strong> 重要度★★★の <strong>「原稿処理」「文体保持」「データ保護」「推進担当との相性」</strong> の4軸で Claude が単独で最高評価。逆に「Web検索」「既存利用」では ChatGPT／Gemini が優位ですが、これは <strong>個人裁量での併用OKというハイブリッド設計で十分カバーできる</strong> 領域です。
+  </div>
+
+  <!-- ============ 6. Claudeを共通基盤に据える 4本柱 ============ -->
+  <h2 class="section">6. Claudeを共通基盤に据える ── 4つの根拠</h2>
+
+  <div class="pillar-grid">
+    <div class="pillar">
+      <div class="p-num">PILLAR 1</div>
+      <div class="p-title">編集業務の核「原稿」で最も強い</div>
+      <div class="p-body">
+        200Kトークン（年内に1M拡大予定）で <strong>原稿1冊まるごと処理</strong> 可能。日本語の文体保持品質は3ツール中最高評価。<strong>第一稿生成（#5構想中）・校正・原稿確認</strong> の全てで適性が最も高い。
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="p-num">PILLAR 2</div>
+      <div class="p-title">推進担当2名（#5,#8）が既にClaude派</div>
+      <div class="p-body">
+        エヴァンジェリスト育成モデルの前提と完全に一致。会社契約に切り替えれば、<strong>出口様が詰まっているClaudeクレジット問題が即解消</strong>。Claude Codeの自作事例も会社環境で継続可能になります。
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="p-num">PILLAR 3</div>
+      <div class="p-title">著作権懸念（7/13＝54%）への直接的回答</div>
+      <div class="p-body">
+        Anthropicの「Constitutional AI」＋Team以上で <strong>入力データを学習に使わない契約</strong>。OpenAIはNYT訴訟係争中で編集業界が心象的に距離を置きやすい状況。「会社が著作権を守る形で契約した」と編集部に説明できます。
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="p-num">PILLAR 4</div>
+      <div class="p-title">「ツール固定化NG」哲学と両立できる</div>
+      <div class="p-body">
+        Claudeを <strong>"業務原稿の標準ルート"</strong> に据える一方、企画リサーチ・Web検索は個人のChatGPT／Geminiで自由に併用OK。<strong>共通基盤＋個人裁量の二層構造</strong> を最も自然に実現できる組み合わせです。
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 7. リスクと対応 ============ -->
+  <h2 class="section">7. リスクと対応</h2>
+
+  <table class="tbl">
+    <tr>
+      <th style="width:280px">想定リスク</th>
+      <th>対応</th>
+    </tr>
+    <tr>
+      <td class="cell-strong">既存ChatGPTユーザー10名の移行抵抗</td>
+      <td>移行は強制しない。<strong>「業務上の原稿系作業はClaude／それ以外は自由」</strong> という単純ルールに絞る。ChatGPT個人プランの継続利用OKで運用負荷を最小化。</td>
+    </tr>
+    <tr>
+      <td class="cell-strong">Web検索・最新情報の弱さ</td>
+      <td>個人のChatGPT／Geminiを並行利用で補完。これは「制約」ではなく <strong>設計上の選択</strong>（用途別の使い分け）として明示する。</td>
+    </tr>
+    <tr>
+      <td class="cell-strong">出口様のClaude Code継続</td>
+      <td>Claude Pro個人版（$20/月）を1名分追加、または Team内のClaude Code利用枠で対応。<strong>クレジット切れ問題は会社契約への切り替えで即解消</strong>。</td>
+    </tr>
+    <tr>
+      <td class="cell-strong">大和書房がGoogle Workspace環境の場合</td>
+      <td>将来的にGemini Add-on併用は柔軟に検討。ただし <strong>今は意思決定を分散させずClaude単体推奨</strong>。<em>※本MTGで環境確認が必要（§10 Q1）</em>。</td>
+    </tr>
+    <tr>
+      <td class="cell-strong">ChatGPT 10名の感情面</td>
+      <td>5/27 推進3名MTGで「<strong>個人利用は引き続き自由</strong>」を明示。ルールv1.0で「業務原稿はClaude」だけを定め、個人活用はガイドラインで肯定的に位置づける。</td>
+    </tr>
+  </table>
+
+  <!-- ============ 8. 段階導入プラン ============ -->
+  <h2 class="section">8. 段階導入プラン</h2>
+
+  <div class="phase-row">
+    <div class="phase-box">
+      <div class="phase-num">PHASE 0</div>
+      <div class="phase-when">6月（2ヶ月）</div>
+      <div class="phase-title">Claude Team 先行5名</div>
+      <div class="phase-cost">月額 約 ¥19,500</div>
+      <ul>
+        <li>推進3名＋窪田様＋西川</li>
+        <li>プロンプト集・運用ルールの叩き台作成</li>
+        <li>出口様 Claude Codeを会社環境へ移管</li>
+        <li>3名で出口事例の横展開検証</li>
+      </ul>
+    </div>
+    <div class="phase-box">
+      <div class="phase-num">PHASE 1</div>
+      <div class="phase-when">8月以降</div>
+      <div class="phase-title">編集部13名へ拡大</div>
+      <div class="phase-cost">月額 約 ¥48,750</div>
+      <ul>
+        <li>Phase 0で作ったプロンプト集を全員配布</li>
+        <li>月次シェア会スタート</li>
+        <li>編集部AI活用ルール v1.0配布</li>
+        <li>クイックウィン本格展開</li>
+      </ul>
+    </div>
+    <div class="phase-box">
+      <div class="phase-num">PHASE 2</div>
+      <div class="phase-when">10月以降</div>
+      <div class="phase-title">Enterprise・他部署展開</div>
+      <div class="phase-cost">要検討</div>
+      <ul>
+        <li>必要に応じてEnterprise契約検討</li>
+        <li>営業部・総務部の接続検討</li>
+        <li>Gemini併用の本格判断</li>
+        <li>編集部AI活用ルール v2.0</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>段階導入の意味：</strong> Phase 0（5名）でリスク最小化＋プロンプト集・ルールの実証を行い、その成果物を持ってPhase 1（13名拡大）に進む二段構えとします。これにより、推進3名がエヴァンジェリストとして編集部全体に展開する役割を担う準備期間を確保できます。
+  </div>
+
+  <!-- ============ 9. コスト試算とROI ============ -->
+  <h2 class="section">9. コスト試算とROI</h2>
+
+  <h3 class="subsection">初年度コスト</h3>
+  <table class="tbl">
+    <tr>
+      <th>プラン</th>
+      <th style="width:120px;text-align:right">月額</th>
+      <th style="width:140px;text-align:right">期間内合計</th>
+    </tr>
+    <tr>
+      <td>Phase 0（5名 ／ 6-7月の2ヶ月）</td>
+      <td class="num-right">¥19,500</td>
+      <td class="num-right">¥39,000</td>
+    </tr>
+    <tr>
+      <td>Phase 1（13名 ／ 8月以降11ヶ月）</td>
+      <td class="num-right">¥48,750</td>
+      <td class="num-right">¥536,250</td>
+    </tr>
+    <tr style="background:var(--accent-bg);">
+      <td class="cell-strong">初年度合計</td>
+      <td class="num-right">—</td>
+      <td class="num-right cell-strong" style="color:var(--accent-dark);">約 ¥575,000</td>
+    </tr>
+  </table>
+  <p class="body-text" style="font-size:11.5px;color:var(--text-3);">※ Claude Team 年契約 $25/seat × 150円/$ で試算。為替変動・プラン改定により増減の可能性あり。</p>
+
+  <h3 class="subsection">ROI試算（控えめ見積もり）</h3>
+  <table class="tbl">
+    <tr>
+      <th>削減対象</th>
+      <th style="width:160px;text-align:right">年間 削減時間</th>
+      <th style="width:160px;text-align:right">削減効果（時給¥3,000換算）</th>
+    </tr>
+    <tr>
+      <td>テープ起こし（20本／年 × 45分短縮）</td>
+      <td class="num-right">15時間</td>
+      <td class="num-right">¥45,000</td>
+    </tr>
+    <tr>
+      <td>第一稿生成（5冊 × 30時間短縮）</td>
+      <td class="num-right">150時間</td>
+      <td class="num-right">¥450,000</td>
+    </tr>
+    <tr>
+      <td>校正・調べもの（100冊 × 1時間）</td>
+      <td class="num-right">100時間</td>
+      <td class="num-right">¥300,000</td>
+    </tr>
+    <tr>
+      <td>事務処理（支払依頼・PR資料 月10時間 × 50%）</td>
+      <td class="num-right">60時間</td>
+      <td class="num-right">¥180,000</td>
+    </tr>
+    <tr style="background:var(--green-bg);">
+      <td class="cell-strong">合計（年間削減効果）</td>
+      <td class="num-right cell-strong">325時間</td>
+      <td class="num-right cell-strong" style="color:var(--green);">約 ¥975,000</td>
+    </tr>
+  </table>
+
+  <div class="insight">
+    <strong>ROI 約170%（初年度）。</strong> 投資 約 ¥58万 に対し、控えめ試算で削減効果 約 ¥97万。2年目以降は Phase 0 がないため投資 約 ¥58万／削減効果はさらに拡大の見込みです。<strong>1冊あたり投資額は ¥4-6千</strong>（年間刊行100-150冊想定）と、単冊収益への影響は無視できる水準です。
+  </div>
+
+  <!-- ============ 10. 窪田様に確認したいこと ============ -->
+  <h2 class="section">10. 窪田様に確認したいこと（30分内で）</h2>
+
+  <div class="q-confirm">
+    <div class="q-id">Q1</div>
+    <div class="q-question">大和書房は Google Workspace か Microsoft 365 か</div>
+    <div class="q-why">Geminiの相性判定／Phase 2でのワークフロー統合判断。5/13ヒアリングでSharePointへの言及があり、Microsoft寄りと推測していますが要確認です。</div>
+  </div>
+  <div class="q-confirm">
+    <div class="q-id">Q2</div>
+    <div class="q-question">編集部 月¥5万／年¥60万の予算感は、窪田様権限で動かせる規模か／社長決裁か</div>
+    <div class="q-why">段階導入プランのスピードに直結します。窪田様裁量なら6月着手、社長決裁なら5/27前後で報告→決裁→7月着手の流れになります。</div>
+  </div>
+  <div class="q-confirm">
+    <div class="q-id">Q3</div>
+    <div class="q-question">社長・編集統括への共有タイミング ── 5/27 前 or 後</div>
+    <div class="q-why">上位層が「方向感だけ聞きたい」のか「具体案を聞きたい」のかで報告粒度が変わります。5/27前なら本書を素材に窪田様から共有、後なら推進3名の合意も含めた本格レポートになります。</div>
+  </div>
+  <div class="q-confirm">
+    <div class="q-id">Q4</div>
+    <div class="q-question">編集部以外（営業・総務）への展開意図</div>
+    <div class="q-why">Phase 2 の絵を窪田様と共有しておけば、出口様の類書DB × 営業POSダッシュボードの接続提案も動きやすくなります。「編集起点だが全社展開を視野」のスタンスを握っておきたい論点です。</div>
+  </div>
+
+  <!-- ============ 11. 上位層への報告ストーリー ============ -->
+  <h2 class="section">11. 上位層への報告ストーリー（叩き）</h2>
+
+  <p class="body-text">窪田様から社長・編集統括へお伝えいただく際の叩きです。語順・粒度は窪田様のスタイルに合わせて調整してください。</p>
+
+  <div class="story-box">
+    編集部の推進3名（中山課長・林様・出口様）へのヒアリングを実施しました。3名とも個人でAIを実装段階まで使っており、<strong>エヴァンジェリスト化の素地は十分</strong>にあります。<br><br>
+    全社一律ではなく <strong>「個人の柔軟性 × 共通仕組み」の二層構造</strong> で進めます。共通基盤は <strong>Claude Team</strong>（編集業務の中核である原稿処理・著作権配慮で最適）を採用し、個人のリサーチ等は ChatGPT／Gemini も自由に併用OKという方針です。<br><br>
+    まず5月末から推進3名＋総務2名の <strong>計5名（月¥1.9万）</strong> で先行運用し、6-7月の手応えを見て8月に編集部全体13名（月¥4.9万・年¥58万）へ広げます。<br><br>
+    初年度の作業時間削減効果は控えめ試算で <strong>年間325時間相当（¥97万）</strong>、<strong>投資対効果 約170%</strong> を見込みます。
+  </div>
+
+  <div class="highlight" style="margin-top:18px;">
+    <strong>本書の使い方：</strong> 30分のMTGで全項目を消化するのは難しいため、<strong>§4-§7（ツール選定の結論・比較・根拠・リスク）に時間を寄せ、§10（Q1-Q4）の答えを持ち帰る</strong> 設計でお進めください。§8-§9（プラン・コスト）はMTG後に窪田様が社長・編集統括へ共有される際の素材として活用いただければと思います。
+  </div>
+
+  <div class="footer">
+    <div class="brand">omoshi<span>ku</span></div>
+    <div>合同会社オモシク 西川 太雄 ／ nishikawa@omoshiku.jp</div>
+    <div style="margin-top:6px; opacity:0.7;">本書は5/13ヒアリングを踏まえたツール選定の推奨レポートです。ご不明点・追加のご質問はお気軽にご連絡ください。</div>
+  </div>
+
+</div>
+</body>
+</html>
